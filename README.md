@@ -1,7 +1,7 @@
 # Word Hero
 Gamified application to learn all new vocabularies of the Interchange book series
 
-![](ReadmeAssets/WordHero.jpg)
+<img src="ReadmeAssets/WordHero.jpg" width="270"/>
 
 ## Abstract
 
