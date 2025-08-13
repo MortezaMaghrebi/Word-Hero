@@ -1633,6 +1633,34 @@
                         android:layout_marginTop="15dp"
                         android:background="@drawable/button2a"
                         android:text="Import Image Database" />
+                    <Button
+                        android:id="@+id/btngetimages"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginRight="30dp"
+                        android:layout_marginTop="15dp"
+                        android:background="@drawable/button2a"
+                        android:text="Get images from net" />
+                    <Button
+                        android:id="@+id/btnCancelgetimages"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginRight="30dp"
+                        android:layout_marginTop="15dp"
+                        android:background="@drawable/button2a"
+                        android:text="Cancel Get Images" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtGetimagesprogress"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginRight="30dp"
+                        android:layout_marginTop="15dp"
+
+                        />
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

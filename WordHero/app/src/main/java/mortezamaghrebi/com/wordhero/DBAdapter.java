@@ -239,11 +239,23 @@ public class DBAdapter extends SQLiteOpenHelper {
         c.close();
     }
 
-    public Cursor getAllWords(){
+    public Cursor getAllWords() {
         String where = null;
-        Cursor c = db.query(true,DATABASE_TABLE,ALL_KEYS,
-                where, null,null,null,null,null);
-        if(c!=null){c.moveToFirst();}
+        String orderBy = key_day + " ASC";
+        Cursor c = db.query(
+                true,
+                DATABASE_TABLE,
+                ALL_KEYS,
+                where,
+                null,
+                null,
+                null,
+                orderBy,
+                null
+        );
+        if (c != null) {
+            c.moveToFirst();
+        }
         return c;
     }
 

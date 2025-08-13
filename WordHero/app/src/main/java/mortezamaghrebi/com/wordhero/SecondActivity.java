@@ -47,8 +47,14 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -62,7 +68,7 @@ import java.util.Map;
 public class SecondActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_READ_STORAGE = 606;
-    TextView txtheart1, txtheart2, txtexir1, txtexir2, txtstar1, txtstar2, txtuser, txtavatarname, txtnummessages;
+    TextView txtheart1, txtheart2, txtexir1, txtexir2, txtstar1, txtstar2, txtuser, txtavatarname, txtnummessages,txtGetimagesprogress;
     RelativeLayout prgheart, prgexir, prgstar, prgref, btnmessages, btnusersetting, lytone;
     LinearLayout buyh1, buyh2, buyh3, buyp1, buyp2, buyp3, lyttwo, lytthree, lytbody,lytfour,lytfive;
     ImageView imghome, imgchat, imgmarket,imgsearch,imgusers, imgacceptavatar, imgacceptuser, imgnextavatar, imgprevavatar, imgavatarbuying,imgsynced,imginfo,imgsettings;
@@ -72,6 +78,7 @@ public class SecondActivity extends AppCompatActivity {
     ListView lstchats,lstusers;
     ImageButton btnrefresh;
     int progrefwidth = 0;
+    boolean globalCancel=false;
     Controller controller;
     private Handler mHandler;
     Date heartaddedtime, exirchangedtime;
@@ -105,6 +112,7 @@ public class SecondActivity extends AppCompatActivity {
         txtuser = (TextView) findViewById(R.id.txtuser);
         txtavatarname = (TextView) findViewById(R.id.txtavatarname);
         txtnummessages = (TextView) findViewById(R.id.txtnummessages);
+        txtGetimagesprogress = (TextView) findViewById(R.id.txtGetimagesprogress);
         prgref = (RelativeLayout) findViewById(R.id.prg_ref);
         prgheart = (RelativeLayout) findViewById(R.id.prgheart);
         prgexir = (RelativeLayout) findViewById(R.id.prgexir);
@@ -140,7 +148,7 @@ public class SecondActivity extends AppCompatActivity {
         imgacceptavatar = (ImageView) findViewById(R.id.imgacceptavatar);
         imgacceptuser = (ImageView) findViewById(R.id.imgacceptusers);
         prgavatar = (ProgressBar) findViewById(R.id.prgavatar);
-        imgsynced.setVisibility(View.INVISIBLE);
+        imgsynced.setVisibility(View.VISIBLE);
         txtuser.setText(controller.getUser());
         progrefwidth = controller.getProgWidth();
         mHandler = new Handler();
@@ -940,6 +948,8 @@ public class SecondActivity extends AppCompatActivity {
         Button btnExportImages = (Button) findViewById(R.id.btnexportimages);
         Button btnImportImages = (Button) findViewById(R.id.btnimportimages);
         Button btnDeleteImages = (Button) findViewById(R.id.btndeleteallimages);
+        Button btnGetImagesNet = (Button) findViewById(R.id.btngetimages);
+        Button btnCancelImages = (Button) findViewById(R.id.btnCancelgetimages);
         btnExportImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1013,6 +1023,20 @@ public class SecondActivity extends AppCompatActivity {
             }
         });
 
+        btnGetImagesNet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lastwordid=0;
+                fetchPexelsImageAndShowDialog(controller.wordItems[0].word,1);
+            }
+        });
+
+        btnCancelImages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalCancel=true;
+            }
+        });
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -1772,7 +1796,7 @@ public class SecondActivity extends AppCompatActivity {
                                         Toast.makeText(SecondActivity.this, msg, Toast.LENGTH_SHORT).show();
                                         controller.setLastHeartIdSaved(controller.getHeartId());
                                         imgsynced.clearAnimation();
-                                        imgsynced.setVisibility(View.INVISIBLE);
+                                        //imgsynced.setVisibility(View.INVISIBLE);
                                     }
                                 }
                                 else Toast.makeText(SecondActivity.this,resp,Toast.LENGTH_SHORT).show();
@@ -1800,6 +1824,94 @@ public class SecondActivity extends AppCompatActivity {
 
     }
 
+    int lastwordid=0;
+    public void fetchPexelsImageAndShowDialog(String keyword, int page) {
+        RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
+        String apiKey = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
+        String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=2&page=" + page;
+        UserActivity.lastRequestedWord = keyword;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray photos = response.getJSONArray("photos");
+                            JSONObject photo = null;
+
+                            if (photos.length() > 1) {
+
+                                photo = photos.getJSONObject(1);
+                            } else if (photos.length() > 0) {
+
+                                photo = photos.getJSONObject(0);
+                            }
+
+                            if (photo != null) {
+                                JSONObject src = photo.getJSONObject("src");
+                                String imageUrl = src.getString("medium"); // یا "original" برای کیفیت بالاتر
+
+                                ImageRequest imageRequest = new ImageRequest(imageUrl,
+                                        new Response.Listener<Bitmap>() {
+                                            @Override
+                                            public void onResponse(Bitmap bitmap) {
+                                                showImageDialog(bitmap,page);
+                                            }
+                                        },
+                                        0, 0, ImageView.ScaleType.CENTER_INSIDE,
+                                        Bitmap.Config.ARGB_8888,
+                                        new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                Toast.makeText(SecondActivity.this, "Error loading image: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                                queue.add(imageRequest);
+                            } else {
+                                Toast.makeText(SecondActivity.this, "No images found", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(SecondActivity.this, "JSON parsing error", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(SecondActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", apiKey);
+                return headers;
+            }
+        };
+
+        queue.add(jsonObjectRequest);
+    }
+
+    private void showImageDialog(Bitmap bitmap,int page) {
+        String word = controller.wordItems[lastwordid].word;
+        Bitmap bit = controller.resizeImageToFitDatabase(bitmap);
+        int min = Math.min(bit.getWidth(), bit.getHeight());
+        if (min >= 150) {
+            controller.setWordImageFromBase64(UserActivity.lastRequestedWord, controller.bitmapToBase64(bit));
+            Toast.makeText(SecondActivity.this, "Confirmed for ", Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(SecondActivity.this, "Image size too small", Toast.LENGTH_LONG).show();
+        lastwordid++;
+        if(globalCancel) return;
+        while (controller.hasWordImage(controller.wordItems[lastwordid].word)) {
+            if (lastwordid < controller.wordItems.length - 1) lastwordid++;
+        }
+        fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 0);
+        txtGetimagesprogress.setText(""+lastwordid+"/"+controller.wordItems.length);
+
+    }
     public void Update() throws UnsupportedEncodingException {
         controller = new Controller(SecondActivity.this, true);
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);

@@ -34,6 +34,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,6 +157,9 @@ public class UserActivity extends AppCompatActivity {
                 slist = new ArrayList<Integer>();
                 for (int i = 0; i < controller.wordItems.length; i++)
                     slist.add(i);
+
+
+
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
