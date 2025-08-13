@@ -1959,7 +1959,69 @@ public class SecondActivity extends AppCompatActivity {
         txtGetimagesprogress.setText(""+lastwordid+"/"+controller.wordItems.length+"\n"+word);
 
     }
-    public void Update() throws UnsupportedEncodingException {
+
+    public void GetWordDatasets() throws UnsupportedEncodingException {
+        controller = new Controller(SecondActivity.this, true);
+        RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
+        String url = "https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/EnglishWords.txt";
+
+        // Variable to store the file content
+        final String[] fileContent = {""}; // Using array to allow modification in inner class
+
+        StringRequest getRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Store the response (file content) in the variable
+                        int add=0,update=0,error=0;
+                        fileContent[0] = response;
+                        Toast.makeText(SecondActivity.this, "File downloaded successfully", Toast.LENGTH_SHORT).show();
+                        //controller.myDB.deleteAllWords();
+                        String[] rows = fileContent[0].split("\n");
+                        int index=0;
+                        for (String row:rows) {
+                            String[] items = row.split("#");
+                            if(items.length==7) {
+                                String word = items[0];
+                                int day = ((index / 4) + 1);
+                                String persian = items[1];
+                                String definition = items[3];
+                                String pronounce = items[5];
+                                String sound = "";
+                                String example = items[2];
+                                String examplefa = items[6];
+                                if (!controller.myDB.hasWord(word)) {
+                                    controller.myDB.insertWord(word, day, persian, definition, pronounce, sound, example, examplefa);
+                                    add++;
+                                } else {
+                                    controller.myDB.updateWordRowFromBackup(word, day, persian, definition, pronounce, sound, example, examplefa);
+                                    update++;
+                                }
+                            }else error++;
+                            index++;
+                        }
+                        Toast.makeText(SecondActivity.this, "File downloaded successfully", Toast.LENGTH_SHORT).show();
+                        showSummaryDialog(add,update,error);
+                        //controller.backupDatabaseToDocuments(SecondActivity.this);
+                        // Optionally, you can use fileContent[0] here for further processing
+                        // For example, log it or pass it to another method
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Handle error
+                        Toast.makeText(SecondActivity.this, "Could not download file: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+        queue.add(getRequest);
+
+        // If you need to return fileContent[0], you might want to handle it asynchronously
+        // For now, it's stored in fileContent[0] and can be accessed after the response
+    }
+    public void Update(String url) throws UnsupportedEncodingException {
         controller = new Controller(SecondActivity.this, true);
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
         String url = "https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/EnglishWords.txt";
