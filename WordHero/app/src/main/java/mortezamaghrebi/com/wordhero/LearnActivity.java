@@ -1,10 +1,12 @@
 package mortezamaghrebi.com.wordhero;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
@@ -24,17 +26,26 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 public class LearnActivity extends AppCompatActivity {
@@ -617,6 +628,7 @@ public class LearnActivity extends AppCompatActivity {
                 lytchoices.requestLayout();
                 txtscore.setText("تعداد پاسخ صحیح: "+corrects);
                 txtanswer.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian);
+                txtanswer.setTextSize(25);
                 txtprogress.setText("درصد پیشرفت این لغت: "+(controller.wordItems[questionsIndex[currentQuestionIndex]].box()*100/15)+"%");
                 shown.setText(""+controller.wordItems[questionsIndex[currentQuestionIndex]].review.length()+" times shown");
                 int maxwidth=p1.getMeasuredWidth();
@@ -633,11 +645,38 @@ public class LearnActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 if(currentQuestionIndex==NumberOfQuestions-1)txtnext.setText("نتیجه");
+                fetch_current_page=2;
+                imgwordimage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //
+                        fetch_current_word=controller.wordItems[questionsIndex[currentQuestionIndex]].word;
+                        fetchPexelsImageAndShowDialog(fetch_current_word,fetch_current_page);
+                        fetch_current_page++;
+                        wordItem item=controller.wordItems[questionsIndex[currentQuestionIndex]];
+                        String answer=item.definition+"\n"+item.persian+"\n"+item.example+"\n"+item.examplefa;
+                        txtanswer.setText(answer);
+                        txtanswer.setTextSize(15);
+
+                    }
+                });
+                imgwordimage.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        Toast.makeText(LearnActivity.this,"Reverting Image...",Toast.LENGTH_SHORT).show();
+                        fetch_current_word=controller.wordItems[questionsIndex[currentQuestionIndex]].word;
+                        fetch_current_page=1;
+                        fetchPexelsImageAndShowDialog(fetch_current_word,fetch_current_page);
+                        return false;
+                    }
+                });
+
             }
         }, delay);
     }
 
-
+    String fetch_current_word="";
+    int fetch_current_page=0;
     void helpButtonsInit()
     {
         btnhelp1.setOnClickListener(new View.OnClickListener() {
@@ -720,35 +759,102 @@ public class LearnActivity extends AppCompatActivity {
             imgwordimage.getLayoutParams().width=imgwordimage.getMeasuredHeight();
             imgwordimage.requestLayout();
         }else {
-            RequestQueue queue = Volley.newRequestQueue(LearnActivity.this);
-            StringRequest postRequest = new StringRequest(Request.Method.POST, uri_getimage + word,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            try {
-                                if (response.length() > 200) {
+            fetch_current_page=1;
+            fetch_current_word=word;
+            fetchPexelsImageAndShowDialog(word,1);
+        }
+    }
 
-                                    Bitmap bit = controller.setWordImageFromBase64(word,response);
-                                    if(bit!=null && showimage) {
-                                        try {
-                                            imgwordimage.setImageBitmap(bit);
-                                            imgwordimage.getLayoutParams().width=imgwordimage.getMeasuredHeight();
-                                            imgwordimage.requestLayout();
-                                        }catch (Exception e){}
-                                    }
-                                }
-                            } catch (Exception e) {
-                                int a = 1;
+    public void fetchPexelsImageAndShowDialog(String keyword, int page) {
+
+        RequestQueue queue = Volley.newRequestQueue(LearnActivity.this);
+        String apiKey = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
+        String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=1&page=" + page;
+        UserActivity.lastRequestedWord = keyword;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            errortimefetch=0;
+                            JSONArray photos = response.getJSONArray("photos");
+                            JSONObject photo = null;
+
+                            if (photos.length() > 1) {
+
+                                photo = photos.getJSONObject(1);
+                            } else if (photos.length() > 0) {
+
+                                photo = photos.getJSONObject(0);
                             }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
+
+                            if (photo != null) {
+                                JSONObject src = photo.getJSONObject("src");
+                                String imageUrl = src.getString("medium"); // یا "original" برای کیفیت بالاتر
+
+                                ImageRequest imageRequest = new ImageRequest(imageUrl,
+                                        new Response.Listener<Bitmap>() {
+                                            @Override
+                                            public void onResponse(Bitmap bitmap) {
+                                                showImageDialog(bitmap,page);
+                                            }
+                                        },
+                                        0, 0, ImageView.ScaleType.CENTER_INSIDE,
+                                        Bitmap.Config.ARGB_8888,
+                                        new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                Toast.makeText(LearnActivity.this, "Error loading image: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                                queue.add(imageRequest);
+                            } else {
+                                Toast.makeText(LearnActivity.this, "No images found", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(LearnActivity.this, "JSON parsing error", Toast.LENGTH_SHORT).show();
                         }
                     }
-            );
-            queue.add(postRequest);
-        }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(LearnActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", apiKey);
+                return headers;
+            }
+        };
+
+        queue.add(jsonObjectRequest);
+    }
+    int errortimefetch=0;
+    private void showImageDialog(Bitmap bitmap,int page) {
+        String word = fetch_current_word;
+        Bitmap bit = controller.resizeImageToFitDatabase(bitmap);
+        int min = Math.min(bit.getWidth(), bit.getHeight());
+        if (min >= 150) {
+            controller.setWordImageFromBase64(UserActivity.lastRequestedWord, controller.bitmapToBase64(bit));
+            Bitmap bit1 =controller.getWordImage(word);
+            if(bit1!=null && showimage) {
+                //controller.getWordImage(fetch_current_word);
+                imgwordimage.setImageBitmap(controller.getWordImage(fetch_current_word));
+                imgwordimage.getLayoutParams().width=imgwordimage.getMeasuredHeight();
+                imgwordimage.requestLayout();
+                Toast.makeText(LearnActivity.this,"Image changed",Toast.LENGTH_SHORT).show();
+
+            }
+        } else
+            Toast.makeText(LearnActivity.this, "Image size too small", Toast.LENGTH_LONG).show();
+
+
     }
 }

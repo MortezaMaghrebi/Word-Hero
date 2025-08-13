@@ -147,7 +147,7 @@ public class WordDialogClass extends Dialog {
     public void fetchPexelsImageAndShowDialog(String keyword, int page) {
         RequestQueue queue = Volley.newRequestQueue(context);
         String apiKey = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
-        String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=2&page=" + page;
+        String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=1&page=" + page;
         UserActivity.lastRequestedWord = keyword;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,

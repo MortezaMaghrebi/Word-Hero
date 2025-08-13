@@ -1831,7 +1831,27 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     int lastwordid=0;
+    Handler fetch_Handler=null;
+    int fetch_countdown_timer=600;
+    Runnable fetch_Runnable=new Runnable() {
+        @Override
+        public void run() {
+            fetch_countdown_timer--;
+            if(fetch_countdown_timer==0) {
+                fetch_countdown_timer=600;
+                fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 1);
+            }else if(fetch_countdown_timer>0)
+            {
+                fetch_Handler.postDelayed(fetch_Runnable,1000);
+                txtGetimagesprogress.setText(""+lastwordid+"/"+controller.wordItems.length+"\n"+controller.wordItems[lastwordid].word+"\nRetry in: "+fetch_countdown_timer);
+            }
+        }
+    };
     public void fetchPexelsImageAndShowDialog(String keyword, int page) {
+        if(fetch_Handler==null)
+        {
+            fetch_Handler=new Handler(Looper.getMainLooper());
+        }
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
         String apiKey = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
         String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=1&page=" + page;
@@ -1902,12 +1922,8 @@ public class SecondActivity extends AppCompatActivity {
                                     fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 1);
                                 }else
                                 {
-                                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 1);
-                                        }
-                                    },600*1000);
+                                    fetch_countdown_timer=600;
+                                    fetch_Handler.postDelayed(fetch_Runnable,1000);
                                 }
                             }
                         }
