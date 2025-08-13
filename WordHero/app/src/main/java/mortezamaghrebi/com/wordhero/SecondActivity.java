@@ -33,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -424,7 +425,7 @@ public class SecondActivity extends AppCompatActivity {
                         mpbutton.seekTo(0);mpbutton.start();
                         imgsynced.setBackgroundResource(R.drawable.synced);
                         try {
-                            Update();
+                            GetWordDatasets();
                             //Save();
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
@@ -1963,7 +1964,7 @@ public class SecondActivity extends AppCompatActivity {
     public void GetWordDatasets() throws UnsupportedEncodingException {
         controller = new Controller(SecondActivity.this, true);
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
-        String url = "https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/EnglishWords.txt";
+        String url = "https://raw.githubusercontent.com/MortezaMaghrebi/Word-Hero/main/Datasets.txt";
 
         // Variable to store the file content
         final String[] fileContent = {""}; // Using array to allow modification in inner class
@@ -1975,36 +1976,9 @@ public class SecondActivity extends AppCompatActivity {
                         // Store the response (file content) in the variable
                         int add=0,update=0,error=0;
                         fileContent[0] = response;
-                        Toast.makeText(SecondActivity.this, "File downloaded successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SecondActivity.this, "Datasets list gotten", Toast.LENGTH_SHORT).show();
                         //controller.myDB.deleteAllWords();
-                        String[] rows = fileContent[0].split("\n");
-                        int index=0;
-                        for (String row:rows) {
-                            String[] items = row.split("#");
-                            if(items.length==7) {
-                                String word = items[0];
-                                int day = ((index / 4) + 1);
-                                String persian = items[1];
-                                String definition = items[3];
-                                String pronounce = items[5];
-                                String sound = "";
-                                String example = items[2];
-                                String examplefa = items[6];
-                                if (!controller.myDB.hasWord(word)) {
-                                    controller.myDB.insertWord(word, day, persian, definition, pronounce, sound, example, examplefa);
-                                    add++;
-                                } else {
-                                    controller.myDB.updateWordRowFromBackup(word, day, persian, definition, pronounce, sound, example, examplefa);
-                                    update++;
-                                }
-                            }else error++;
-                            index++;
-                        }
-                        Toast.makeText(SecondActivity.this, "File downloaded successfully", Toast.LENGTH_SHORT).show();
-                        showSummaryDialog(add,update,error);
-                        //controller.backupDatabaseToDocuments(SecondActivity.this);
-                        // Optionally, you can use fileContent[0] here for further processing
-                        // For example, log it or pass it to another method
+                        showDynamicDialog(fileContent[0]);
 
                     }
                 },
@@ -2017,15 +1991,52 @@ public class SecondActivity extends AppCompatActivity {
                 }
         );
         queue.add(getRequest);
-
-        // If you need to return fileContent[0], you might want to handle it asynchronously
-        // For now, it's stored in fileContent[0] and can be accessed after the response
     }
+
+    public void showDynamicDialog(String textData) {
+        String[] lines = textData.split("\n");
+
+        ScrollView scrollView = new ScrollView(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        int padding = (int) getResources().getDisplayMetrics().density * 16;
+        layout.setPadding(padding, padding, padding, padding);
+
+        for (String line : lines) {
+            if (line.trim().isEmpty()) continue;
+            String[] parts = line.split("--");
+            if (parts.length == 2) {
+                String title = parts[0].trim();
+                String url = parts[1].trim();
+
+                Button btn = new Button(this);
+                btn.setText(title);
+                btn.setAllCaps(false);
+                btn.setOnClickListener(v -> {
+                    Toast.makeText(SecondActivity.this, "URL: " + url, Toast.LENGTH_SHORT).show();
+                    try {
+                        Update(url);
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                layout.addView(btn);
+            }
+        }
+
+        scrollView.addView(layout);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("انتخاب فایل")
+                .setView(scrollView)
+                .setNegativeButton("بستن", null)
+                .show();
+    }
+
     public void Update(String url) throws UnsupportedEncodingException {
         controller = new Controller(SecondActivity.this, true);
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
-        String url = "https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/EnglishWords.txt";
-
         // Variable to store the file content
         final String[] fileContent = {""}; // Using array to allow modification in inner class
 
