@@ -59,7 +59,7 @@ public class Controller {
     public wordItem[] wordItems;
     public ImageItem[] imageItems;
     final String url = "http://kingsofleitner.ir/words1100/webservice.php";
-    public final String infourl = "https://github.com/MortezaMaghrebi/Word-Hero";
+    public final String infourl = "https://github.com/MortezaMaghrebi/Word-Hero/blob/main/Info.md";
     final int DecreasExirEachMin=60; //use functions please: getDecreaseExirTime()
     final int HeartsMaximum=12;
     final int HeartIncreasTime=540; //seconds
