@@ -23,7 +23,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -365,6 +367,115 @@ public class Controller {
         }).start();
     }
 
+    public void LoadImagesFromBytes(byte[] backupData) {
+        AlertDialog progressDialog;
+        TextView progressText;
+
+        // Create and show the progress dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Restoring images...");
+        progressText = new TextView(context);
+        progressText.setPadding(32, 48, 32, 48);
+        progressText.setText("Starting...");
+        builder.setView(progressText);
+        builder.setCancelable(false);
+        progressDialog = builder.create();
+        progressDialog.show();
+
+        // Run in background thread
+        new Thread(() -> {
+            int total = 0;
+
+            try {
+                ByteArrayInputStream bais = new ByteArrayInputStream(backupData);
+                DataInputStream dis = new DataInputStream(bais);
+
+                while (dis.available() > 0) {
+
+                    // Read word length
+                    byte[] lenWordBytes = new byte[2];
+                    dis.readFully(lenWordBytes);
+                    int lenWord = Integer.parseInt(new String(lenWordBytes, StandardCharsets.UTF_8));
+
+                    // Check separator '+'
+                    byte separator = dis.readByte();
+                    if (separator != (byte) '+') throw new IOException("Expected '+' not found.");
+
+                    // Read image length
+                    byte[] lenImageBytes = new byte[9];
+                    dis.readFully(lenImageBytes);
+                    int lenImage = Integer.parseInt(new String(lenImageBytes, StandardCharsets.UTF_8));
+
+                    // Check separator '~'
+                    separator = dis.readByte();
+                    if (separator != (byte) '~') throw new IOException("Expected '~' not found.");
+
+                    // Read word
+                    byte[] wordBytes = new byte[lenWord];
+                    dis.readFully(wordBytes);
+                    String word = new String(wordBytes, StandardCharsets.UTF_8);
+
+                    // Check separator ','
+                    separator = dis.readByte();
+                    if (separator != (byte) ',') throw new IOException("Expected ',' not found.");
+
+                    if (hasWordImage(word)) {
+                        // Skip image and newline
+                        dis.skipBytes(lenImage + 1);
+                        duplicatewords++;
+                    } else {
+                        // Read base64 image
+                        byte[] base64Bytes = new byte[lenImage];
+                        dis.readFully(base64Bytes);
+
+                        // Check newline
+                        separator = dis.readByte();
+                        if (separator != (byte) '\n') throw new IOException("Expected '\\n' not found.");
+
+                        String base64Image = new String(base64Bytes, StandardCharsets.UTF_8);
+                        Bitmap bit = base64ToBitmap(base64Image);
+                        Bitmap resizedBit = resizeImageToFitDatabase(bit);
+                        String base64 = bitmapToBase64(resizedBit);
+                        setWordImageFromBase64(word, base64);
+                        newwords++;
+                    }
+
+                    total++;
+
+                    // Update progress on UI thread
+                    int finalNew = newwords;
+                    int finalDup = duplicatewords;
+                    int finalTotal = total;
+                    ((Activity) context).runOnUiThread(() -> {
+                        progressText.setText(
+                                "Total processed: " + finalTotal +
+                                        "\nNew images: " + finalNew +
+                                        "\nDuplicate images: " + finalDup);
+                    });
+                }
+
+                dis.close();
+
+                // Final result dialog
+                ((Activity) context).runOnUiThread(() -> {
+                    progressDialog.dismiss();
+                    AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                    alertDialog.setTitle("Restore Images");
+                    alertDialog.setMessage("Backup loaded successfully:\nNew Images: " + newwords + "\nDuplicate Images: " + duplicatewords);
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            (dialog, which) -> dialog.dismiss());
+                    alertDialog.show();
+                });
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error restoring images from backup", e);
+                ((Activity) context).runOnUiThread(() -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(context, "Error restoring images: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
+        }).start();
+    }
 
     public Bitmap resizeImageToFitDatabase(Bitmap img) {
         Bitmap si = img.copy(img.getConfig(), true);

@@ -1,10 +1,13 @@
 package mortezamaghrebi.com.wordhero;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -58,8 +61,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -67,20 +75,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import okhttp3.OkHttpClient;
+
 public class SecondActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_READ_STORAGE = 606;
-    TextView txtheart1, txtheart2, txtexir1, txtexir2, txtstar1, txtstar2, txtuser, txtavatarname, txtnummessages,txtGetimagesprogress;
+    TextView txtheart1, txtheart2, txtexir1, txtexir2, txtstar1, txtstar2, txtuser, txtavatarname, txtnummessages, txtGetimagesprogress;
     RelativeLayout prgheart, prgexir, prgstar, prgref, btnmessages, btnusersetting, lytone;
-    LinearLayout buyh1, buyh2, buyh3, buyp1, buyp2, buyp3, lyttwo, lytthree, lytbody,lytfour,lytfive;
-    ImageView imghome, imgchat, imgmarket,imgsearch,imgusers, imgacceptavatar, imgacceptuser, imgnextavatar, imgprevavatar, imgavatarbuying,imgsynced,imginfo,imgsettings;
+    LinearLayout buyh1, buyh2, buyh3, buyp1, buyp2, buyp3, lyttwo, lytthree, lytbody, lytfour, lytfive;
+    ImageView imghome, imgchat, imgmarket, imgsearch, imgusers, imgacceptavatar, imgacceptuser, imgnextavatar, imgprevavatar, imgavatarbuying, imgsynced, imginfo, imgsettings;
     ProgressBar prgavatar;
     Button btnsend;
-    EditText txtsend,txtminlevel,txtmaxlevel,txtcountuser;
-    ListView lstchats,lstusers;
+    EditText txtsend, txtminlevel, txtmaxlevel, txtcountuser;
+    ListView lstchats, lstusers;
     ImageButton btnrefresh;
     int progrefwidth = 0;
-    boolean globalCancel=false;
+    boolean globalCancel = false;
     Controller controller;
     private Handler mHandler;
     Date heartaddedtime, exirchangedtime;
@@ -101,10 +111,11 @@ public class SecondActivity extends AppCompatActivity {
 
     Boolean longs = false;
     int avatarindex = 1;
-    final int REQUEST_CODE_OPEN_DOCUMENT=609;
+    final int REQUEST_CODE_OPEN_DOCUMENT = 609;
+
     void initControls() {
         mpbutton = MediaPlayer.create(SecondActivity.this, R.raw.clicksound);
-        mpbutton.setVolume((float)(controller.getVolumeButtons()/100.0),(float)(controller.getVolumeButtons()/100.0));
+        mpbutton.setVolume((float) (controller.getVolumeButtons() / 100.0), (float) (controller.getVolumeButtons() / 100.0));
         txtheart1 = (TextView) findViewById(R.id.txtheart1);
         txtheart2 = (TextView) findViewById(R.id.txtheart2);
         txtexir1 = (TextView) findViewById(R.id.txtexir1);
@@ -138,7 +149,7 @@ public class SecondActivity extends AppCompatActivity {
         txtsend = (EditText) findViewById(R.id.txtsend);
         txtminlevel = (EditText) findViewById(R.id.txtminlevel);
         txtmaxlevel = (EditText) findViewById(R.id.txtmaxlevel);
-        txtcountuser= (EditText) findViewById(R.id.txtcountusers);
+        txtcountuser = (EditText) findViewById(R.id.txtcountusers);
         btnsend = (Button) findViewById(R.id.btnsend);
         btnrefresh = (ImageButton) findViewById(R.id.btnrefresh);
         lstchats = (ListView) findViewById(R.id.lstchat);
@@ -169,7 +180,8 @@ public class SecondActivity extends AppCompatActivity {
         imghome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 int height = lytbody.getHeight();
                 lyttwo.getLayoutParams().height = 0;
                 lytthree.getLayoutParams().height = 0;
@@ -186,13 +198,14 @@ public class SecondActivity extends AppCompatActivity {
                 imgchat.setImageResource(R.drawable.chatt);
                 imgmarket.setImageResource(R.drawable.baskett);
                 imgsearch.setImageResource(R.drawable.searchh);
-                bookcontentlayout=0;
+                bookcontentlayout = 0;
             }
         });
         imgmarket.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 int height = lytbody.getHeight();
                 lyttwo.getLayoutParams().height = height;
                 lytone.getLayoutParams().height = 0;
@@ -208,19 +221,21 @@ public class SecondActivity extends AppCompatActivity {
                 imghome.setImageResource(R.drawable.homee);
                 imgchat.setImageResource(R.drawable.chatt);
                 imgmarket.setImageResource(R.drawable.baskett1);
-                imgsearch.setImageResource(R.drawable.searchh);prgavatar.setVisibility(View.INVISIBLE);
+                imgsearch.setImageResource(R.drawable.searchh);
+                prgavatar.setVisibility(View.INVISIBLE);
                 try {
                     getAvatar(avatarindex);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-                bookcontentlayout=0;
+                bookcontentlayout = 0;
             }
         });
         imgchat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 int height = lytbody.getHeight();
                 lyttwo.getLayoutParams().height = 0;
                 lytone.getLayoutParams().height = 0;
@@ -242,13 +257,14 @@ public class SecondActivity extends AppCompatActivity {
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-                bookcontentlayout=0;
+                bookcontentlayout = 0;
             }
         });
         imgsearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 int height = lytbody.getHeight();
                 lyttwo.getLayoutParams().height = 0;
                 lytone.getLayoutParams().height = 0;
@@ -266,14 +282,15 @@ public class SecondActivity extends AppCompatActivity {
                 imgmarket.setImageResource(R.drawable.baskett);
                 imgsearch.setImageResource(R.drawable.searchh2);
                 GetWeeks(height);
-                bookcontentlayout=0;
+                bookcontentlayout = 0;
             }
         });
         imgusers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
-                if(controller.getLevel()>=4) {
+                mpbutton.seekTo(0);
+                mpbutton.start();
+                if (controller.getLevel() >= 4) {
                     int height = lytbody.getHeight();
                     lyttwo.getLayoutParams().height = 0;
                     lytone.getLayoutParams().height = 0;
@@ -296,8 +313,7 @@ public class SecondActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     bookcontentlayout = 0;
-                }
-                else {
+                } else {
                     NotAllowedDialogClass cdd = new NotAllowedDialogClass(SecondActivity.this);
                     cdd.show();
                 }
@@ -306,7 +322,8 @@ public class SecondActivity extends AppCompatActivity {
         btnrefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 try {
                     GetChats();
                 } catch (UnsupportedEncodingException e) {
@@ -317,7 +334,8 @@ public class SecondActivity extends AppCompatActivity {
         btnsend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 try {
                     SendChat(txtsend.getText().toString());
                     hideSoftKeyboard(SecondActivity.this);
@@ -329,8 +347,9 @@ public class SecondActivity extends AppCompatActivity {
         imgavatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!longs) {
-                    mpbutton.seekTo(0);mpbutton.start();
+                if (!longs) {
+                    mpbutton.seekTo(0);
+                    mpbutton.start();
                     try {
                         Intent intent = new Intent(SecondActivity.this, UserActivity.class);
                         startActivity(intent);
@@ -338,7 +357,7 @@ public class SecondActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                longs=false;
+                longs = false;
             }
         });
 
@@ -347,7 +366,8 @@ public class SecondActivity extends AppCompatActivity {
             public boolean onLongClick(View view) {
                 try {
                     longs = true;
-                    mpbutton.seekTo(0);mpbutton.start();
+                    mpbutton.seekTo(0);
+                    mpbutton.start();
                     getImage();
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -358,7 +378,7 @@ public class SecondActivity extends AppCompatActivity {
         imgacceptavatar.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                 switch (motionEvent.getAction()) {
+                switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         imgacceptavatar.setBackgroundResource(R.drawable.accept2);
                         return true;
@@ -366,7 +386,8 @@ public class SecondActivity extends AppCompatActivity {
                         imgacceptavatar.setBackgroundResource(R.drawable.accept);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        mpbutton.seekTo(0);mpbutton.start();
+                        mpbutton.seekTo(0);
+                        mpbutton.start();
                         imgacceptavatar.setBackgroundResource(R.drawable.accept);
                         try {
                             acceptAvatar();
@@ -381,7 +402,8 @@ public class SecondActivity extends AppCompatActivity {
         imgacceptuser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 try {
                     GetUsers();
                 } catch (UnsupportedEncodingException e) {
@@ -392,7 +414,8 @@ public class SecondActivity extends AppCompatActivity {
         imgnextavatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 try {
                     getAvatar(avatarindex + 1);
                 } catch (UnsupportedEncodingException e) {
@@ -403,7 +426,8 @@ public class SecondActivity extends AppCompatActivity {
         imgprevavatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 try {
                     if (avatarindex > 1) getAvatar(avatarindex - 1);
                 } catch (UnsupportedEncodingException e) {
@@ -422,9 +446,11 @@ public class SecondActivity extends AppCompatActivity {
                         imgsynced.setBackgroundResource(R.drawable.synced);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        mpbutton.seekTo(0);mpbutton.start();
+                        mpbutton.seekTo(0);
+                        mpbutton.start();
                         imgsynced.setBackgroundResource(R.drawable.synced);
                         try {
+                            GetStoragePermission();
                             GetWordDatasets();
                             //Save();
                         } catch (UnsupportedEncodingException e) {
@@ -438,7 +464,8 @@ public class SecondActivity extends AppCompatActivity {
         imginfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 InfoDialogClass cdd = new InfoDialogClass(SecondActivity.this);
                 cdd.show();
                 controller.setInfoShown();
@@ -448,13 +475,13 @@ public class SecondActivity extends AppCompatActivity {
         imgsettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
+                mpbutton.seekTo(0);
+                mpbutton.start();
                 SettingsDialogClass cdd = new SettingsDialogClass(SecondActivity.this);
                 cdd.show();
             }
         });
-        if(!controller.getInfoShown())
-        {
+        if (!controller.getInfoShown()) {
             Animation connectingAnimation = AnimationUtils.loadAnimation(SecondActivity.this, R.anim.acceptbuttonavatar);
             imginfo.startAnimation(connectingAnimation);
         }
@@ -510,7 +537,8 @@ public class SecondActivity extends AppCompatActivity {
                         btn.setBackgroundResource(R.drawable.curve_buyheartitem);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        mpbutton.seekTo(0);mpbutton.start();
+                        mpbutton.seekTo(0);
+                        mpbutton.start();
                         btn.setBackgroundResource(R.drawable.curve_buyheartitem);
                         if (touched) {
                             switch (tag) {
@@ -546,14 +574,14 @@ public class SecondActivity extends AppCompatActivity {
                                     break;
                             }
                             try {
-                                if(controller.getBuyEnabled()) {
+                                if (controller.getBuyEnabled()) {
                                     String postData = "command=" + "buypotionheart," + controller.getUser() + "~" + order + "~" + price + "~" + quantity + "";
                                     Intent viewIntent =
                                             new Intent("android.intent.action.VIEW",
                                                     Uri.parse(url + "?" + postData));
                                     startActivity(viewIntent);
-                                }else {
-                                    Toast.makeText(SecondActivity.this,"این قابلیت به زودی افزوده می شود",Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(SecondActivity.this, "این قابلیت به زودی افزوده می شود", Toast.LENGTH_SHORT).show();
                                 }
                                 //WebView webView = (WebView)findViewById(R.id.webv);
                                 //webView.postUrl(url,postData.getBytes());
@@ -760,6 +788,32 @@ public class SecondActivity extends AppCompatActivity {
         super.onPostResume();
     }
 
+    void GetStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.setType("text/plain");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            startActivityForResult(intent, 5101);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // if android 11+ request MANAGER_EXTERNAL_STORAGE
+            if (!Environment.isExternalStorageManager()) { // check if we already have permission
+                Uri uri = Uri.parse(String.format(Locale.ENGLISH, "package:%s", getApplicationContext().getPackageName()));
+                startActivity(
+                        new Intent(
+                                Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                uri
+                        )
+                );
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(SecondActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) { // check if we already have permission
+                ActivityCompat.requestPermissions(SecondActivity.this, new String[]{
+                        android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                }, 5101);
+            }
+        }
+    }
+
     @Override
     protected void onStart() {
         TextView txtlevel, txtprogress;
@@ -955,6 +1009,7 @@ public class SecondActivity extends AppCompatActivity {
         btnExportImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                GetStoragePermission();
                 mpbutton.seekTo(0);mpbutton.start();
                 controller.backupImagesToDocumentsWithProgress(SecondActivity.this);
             }
@@ -1976,8 +2031,6 @@ public class SecondActivity extends AppCompatActivity {
                         // Store the response (file content) in the variable
                         int add=0,update=0,error=0;
                         fileContent[0] = response;
-                        Toast.makeText(SecondActivity.this, "Datasets list gotten", Toast.LENGTH_SHORT).show();
-                        //controller.myDB.deleteAllWords();
                         showDynamicDialog(fileContent[0]);
 
                     }
@@ -1990,6 +2043,7 @@ public class SecondActivity extends AppCompatActivity {
                     }
                 }
         );
+        queue.getCache().clear();
         queue.add(getRequest);
     }
 
@@ -1999,23 +2053,29 @@ public class SecondActivity extends AppCompatActivity {
         ScrollView scrollView = new ScrollView(this);
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        int padding = (int) getResources().getDisplayMetrics().density * 16;
+        int padding = (int) (getResources().getDisplayMetrics().density * 16);
         layout.setPadding(padding, padding, padding, padding);
 
         for (String line : lines) {
             if (line.trim().isEmpty()) continue;
             String[] parts = line.split("--");
-            if (parts.length == 2) {
+
+            if (parts.length == 3) {
                 String title = parts[0].trim();
-                String url = parts[1].trim();
+                String urlSmall = parts[1].trim();
+                String urlLarge = parts[2].trim();
 
                 Button btn = new Button(this);
                 btn.setText(title);
                 btn.setAllCaps(false);
+
                 btn.setOnClickListener(v -> {
-                    Toast.makeText(SecondActivity.this, "URL: " + url, Toast.LENGTH_SHORT).show();
                     try {
-                        Update(url);
+
+                        GetWordsFromURL(urlSmall);
+                        GetImagesFromURL(urlLarge);
+
+
                     } catch (UnsupportedEncodingException e) {
                         throw new RuntimeException(e);
                     }
@@ -2034,9 +2094,13 @@ public class SecondActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void Update(String url) throws UnsupportedEncodingException {
+
+
+
+    public void GetWordsFromURL(String url) throws UnsupportedEncodingException {
         controller = new Controller(SecondActivity.this, true);
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
+        queue.getCache().clear();
         // Variable to store the file content
         final String[] fileContent = {""}; // Using array to allow modification in inner class
 
@@ -2047,8 +2111,6 @@ public class SecondActivity extends AppCompatActivity {
                         // Store the response (file content) in the variable
                         int add=0,update=0,error=0;
                         fileContent[0] = response;
-                        Toast.makeText(SecondActivity.this, "File downloaded successfully", Toast.LENGTH_SHORT).show();
-                        //controller.myDB.deleteAllWords();
                         String[] rows = fileContent[0].split("\n");
                         int index=0;
                         for (String row:rows) {
@@ -2072,11 +2134,8 @@ public class SecondActivity extends AppCompatActivity {
                             }else error++;
                             index++;
                         }
-                        Toast.makeText(SecondActivity.this, "File downloaded successfully", Toast.LENGTH_SHORT).show();
                         showSummaryDialog(add,update,error);
-                        //controller.backupDatabaseToDocuments(SecondActivity.this);
-                        // Optionally, you can use fileContent[0] here for further processing
-                        // For example, log it or pass it to another method
+
 
                     }
                 },
@@ -2094,6 +2153,28 @@ public class SecondActivity extends AppCompatActivity {
         // For now, it's stored in fileContent[0] and can be accessed after the response
     }
 
+    public void GetImagesFromURL(String url) throws UnsupportedEncodingException {
+        RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
+        queue.getCache().clear();
+
+        // Custom Request for binary data
+        InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, url,
+                response -> {
+                    // response is byte[]
+                    if (response != null && response.length > 0) {
+                        // Call the previous function with byte array
+                        controller.LoadImagesFromBytes(response);
+                    } else {
+                        Toast.makeText(SecondActivity.this, "Downloaded file is empty", Toast.LENGTH_LONG).show();
+                    }
+                },
+                error -> {
+                    Toast.makeText(SecondActivity.this, "Could not download file: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                }
+        );
+
+        queue.add(request);
+    }
     private void showSummaryDialog(int addCount, int updatedCount, int errorCount) {
         AlertDialog.Builder builder = new AlertDialog.Builder(SecondActivity.this);
         builder.setTitle("File Downloaded Successfully");

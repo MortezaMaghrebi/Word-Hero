@@ -1,3 +1,1 @@
-Interchange 1 to 3--https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/Interchange1to3Words.txt
-American English Files--https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/Interchange1to3Words.txt
-English Collocations--https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/Interchange1to3Words.txt
+Interchange 1 to 3--https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/Interchange1to3Words.txt--https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/Interchange1to3Images.txt
