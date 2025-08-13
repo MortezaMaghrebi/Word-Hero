@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr"
+    tools:context=".MainActivity"
+    android:orientation="vertical"
+    android:background="#351B4A"
+
+    >
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="350dp"
+            android:layout_margin="40dp"
+            android:src="@drawable/splash"
+            android:layout_marginTop="15dp"
+            android:id="@+id/splashimage"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Word Hero"
+            android:layout_marginTop="0dp"
+            android:textColor="#75916b"
+            android:fontFamily="cursive"
+            android:layout_below="@+id/splashimage"
+            android:layout_centerHorizontal="true"
+            android:textSize="45dp"
+            android:id="@+id/tWordHero"
+            />
+
+
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="20dp"
+            android:textSize="15dp"
+            android:textColor="#E86a8c"
+            android:layout_below="@+id/tWordHero"
+            android:text="✔ Learn easy\n✔ Remember fast\n✔ Minimize forgetfulness"
+            />
+
+
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_alignParentBottom="true"
+    android:layout_marginTop="20dp"
+    android:id="@+id/lytfooter"
+    android:layout_marginBottom="30dp"
+    android:gravity="center_horizontal"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="180dp"
+        android:layout_height="70dp"
+        android:visibility="invisible"
+        android:background="@drawable/curved2"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:id="@+id/btnstart"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            android:textColor="#ffffff"
+            />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginRight="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_height="25dp"
+        android:visibility="invisible"
+        android:id="@+id/lytproga"
+        android:background="@drawable/curve_prograssa2"
+        android:layout_marginTop="25dp">
+
+        <RelativeLayout
+            android:layout_width="240dp"
+            android:layout_height="25dp"
+            android:id="@+id/lytprogb"
+            android:background="@drawable/curve_prograssb2"
+            ></RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>
+</RelativeLayout>
