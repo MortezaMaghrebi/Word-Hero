@@ -11,9 +11,9 @@ This is a game android application written with android studio and java to help 
 
 ## Related Repositories
 
-- Using Interchange Book Series Vocabular Dataset [Interchange_Vocabulary_Dataset](../../../../Interchange_Vocabulary_Dataset) Repository
+- Using Interchange Book Series Vocabular Dataset [Interchange_Vocabulary_Dataset](../../../Interchange_Vocabulary_Dataset) Repository
 
-- Using Image-Dictionary [Image-Dictionary](../../../../Image-Dictionary) Repository
+- Using Image-Dictionary [Image-Dictionary](../../../Image-Dictionary) Repository
 
 
 
