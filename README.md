@@ -5,7 +5,7 @@ Gamified application to learn all new vocabularies of the Interchange book serie
 
 ## Abstract
 
-This is a game android application written with android studio and java to help improve your vocabulary in a smart way, using images, quizzes, and the Leitner method, in which every word repeats for you in a set of smart intervals to ensure you learn it and never forget it again.
+This is an Android game application written with android studio and java to help improve your vocabulary in a smart way, using images, quizzes, and the Leitner method, in which every word repeats for you in a set of smart intervals to ensure you learn it and never forget it again.
 
 ## Related Repositories
 
