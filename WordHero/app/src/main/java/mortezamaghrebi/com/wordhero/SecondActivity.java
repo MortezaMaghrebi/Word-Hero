@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.os.Handler;
 
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Base64;
 import android.view.GestureDetector;
@@ -1027,6 +1028,11 @@ public class SecondActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 lastwordid=0;
+                while (controller.hasWordImage(controller.wordItems[lastwordid].word)) {
+                    if (lastwordid < controller.wordItems.length - 1) lastwordid++;
+                    else break;
+                }
+                errortimefetch=0;
                 fetchPexelsImageAndShowDialog(controller.wordItems[0].word,1);
             }
         });
@@ -1828,7 +1834,7 @@ public class SecondActivity extends AppCompatActivity {
     public void fetchPexelsImageAndShowDialog(String keyword, int page) {
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
         String apiKey = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
-        String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=2&page=" + page;
+        String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=1&page=" + page;
         UserActivity.lastRequestedWord = keyword;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -1836,6 +1842,7 @@ public class SecondActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            errortimefetch=0;
                             JSONArray photos = response.getJSONArray("photos");
                             JSONObject photo = null;
 
@@ -1870,6 +1877,12 @@ public class SecondActivity extends AppCompatActivity {
                                 queue.add(imageRequest);
                             } else {
                                 Toast.makeText(SecondActivity.this, "No images found", Toast.LENGTH_SHORT).show();
+                                if(!globalCancel) {
+                                    if (lastwordid < controller.wordItems.length - 1) {
+                                        lastwordid++;
+                                        fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 1);
+                                    }
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -1881,6 +1894,23 @@ public class SecondActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Toast.makeText(SecondActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        errortimefetch++;
+                        if(!globalCancel) {
+                            if (lastwordid < controller.wordItems.length - 1) {
+                                lastwordid++;
+                                if(errortimefetch<3) {
+                                    fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 1);
+                                }else
+                                {
+                                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 1);
+                                        }
+                                    },600*1000);
+                                }
+                            }
+                        }
                     }
                 }) {
             @Override
@@ -1893,23 +1923,24 @@ public class SecondActivity extends AppCompatActivity {
 
         queue.add(jsonObjectRequest);
     }
-
+    int errortimefetch=0;
     private void showImageDialog(Bitmap bitmap,int page) {
         String word = controller.wordItems[lastwordid].word;
         Bitmap bit = controller.resizeImageToFitDatabase(bitmap);
         int min = Math.min(bit.getWidth(), bit.getHeight());
         if (min >= 150) {
             controller.setWordImageFromBase64(UserActivity.lastRequestedWord, controller.bitmapToBase64(bit));
-            Toast.makeText(SecondActivity.this, "Confirmed for ", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(SecondActivity.this, "Confirmed for "+word, Toast.LENGTH_SHORT).show();
         } else
             Toast.makeText(SecondActivity.this, "Image size too small", Toast.LENGTH_LONG).show();
         lastwordid++;
         if(globalCancel) return;
         while (controller.hasWordImage(controller.wordItems[lastwordid].word)) {
             if (lastwordid < controller.wordItems.length - 1) lastwordid++;
+            else break;
         }
         fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 0);
-        txtGetimagesprogress.setText(""+lastwordid+"/"+controller.wordItems.length);
+        txtGetimagesprogress.setText(""+lastwordid+"/"+controller.wordItems.length+"\n"+word);
 
     }
     public void Update() throws UnsupportedEncodingException {
