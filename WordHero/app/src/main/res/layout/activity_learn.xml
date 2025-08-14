@@ -215,7 +215,6 @@
                 android:id="@+id/lytcontent"
                 android:layout_marginLeft="15dp"
                 android:orientation="vertical">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -224,157 +223,205 @@
                     tools:ignore="Suspicious0dp">
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_marginTop="5dp"
-                        android:id="@+id/lytactionbuttons"
-                        android:layout_height="67dp"
-                        android:layout_marginBottom="8dp">
-                        <LinearLayout
+                        android:layout_height="match_parent">
+                        <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-                            >
-                            <RelativeLayout
+                            android:layout_marginTop="5dp"
+                            android:id="@+id/lytactionbuttons"
+                            android:layout_height="67dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginBottom="8dp">
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:layout_marginRight="10dp"
-                                android:id="@+id/lyteasy"
-                                android:background="@drawable/easybutton">
+                                android:orientation="horizontal"
+                                android:weightSum="2"
                                 >
-                                <TextView
+                                <RelativeLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:layout_centerVertical="true"
-                                    android:layout_marginRight="50dp"
-                                    android:layout_marginLeft="15dp"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginBottom="10dp"
-                                    android:textColor="#000000"
-                                    android:gravity="center"
-                                    android:textStyle="bold"
-                                    app:autoSizeTextType="uniform"
-                                    app:autoSizeMinTextSize="8sp"
-                                    app:autoSizeMaxTextSize="22sp"
-                                    app:autoSizeStepGranularity="2sp"
-                                    android:autoSizeTextType="uniform"
-                                    android:autoSizeMaxTextSize="22sp"
-                                    android:autoSizeMinTextSize="8sp"
-                                    android:autoSizeStepGranularity="2sp"
-                                    android:text="خیلی آسون بود"
-                                    tools:ignore="MissingPrefix" />
-                            </RelativeLayout>
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:id="@+id/lytnext"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginRight="5dp"
-                                android:background="@drawable/nextbutton"
-                                >
-                                <TextView
+                                    android:layout_weight="1"
+                                    android:layout_marginRight="10dp"
+                                    android:id="@+id/lyteasy"
+                                    android:background="@drawable/easybutton">
+                                    >
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginRight="50dp"
+                                        android:layout_marginLeft="15dp"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_marginBottom="10dp"
+                                        android:textColor="#000000"
+                                        android:gravity="center"
+                                        android:textStyle="bold"
+                                        app:autoSizeTextType="uniform"
+                                        app:autoSizeMinTextSize="8sp"
+                                        app:autoSizeMaxTextSize="22sp"
+                                        app:autoSizeStepGranularity="2sp"
+                                        android:autoSizeTextType="uniform"
+                                        android:autoSizeMaxTextSize="22sp"
+                                        android:autoSizeMinTextSize="8sp"
+                                        android:autoSizeStepGranularity="2sp"
+                                        android:text="خیلی آسون بود"
+                                        tools:ignore="MissingPrefix" />
+                                </RelativeLayout>
+                                <RelativeLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:layout_centerVertical="true"
-                                    android:layout_marginRight="50dp"
-                                    android:layout_marginLeft="15dp"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginBottom="10dp"
-                                    android:textColor="#ffffff"
-                                    android:gravity="center"
-                                    android:textStyle="bold"
-                                    android:id="@+id/txtnext"
-                                    app:autoSizeTextType="uniform"
-                                    app:autoSizeMinTextSize="8sp"
-                                    app:autoSizeMaxTextSize="22sp"
-                                    app:autoSizeStepGranularity="2sp"
-                                    android:autoSizeTextType="uniform"
-                                    android:autoSizeMaxTextSize="22sp"
-                                    android:autoSizeMinTextSize="8sp"
-                                    android:autoSizeStepGranularity="2sp"
-                                    android:text="سوال بعدی"
-                                    tools:ignore="MissingPrefix" />
-                            </RelativeLayout>
-                        </LinearLayout>
-                    </RelativeLayout>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="تعداد پاسخ صحیح:"
-                        android:textSize="15dp"
-                        android:id="@+id/txtscore"
-                        android:layout_marginTop="12dp"
-                        android:textColor="#e0fFa0"
-                        android:gravity="center"
-                        />
-
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="پاسخ صحیح:"
-                        android:textSize="28dp"
-                        android:id="@+id/txtanswer"
-                        android:layout_marginTop="30dp"
-                        android:textColor="#efffff"
-                        android:gravity="center"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="پیشرفت این لغت:"
-                        android:textSize="14dp"
-                        android:id="@+id/txtprogress"
-                        android:layout_marginTop="40dp"
-                        android:textColor="#ffffff"
-                        android:gravity="center"
-                        />
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_alignParentRight="true"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginRight="35dp"
-                        android:layout_marginLeft="35dp"
-                        android:layout_centerVertical="true"
-                        android:layout_height="20dp"
-                        android:id="@+id/lytwordprogres1"
-                        android:background="@drawable/curve_wordprogress1_learn">
-                        <TextView
-                            android:layout_width="wrap_content"
+                                    android:layout_weight="1"
+                                    android:id="@+id/lytnext"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="5dp"
+                                    android:background="@drawable/nextbutton"
+                                    >
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginRight="50dp"
+                                        android:layout_marginLeft="15dp"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_marginBottom="10dp"
+                                        android:textColor="#ffffff"
+                                        android:gravity="center"
+                                        android:textStyle="bold"
+                                        android:id="@+id/txtnext"
+                                        app:autoSizeTextType="uniform"
+                                        app:autoSizeMinTextSize="8sp"
+                                        app:autoSizeMaxTextSize="22sp"
+                                        app:autoSizeStepGranularity="2sp"
+                                        android:autoSizeTextType="uniform"
+                                        android:autoSizeMaxTextSize="22sp"
+                                        android:autoSizeMinTextSize="8sp"
+                                        android:autoSizeStepGranularity="2sp"
+                                        android:text="سوال بعدی"
+                                        tools:ignore="MissingPrefix" />
+                                </RelativeLayout>
+                            </LinearLayout>
+                        </RelativeLayout>
+                        <RelativeLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="15 times shown"
-                            android:textSize="12dp"
-                            android:gravity="center"
-                            android:textColor="#F0505050"
-                            android:id="@+id/txtshown"
-                            android:layout_alignParentLeft="true"
-                            android:layout_marginLeft="11dp"
-                            android:layout_centerVertical="true"
-                            />
-                        <RelativeLayout
-                            android:layout_width="100dp"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/curve_wordprogress2"
-                            android:id="@+id/lytwordprogres2"
-                            android:layout_alignParentRight="true">
+                            android:orientation="vertical"
+                            android:layout_marginBottom="10dp"
+                            android:id="@+id/lytprogresslayout"
+                            android:layout_above="@+id/lytactionbuttons"
+                            >
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_alignParentTop="true"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginRight="40dp"
+                                android:text="پیشرفت این لغت:"
+                                android:textSize="14dp"
+                                android:id="@+id/txtprogress"
+                                android:textColor="#ffffff"
+                                android:gravity="center"
+
+                                />
                             <RelativeLayout
-                                android:layout_width="30dp"
-                                android:layout_height="match_parent"
-                                android:background="@drawable/curve_wordprogress3"
-                                android:id="@+id/lytwordprogres3"
-                                android:layout_alignParentRight="true">
+                                android:layout_width="match_parent"
+                                android:layout_toLeftOf="@+id/txtprogress"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginRight="35dp"
+                                android:layout_marginLeft="35dp"
+                                android:layout_alignParentTop="true"
+                                android:layout_height="20dp"
+                                android:id="@+id/lytwordprogres1"
+                                android:background="@drawable/curve_wordprogress1_learn">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="15 times shown"
+                                    android:textSize="12dp"
+                                    android:gravity="center"
+                                    android:textColor="#F0505050"
+                                    android:id="@+id/txtshown"
+                                    android:layout_alignParentLeft="true"
+                                    android:layout_marginLeft="11dp"
+                                    android:layout_centerVertical="true"
+                                    />
+                                <RelativeLayout
+                                    android:layout_width="100dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/curve_wordprogress2"
+                                    android:id="@+id/lytwordprogres2"
+                                    android:layout_alignParentRight="true">
+                                    <RelativeLayout
+                                        android:layout_width="30dp"
+                                        android:layout_height="match_parent"
+                                        android:background="@drawable/curve_wordprogress3"
+                                        android:id="@+id/lytwordprogres3"
+                                        android:layout_alignParentRight="true">
+                                    </RelativeLayout>
+                                </RelativeLayout>
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:background="@drawable/curve_wordprogress4_learn"
+                                    android:layout_height="match_parent">
+                                </RelativeLayout>
                             </RelativeLayout>
                         </RelativeLayout>
-                        <RelativeLayout
+                        <ScrollView
                             android:layout_width="match_parent"
-                            android:background="@drawable/curve_wordprogress4_learn"
                             android:layout_height="match_parent">
-                        </RelativeLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentTop="true"
+                                android:layout_above="@+id/lytprogresslayout"
+                                android:orientation="vertical">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="تعداد پاسخ صحیح:"
+                                    android:textSize="15dp"
+                                    android:id="@+id/txtscore"
+                                    android:layout_marginTop="12dp"
+                                    android:textColor="#e0fFa0"
+                                    android:gravity="center"
+                                    />
 
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="پاسخ"
+                                    android:textSize="28dp"
+                                    android:id="@+id/txtanswer"
+                                    android:layout_marginTop="30dp"
+                                    android:textColor="#efffff"
+                                    android:gravity="center"
+                                    />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Definition"
+                                    android:textSize="20dp"
+                                    android:id="@+id/txtdefinitoin"
+                                    android:layout_marginTop="10dp"
+                                    android:textColor="#44ff44"
+                                    android:gravity="left"
+                                    />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Example"
+                                    android:textSize="20dp"
+                                    android:textStyle="italic"
+                                    android:id="@+id/txtexample"
+                                    android:layout_marginTop="0dp"
+                                    android:textColor="#ffff44"
+                                    android:gravity="left"
+                                    />
+                            </LinearLayout>
+                        </ScrollView>
                     </RelativeLayout>
                 </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -532,9 +579,6 @@
 
                     </RelativeLayout>
                 </LinearLayout>
-
-
-
             </LinearLayout>
 
 

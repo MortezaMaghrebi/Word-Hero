@@ -52,7 +52,7 @@ public class LearnActivity extends AppCompatActivity {
 
     RelativeLayout lytques,lytans1,lytans2,lytans3,lytans4,lytproga,lytprogb,btnhelp1,btnhelp2,btnhelp3,btnnext,btneasy,lytactionbuttons,p1,p2,p3;
     LinearLayout lytwait,lytchoices,lytcontent,lythelps;
-    TextView txtnum,txtques,txtweek,txtans1,txtans2,txtans3,txtans4,txtscore,txtanswer,txtnext,txtprogress;
+    TextView txtnum,txtques,txtweek,txtans1,txtans2,txtans3,txtans4,txtscore,txtanswer,txtdefinition,txtexample,txtnext,txtprogress;
     ImageView imgpron,imgwordimage;
     Controller controller;
     int[] questionsIndex;
@@ -291,6 +291,8 @@ public class LearnActivity extends AppCompatActivity {
         txtans4= (TextView)findViewById(R.id.txtans4);
         txtscore= (TextView)findViewById(R.id.txtscore);
         txtanswer= (TextView)findViewById(R.id.txtanswer);
+        txtdefinition= (TextView)findViewById(R.id.txtdefinitoin);
+        txtexample= (TextView)findViewById(R.id.txtexample);
         txtprogress = (TextView) findViewById(R.id.txtprogress);
         p1 = (RelativeLayout) findViewById(R.id.lytwordprogres1);
         p2 = (RelativeLayout) findViewById(R.id.lytwordprogres2);
@@ -628,8 +630,10 @@ public class LearnActivity extends AppCompatActivity {
                 lytchoices.requestLayout();
                 txtscore.setText("تعداد پاسخ صحیح: "+corrects);
                 txtanswer.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian);
-                txtanswer.setTextSize(25);
-                txtprogress.setText("درصد پیشرفت این لغت: "+(controller.wordItems[questionsIndex[currentQuestionIndex]].box()*100/15)+"%");
+                txtdefinition.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].definition);
+                txtexample.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].example);
+                //txtanswer.setTextSize(25);
+                txtprogress.setText("پیشرفت لغت: "+(controller.wordItems[questionsIndex[currentQuestionIndex]].box()*100/15)+"%");
                 shown.setText(""+controller.wordItems[questionsIndex[currentQuestionIndex]].review.length()+" times shown");
                 int maxwidth=p1.getMeasuredWidth();
                 int greenwitdh=maxwidth*controller.wordItems[questionsIndex[currentQuestionIndex]].box()/15;
@@ -805,24 +809,24 @@ public class LearnActivity extends AppCompatActivity {
                                         new Response.ErrorListener() {
                                             @Override
                                             public void onErrorResponse(VolleyError error) {
-                                                Toast.makeText(LearnActivity.this, "Error loading image: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                               // Toast.makeText(LearnActivity.this, "Error loading image: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                                             }
                                         });
 
                                 queue.add(imageRequest);
                             } else {
-                                Toast.makeText(LearnActivity.this, "No images found", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(LearnActivity.this, "No images found", Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(LearnActivity.this, "JSON parsing error", Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(LearnActivity.this, "JSON parsing error", Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(LearnActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(LearnActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
 
                     }
                 }) {
