@@ -1,1 +1,3 @@
 Interchange 1 to 3--https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/Interchange1to3Words.txt--https://raw.githubusercontent.com/MortezaMaghrebi/Interchange_Vocabulary_Dataset/main/Interchange1to3Images.txt
+1000 English Collocations--https://raw.githubusercontent.com/MortezaMaghrebi/Datesets-For-Word-Hero-Application/1000EnglishCollocations/1000EnglishCollocations.txt--
+
