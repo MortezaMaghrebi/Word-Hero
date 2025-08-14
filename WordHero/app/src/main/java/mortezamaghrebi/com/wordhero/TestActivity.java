@@ -40,7 +40,7 @@ public class TestActivity extends AppCompatActivity {
 
     RelativeLayout lytques,lytans1,lytans2,lytans3,lytans4,lytproga,lytprogb,btnhelp1,btnhelp2,btnhelp3,btnnext,btneasy,lytactionbuttons;
     LinearLayout lytwait,lytchoices,lytcontent,lythelps;
-    TextView txtnum,txtques,txtweek,txtans1,txtans2,txtans3,txtans4,txtscore,txtanswer,txtnext;
+    TextView txtnum,txtques,txtweek,txtans1,txtans2,txtans3,txtans4,txtscore,txtanswer,txtdefinition,txtexample,txtnext;
     Controller controller;
     ImageView imgpron;
     int[] questionsIndex;
@@ -279,6 +279,8 @@ public class TestActivity extends AppCompatActivity {
         txtans4= (TextView)findViewById(R.id.txtans4);
         txtscore= (TextView)findViewById(R.id.txtscore);
         txtanswer= (TextView)findViewById(R.id.txtanswer);
+        txtdefinition= (TextView)findViewById(R.id.txtdefinitoin);
+        txtexample= (TextView)findViewById(R.id.txtexample);
         txtnext= (TextView)findViewById(R.id.txtnext);
         imgpron = (ImageView)findViewById(R.id.imgpron);
         imgpron.setVisibility(View.INVISIBLE);
@@ -452,7 +454,23 @@ public class TestActivity extends AppCompatActivity {
     void showNextQuestion()
     {
         Random rnd = new Random();
-        txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].example + "?");
+        String question=controller.wordItems[questionsIndex[currentQuestionIndex]].example.toLowerCase();
+        String[] words = controller.wordItems[questionsIndex[currentQuestionIndex]].word.toLowerCase().split(" ");
+        for (String word:words) {
+           question= question.replace(word,"#");
+        }
+        String[] questionwords = question.split(" ");
+        String[] realQuestionwords=controller.wordItems[questionsIndex[currentQuestionIndex]].example.split(" ");
+        for(int i=0;i<questionwords.length;i++) if(questionwords[i].contains("#")) questionwords[i]="_____";
+        question="";
+        for(int i=0;i<questionwords.length;i++)
+        {
+            if(questionwords[i].contains("____"))question+=questionwords[i]+" ";
+            else question+=realQuestionwords[i]+" ";
+        }
+        while (question.contains("_____ _____"))question=question.replace("_____ _____","_____");
+
+        txtques.setText(question.trim() + "?");
         List<Integer> list;
         list = new ArrayList<Integer>();
         list.add(questionsIndex[currentQuestionIndex]);
@@ -579,7 +597,9 @@ public class TestActivity extends AppCompatActivity {
                 lytchoices.requestLayout();
                 txtscore.setText("امتیاز شما: "+corrects);
                 txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].example+"\n"+controller.wordItems[questionsIndex[currentQuestionIndex]].examplefa);
-                txtanswer.setText("پاسخ صحیح: "+controller.wordItems[questionsIndex[currentQuestionIndex]].word+"\n"+controller.wordItems[questionsIndex[currentQuestionIndex]].persian);
+                txtanswer.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word+"\n"+controller.wordItems[questionsIndex[currentQuestionIndex]].persian);
+                txtdefinition.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].definition);
+                txtexample.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].examplefa);
                 if(currentQuestionIndex==NumberOfQuestions-1)txtnext.setText("نتیجه");
             }
         }, delay);

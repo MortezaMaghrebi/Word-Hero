@@ -358,60 +358,73 @@ public class DBAdapter extends SQLiteOpenHelper {
         if (c != null) c.close(); // یادت نره Cursor رو ببندی
         return exists;
     }
-    public Boolean updateWordRowFromBackup(String word,int day,String persian,String definition,String pronounce,String sound,String example,String examplefa)
+    public Boolean updateWordRowFromBackup(String word, int day, String persian, String definition, String pronounce, String sound, String example, String examplefa)
     {
-        String where = key_word + "='" + word+"'";
         ContentValues newValues = new ContentValues();
-        newValues.put(key_day     ,day);
-        newValues.put(key_persian     ,persian);
-        newValues.put(key_definition  ,definition);
-        newValues.put(key_pronounce  ,pronounce);
-        newValues.put(key_sound  ,sound);
-        newValues.put(key_example  ,example);
-        newValues.put(key_examplefa,examplefa);
-        return db.update(DATABASE_TABLE,newValues,where,null)!=0;
+        newValues.put(key_day     , day);
+        newValues.put(key_persian , persian);
+        newValues.put(key_definition, definition);
+        newValues.put(key_pronounce , pronounce);
+        newValues.put(key_sound , sound);
+        newValues.put(key_example , example);
+        newValues.put(key_examplefa, examplefa);
+
+        String where = key_word + "=?";
+        String[] whereArgs = { word };
+
+        return db.update(DATABASE_TABLE, newValues, where, whereArgs) != 0;
     }
-    public Boolean updateWordImage(String word,String image)
-    {
-        String where = key_word + "='" + word+"'";
+    public Boolean updateWordImage(String word, String image) {
         ContentValues newValues = new ContentValues();
-        newValues.put(key_image     ,image);
-        return db.update(DATABASE_TABLE_IMAGE,newValues,where,null)!=0;
+        newValues.put(key_image, image);
+
+        String where = key_word + "=?";
+        String[] whereArgs = { word };
+
+        return db.update(DATABASE_TABLE_IMAGE, newValues, where, whereArgs) != 0;
     }
 
-    public Boolean updateWordRowFromSaved(String word,String review,int lastheart,int started,int finished)
-    {
-        String where = key_word + "='" + word+"'";
+    public Boolean updateWordRowFromSaved(String word, String review, int lastheart, int started, int finished) {
         ContentValues newValues = new ContentValues();
-        newValues.put(key_review     ,review);
-        newValues.put(key_lastheart ,lastheart);
-        newValues.put(key_started,started);
-        newValues.put(key_finished,finished);
-        return db.update(DATABASE_TABLE,newValues,where,null)!=0;
+        newValues.put(key_review, review);
+        newValues.put(key_lastheart, lastheart);
+        newValues.put(key_started, started);
+        newValues.put(key_finished, finished);
+
+        String where = key_word + "=?";
+        String[] whereArgs = { word };
+
+        return db.update(DATABASE_TABLE, newValues, where, whereArgs) != 0;
     }
 
-    public Boolean UpdateWordReview(long rowId,String review,int lastheart)
-    {
-        String where = key_id + "=" + rowId;
+    public Boolean UpdateWordReview(long rowId, String review, int lastheart) {
         ContentValues newValues = new ContentValues();
-        newValues.put(key_review,review);
-        newValues.put(key_lastheart,lastheart);
-        return db.update(DATABASE_TABLE,newValues,where,null)!=0;
+        newValues.put(key_review, review);
+        newValues.put(key_lastheart, lastheart);
+
+        String where = key_id + "=?";
+        String[] whereArgs = { String.valueOf(rowId) };
+
+        return db.update(DATABASE_TABLE, newValues, where, whereArgs) != 0;
     }
-    public Boolean UpdateWordStarted(long rowId,int started)
-    {
-        String where = key_id + "=" + rowId;
+    public Boolean UpdateWordStarted(long rowId, int started) {
         ContentValues newValues = new ContentValues();
-        newValues.put(key_started  ,started);
-        return db.update(DATABASE_TABLE,newValues,where,null)!=0;
+        newValues.put(key_started, started);
+
+        String where = key_id + "=?";
+        String[] whereArgs = { String.valueOf(rowId) };
+
+        return db.update(DATABASE_TABLE, newValues, where, whereArgs) != 0;
     }
 
-    public Boolean UpdateWordFinished(long rowId,int finished)
-    {
-        String where = key_id + "=" + rowId;
+    public Boolean UpdateWordFinished(long rowId, int finished) {
         ContentValues newValues = new ContentValues();
-        newValues.put(key_finished,finished);
-        return db.update(DATABASE_TABLE,newValues,where,null)!=0;
+        newValues.put(key_finished, finished);
+
+        String where = key_id + "=?";
+        String[] whereArgs = { String.valueOf(rowId) };
+
+        return db.update(DATABASE_TABLE, newValues, where, whereArgs) != 0;
     }
 
     public boolean UpdateOrInsert(wordItem word)

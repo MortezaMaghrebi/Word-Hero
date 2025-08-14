@@ -41,12 +41,12 @@
                 android:layout_marginTop="35dp"
                 android:layout_width="match_parent"
                 android:layout_height="200dp">
+
                 <ImageView
+                    android:id="@+id/imgpercent"
                     android:layout_width="180dp"
                     android:layout_height="180dp"
-                    android:id="@+id/imgpercent"
-                    android:layout_centerInParent="true"
-                    />
+                    android:layout_centerInParent="true" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -341,8 +341,8 @@
                                     android:gravity="center"
                                     android:textColor="#F0505050"
                                     android:id="@+id/txtshown"
-                                    android:layout_alignParentLeft="true"
-                                    android:layout_marginLeft="11dp"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_marginRight="11dp"
                                     android:layout_centerVertical="true"
                                     />
                                 <RelativeLayout
@@ -350,13 +350,13 @@
                                     android:layout_height="match_parent"
                                     android:background="@drawable/curve_wordprogress2"
                                     android:id="@+id/lytwordprogres2"
-                                    android:layout_alignParentRight="true">
+                                    android:layout_alignParentLeft="true">
                                     <RelativeLayout
                                         android:layout_width="30dp"
                                         android:layout_height="match_parent"
                                         android:background="@drawable/curve_wordprogress3"
                                         android:id="@+id/lytwordprogres3"
-                                        android:layout_alignParentRight="true">
+                                        android:layout_alignParentLeft="true">
                                     </RelativeLayout>
                                 </RelativeLayout>
                                 <RelativeLayout
@@ -366,60 +366,67 @@
                                 </RelativeLayout>
                             </RelativeLayout>
                         </RelativeLayout>
-                        <ScrollView
+                        <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                            <LinearLayout
+                            android:layout_height="match_parent"
+                            android:layout_above="@id/lytprogresslayout"
+                            >
+                            <ScrollView
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentTop="true"
-                                android:layout_above="@+id/lytprogresslayout"
-                                android:orientation="vertical">
-                                <TextView
+                                android:layout_height="match_parent">
+                                <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="تعداد پاسخ صحیح:"
-                                    android:textSize="15dp"
-                                    android:id="@+id/txtscore"
-                                    android:layout_marginTop="12dp"
-                                    android:textColor="#e0fFa0"
-                                    android:gravity="center"
-                                    />
+                                    android:layout_alignParentTop="true"
+                                    android:layout_above="@+id/lytprogresslayout"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="تعداد پاسخ صحیح:"
+                                        android:textSize="15dp"
+                                        android:id="@+id/txtscore"
+                                        android:layout_marginTop="12dp"
+                                        android:textColor="#e0fFa0"
+                                        android:gravity="center"
+                                        />
 
 
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="پاسخ"
-                                    android:textSize="28dp"
-                                    android:id="@+id/txtanswer"
-                                    android:layout_marginTop="30dp"
-                                    android:textColor="#efffff"
-                                    android:gravity="center"
-                                    />
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Definition"
-                                    android:textSize="20dp"
-                                    android:id="@+id/txtdefinitoin"
-                                    android:layout_marginTop="10dp"
-                                    android:textColor="#44ff44"
-                                    android:gravity="left"
-                                    />
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Example"
-                                    android:textSize="20dp"
-                                    android:textStyle="italic"
-                                    android:id="@+id/txtexample"
-                                    android:layout_marginTop="0dp"
-                                    android:textColor="#ffff44"
-                                    android:gravity="left"
-                                    />
-                            </LinearLayout>
-                        </ScrollView>
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="پاسخ"
+                                        android:textSize="28dp"
+                                        android:id="@+id/txtanswer"
+                                        android:layout_marginTop="30dp"
+                                        android:textColor="#efffff"
+                                        android:gravity="center"
+                                        />
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Definition"
+                                        android:textSize="20dp"
+                                        android:id="@+id/txtdefinitoin"
+                                        android:layout_marginTop="10dp"
+                                        android:textColor="#44ff44"
+                                        android:gravity="left"
+                                        />
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Example"
+                                        android:textSize="20dp"
+                                        android:textStyle="italic"
+                                        android:id="@+id/txtexample"
+                                        android:layout_marginTop="0dp"
+                                        android:textColor="#ffff44"
+                                        android:gravity="left"
+                                        />
+                                </LinearLayout>
+                            </ScrollView>
+                        </RelativeLayout>
+
                     </RelativeLayout>
                 </LinearLayout>
                 <LinearLayout
@@ -647,4 +654,14 @@
 
 
 </LinearLayout>
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/tap"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="90dp"
+        android:id="@+id/imgtap"
+        android:visibility="invisible"
+        />
 </RelativeLayout>

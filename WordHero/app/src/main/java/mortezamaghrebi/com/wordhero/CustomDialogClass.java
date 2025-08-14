@@ -108,45 +108,72 @@ public class CustomDialogClass extends Dialog  {
 
     public  void  loadGetLoading()  throws UnsupportedEncodingException
     {
+        controller = new Controller(context, true);
         RequestQueue queue = Volley.newRequestQueue(context);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>()
-                {
+        String url = "https://raw.githubusercontent.com/MortezaMaghrebi/Datesets-For-Word-Hero-Application/refs/heads/main/Messages.txt";
+
+        // Variable to store the file content
+        final String[] fileContent = {""}; // Using array to allow modification in inner class
+
+        StringRequest getRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // response
-                        if(response.contains("getLoading")) {
-                            String resp = response.substring(response.indexOf("{") + 1, response.indexOf("}"));
-                            controller.setMessages(resp);
-                        }
-                        Intent secondact = new Intent(context, SecondActivity.class);
-                        context.startActivity(secondact);
-                        CustomDialogClass.this.dismiss();
-                        c.finish();
+                        // Store the response (file content) in the variable
+                        controller.setMessages(response);
+
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // error
-                        Intent secondact = new Intent(context, SecondActivity.class);
-                        context.startActivity(secondact);
-                        CustomDialogClass.this.dismiss();
-                        c.finish();
+                        // Handle error
+                        //Toast.makeText(context, "Could not download file: " + error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("command", "getLoading"+","+controller.getUser()+"~"+controller.getPassword());
-                //params.put("domain", "http://itsalif.info");
-                return params;
-            }
-        };
-        queue.add(postRequest);
+        );
+        queue.getCache().clear();
+        queue.add(getRequest);
+
+       //RequestQueue queue = Volley.newRequestQueue(context);
+       //StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+       //        new Response.Listener<String>()
+       //        {
+       //            @Override
+       //            public void onResponse(String response) {
+       //                // response
+       //                if(response.contains("getLoading")) {
+       //                    String resp = response.substring(response.indexOf("{") + 1, response.indexOf("}"));
+       //                    controller.setMessages(resp);
+       //                }
+       //                Intent secondact = new Intent(context, SecondActivity.class);
+       //                context.startActivity(secondact);
+       //                CustomDialogClass.this.dismiss();
+       //                c.finish();
+       //            }
+       //        },
+       //        new Response.ErrorListener()
+       //        {
+       //            @Override
+       //            public void onErrorResponse(VolleyError error) {
+       //                // error
+       //                Intent secondact = new Intent(context, SecondActivity.class);
+       //                context.startActivity(secondact);
+       //                CustomDialogClass.this.dismiss();
+       //                c.finish();
+       //            }
+       //        }
+       //) {
+       //    @Override
+       //    protected Map<String, String> getParams()
+       //    {
+       //        Map<String, String>  params = new HashMap<String, String>();
+       //        params.put("command", "getLoading"+","+controller.getUser()+"~"+controller.getPassword());
+       //        //params.put("domain", "http://itsalif.info");
+       //        return params;
+       //    }
+       //};
+       //queue.add(postRequest);
 
     }
     public  void  GetByUser(final String user)  throws UnsupportedEncodingException

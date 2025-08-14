@@ -53,8 +53,9 @@ public class LearnActivity extends AppCompatActivity {
     RelativeLayout lytques,lytans1,lytans2,lytans3,lytans4,lytproga,lytprogb,btnhelp1,btnhelp2,btnhelp3,btnnext,btneasy,lytactionbuttons,p1,p2,p3;
     LinearLayout lytwait,lytchoices,lytcontent,lythelps;
     TextView txtnum,txtques,txtweek,txtans1,txtans2,txtans3,txtans4,txtscore,txtanswer,txtdefinition,txtexample,txtnext,txtprogress;
-    ImageView imgpron,imgwordimage;
+    ImageView imgpron,imgwordimage,imgtap;
     Controller controller;
+    int imagesize=0;
     int[] questionsIndex;
     String[] results;
     int currentQuestionIndex=0;
@@ -300,6 +301,7 @@ public class LearnActivity extends AppCompatActivity {
         txtnext= (TextView)findViewById(R.id.txtnext);
         imgpron = (ImageView)findViewById(R.id.imgpron);
         imgwordimage = (ImageView)findViewById(R.id.imgwordimage);
+        imgtap = (ImageView)findViewById(R.id.imgtap);
         lytans1.setTag("0");
         lytans2.setTag("1");
         lytans3.setTag("2");
@@ -330,9 +332,9 @@ public class LearnActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        initTts();
         helpButtonsInit();
         answerButtonsInit();
-        initTts();
         btnnext.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -394,6 +396,28 @@ public class LearnActivity extends AppCompatActivity {
             lytprogb.getLayoutParams().width = 0;
             lytprogb.requestLayout();
         }catch (Exception e){}
+        imgwordimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //
+                fetch_current_word=controller.wordItems[questionsIndex[currentQuestionIndex]].word;
+                fetchPexelsImageAndShowDialog(fetch_current_word,fetch_current_page,false);
+                fetch_current_page++;
+                wordItem item=controller.wordItems[questionsIndex[currentQuestionIndex]];
+                txtanswer.setTextSize(15);
+
+            }
+        });
+        imgwordimage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Toast.makeText(LearnActivity.this,"Reverting Image...",Toast.LENGTH_SHORT).show();
+                fetch_current_word=controller.wordItems[questionsIndex[currentQuestionIndex]].word;
+                fetch_current_page=1;
+                fetchPexelsImageAndShowDialog(fetch_current_word,fetch_current_page,false);
+                return false;
+            }
+        });
     }
 
     void itsEasyQuestion()
@@ -481,7 +505,9 @@ public class LearnActivity extends AppCompatActivity {
     void showNextQuestion()
     {
             Random rnd = new Random();
-            txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
+            wordItem item=controller.wordItems[questionsIndex[currentQuestionIndex]];
+
+            //txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
             List<Integer> list;
             list = new ArrayList<Integer>();
             list.add(questionsIndex[currentQuestionIndex]);
@@ -506,10 +532,86 @@ public class LearnActivity extends AppCompatActivity {
             imgwordimage.requestLayout();
             showimage=false;
             currentAnswerIndex = alist.indexOf(questionsIndex[currentQuestionIndex]);
-            txtans1.setText(controller.wordItems[alist.get(0)].persian);
-            txtans2.setText(controller.wordItems[alist.get(1)].persian);
-            txtans3.setText(controller.wordItems[alist.get(2)].persian);
-            txtans4.setText(controller.wordItems[alist.get(3)].persian);
+            if(item.box()<7)
+            {
+                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
+                txtans1.setText(controller.wordItems[alist.get(0)].persian);
+                txtans2.setText(controller.wordItems[alist.get(1)].persian);
+                txtans3.setText(controller.wordItems[alist.get(2)].persian);
+                txtans4.setText(controller.wordItems[alist.get(3)].persian);
+                if(item.box()<3)
+                {
+                    txtques.setTextColor(Color.parseColor("#4169E1"));
+                    try {
+                        showimage=true;
+                        getImage(controller.wordItems[questionsIndex[currentQuestionIndex]].word,true);
+
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }else
+                    txtques.setTextColor(Color.parseColor("#000000"));
+                if(ttsinit&&isproun) tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "!?", TextToSpeech.QUEUE_ADD, null);
+
+            }else if(item.box()<12)
+            {
+                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian + "?");
+                txtans1.setText(controller.wordItems[alist.get(0)].word);
+                txtans2.setText(controller.wordItems[alist.get(1)].word);
+                txtans3.setText(controller.wordItems[alist.get(2)].word);
+                txtans4.setText(controller.wordItems[alist.get(3)].word);
+
+            }else if(item.box()<13)
+            {
+                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
+                txtans1.setText(controller.wordItems[alist.get(0)].definition);
+                txtans2.setText(controller.wordItems[alist.get(1)].definition);
+                txtans3.setText(controller.wordItems[alist.get(2)].definition);
+                txtans4.setText(controller.wordItems[alist.get(3)].definition);
+                if(ttsinit&&isproun) tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "!?", TextToSpeech.QUEUE_ADD, null);
+
+            }else if(item.box()<14)
+            {
+                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian + "?");
+                txtans1.setText(controller.wordItems[alist.get(0)].definition);
+                txtans2.setText(controller.wordItems[alist.get(1)].definition);
+                txtans3.setText(controller.wordItems[alist.get(2)].definition);
+                txtans4.setText(controller.wordItems[alist.get(3)].definition);
+            }else if(item.box()<14)
+            {
+                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].definition + "?");
+                txtans1.setText(controller.wordItems[alist.get(0)].word);
+                txtans2.setText(controller.wordItems[alist.get(1)].word);
+                txtans3.setText(controller.wordItems[alist.get(2)].word);
+                txtans4.setText(controller.wordItems[alist.get(3)].word);
+                if(ttsinit&&isproun) tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].definition + "!?", TextToSpeech.QUEUE_ADD, null);
+
+            }else if (item.box()<15)
+            {
+                String question=controller.wordItems[questionsIndex[currentQuestionIndex]].example.toLowerCase();
+                String[] words = controller.wordItems[questionsIndex[currentQuestionIndex]].word.toLowerCase().split(" ");
+                for (String word:words) {
+                    question= question.replace(word,"#");
+                }
+                String[] questionwords = question.split(" ");
+                String[] realQuestionwords=controller.wordItems[questionsIndex[currentQuestionIndex]].example.split(" ");
+                for(int i=0;i<questionwords.length;i++) if(questionwords[i].contains("#")) questionwords[i]="_____";
+                question="";
+                for(int i=0;i<questionwords.length;i++)
+                {
+                    if(questionwords[i].contains("____"))question+=questionwords[i]+" ";
+                    else question+=realQuestionwords[i]+" ";
+                }
+                while (question.contains("_____ _____"))question=question.replace("_____ _____","_____");
+                txtques.setText(question.trim() + "?");
+                txtans1.setText(controller.wordItems[alist.get(0)].word);
+                txtans2.setText(controller.wordItems[alist.get(1)].word);
+                txtans3.setText(controller.wordItems[alist.get(2)].word);
+                txtans4.setText(controller.wordItems[alist.get(3)].word);
+                if(ttsinit&&isproun) tts.speak(question + "!?", TextToSpeech.QUEUE_ADD, null);
+
+            }
+
             int day=controller.wordItems[questionsIndex[currentQuestionIndex]].day;
             int dayis=((day-1)%4)+1;
             int weekis=(int)((day-1)/4)+1;
@@ -531,7 +633,6 @@ public class LearnActivity extends AppCompatActivity {
             btnhelp1.setBackgroundResource(R.drawable.helpx2);
             btnhelp2.setBackgroundResource(R.drawable.help2r);
             btnhelp3.setBackgroundResource(R.drawable.helpshow);
-            if(ttsinit&&isproun) tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "!?", TextToSpeech.QUEUE_ADD, null);
             time=(timeperquestion*100)-1;
             mHandler = new Handler();
             mHandler.postDelayed(mUpdate, 100);
@@ -629,9 +730,31 @@ public class LearnActivity extends AppCompatActivity {
                 lytchoices.getLayoutParams().height = 1;
                 lytchoices.requestLayout();
                 txtscore.setText("تعداد پاسخ صحیح: "+corrects);
+                wordItem item =controller.wordItems[questionsIndex[currentQuestionIndex]];
+                if(item.box()<7)
+                {
+                    txtanswer.setText(item.persian);
+                }else if(item.box()<12)
+                {
+                    txtanswer.setText(item.word);
+                    if(ttsinit&&isproun) tts.speak(item.word + "!?", TextToSpeech.QUEUE_ADD, null);
+                }else if(item.box()<13)
+                {
+                    txtanswer.setText(item.definition+"\n"+item.persian);
+                }else if(item.box()<14)
+                {
+                    txtanswer.setText(item.definition+"\n"+item.persian);
+                }else if(item.box()<14)
+                {
+                    txtanswer.setText(item.word);
+                    if(ttsinit&&isproun) tts.speak(item.word + "!?", TextToSpeech.QUEUE_ADD, null);
+                }else if (item.box()<15)
+                {
+                    txtanswer.setText(item.word+"\n"+item.persian);
+                }
                 txtanswer.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian);
                 txtdefinition.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].definition);
-                txtexample.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].example);
+                txtexample.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].example+"\n"+controller.wordItems[questionsIndex[currentQuestionIndex]].examplefa);
                 //txtanswer.setTextSize(25);
                 txtprogress.setText("پیشرفت لغت: "+(controller.wordItems[questionsIndex[currentQuestionIndex]].box()*100/15)+"%");
                 shown.setText(""+controller.wordItems[questionsIndex[currentQuestionIndex]].review.length()+" times shown");
@@ -644,36 +767,13 @@ public class LearnActivity extends AppCompatActivity {
 
                 try {
                     showimage=true;
-                    getImage(controller.wordItems[questionsIndex[currentQuestionIndex]].word);
+                    getImage(controller.wordItems[questionsIndex[currentQuestionIndex]].word,false);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
                 if(currentQuestionIndex==NumberOfQuestions-1)txtnext.setText("نتیجه");
                 fetch_current_page=2;
-                imgwordimage.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //
-                        fetch_current_word=controller.wordItems[questionsIndex[currentQuestionIndex]].word;
-                        fetchPexelsImageAndShowDialog(fetch_current_word,fetch_current_page);
-                        fetch_current_page++;
-                        wordItem item=controller.wordItems[questionsIndex[currentQuestionIndex]];
-                        String answer=item.definition+"\n"+item.persian+"\n"+item.example+"\n"+item.examplefa;
-                        txtanswer.setText(answer);
-                        txtanswer.setTextSize(15);
 
-                    }
-                });
-                imgwordimage.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        Toast.makeText(LearnActivity.this,"Reverting Image...",Toast.LENGTH_SHORT).show();
-                        fetch_current_word=controller.wordItems[questionsIndex[currentQuestionIndex]].word;
-                        fetch_current_page=1;
-                        fetchPexelsImageAndShowDialog(fetch_current_word,fetch_current_page);
-                        return false;
-                    }
-                });
 
             }
         }, delay);
@@ -756,20 +856,48 @@ public class LearnActivity extends AppCompatActivity {
     }
     final String uri_getimage = "http://kingsofleitner.ir/words1100/webservice.php?get_command=getwordimage,";
     Boolean showimage=false;
-    void getImage(final String word) throws UnsupportedEncodingException {
+    boolean imagetapshown=false;
+    void getImage(final String word,boolean isquestion) throws UnsupportedEncodingException {
         Bitmap bit =controller.getWordImage(word);
         if(bit!=null && showimage) {
             imgwordimage.setImageBitmap(bit);
-            imgwordimage.getLayoutParams().width=imgwordimage.getMeasuredHeight();
+            if(isquestion) imgwordimage.getLayoutParams().width=(int)(imgwordimage.getMeasuredHeight()*0.7);
+            else imgwordimage.getLayoutParams().width=imgwordimage.getMeasuredHeight();
             imgwordimage.requestLayout();
+            if(!imagetapshown) {
+                imagetapshown=true;
+                (new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (controller.getImageTapShown() % 5 == 0) {
+                            Animation connectingAnimation = AnimationUtils.loadAnimation(LearnActivity.this, R.anim.tap);
+                            imgtap.setVisibility(View.VISIBLE);
+                            imgtap.startAnimation(connectingAnimation);
+                            imgtap.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    imgtap.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                            (new Handler()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    imgtap.setVisibility(View.INVISIBLE);
+                                }
+                            }, 1500);
+                        }
+                        controller.setImageTapShown();
+                    }
+                }, 700);
+            }
         }else {
             fetch_current_page=1;
             fetch_current_word=word;
-            fetchPexelsImageAndShowDialog(word,1);
+            fetchPexelsImageAndShowDialog(word,1,isquestion);
         }
     }
 
-    public void fetchPexelsImageAndShowDialog(String keyword, int page) {
+    public void fetchPexelsImageAndShowDialog(String keyword, int page,boolean isqestion) {
 
         RequestQueue queue = Volley.newRequestQueue(LearnActivity.this);
         String apiKey = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
@@ -801,7 +929,7 @@ public class LearnActivity extends AppCompatActivity {
                                         new Response.Listener<Bitmap>() {
                                             @Override
                                             public void onResponse(Bitmap bitmap) {
-                                                showImageDialog(bitmap,page);
+                                                showImageDialog(bitmap,page,isqestion);
                                             }
                                         },
                                         0, 0, ImageView.ScaleType.CENTER_INSIDE,
@@ -841,7 +969,7 @@ public class LearnActivity extends AppCompatActivity {
         queue.add(jsonObjectRequest);
     }
     int errortimefetch=0;
-    private void showImageDialog(Bitmap bitmap,int page) {
+    private void showImageDialog(Bitmap bitmap,int page,boolean isquestion) {
         String word = fetch_current_word;
         Bitmap bit = controller.resizeImageToFitDatabase(bitmap);
         int min = Math.min(bit.getWidth(), bit.getHeight());
@@ -851,9 +979,10 @@ public class LearnActivity extends AppCompatActivity {
             if(bit1!=null && showimage) {
                 //controller.getWordImage(fetch_current_word);
                 imgwordimage.setImageBitmap(controller.getWordImage(fetch_current_word));
-                imgwordimage.getLayoutParams().width=imgwordimage.getMeasuredHeight();
+                if(isquestion) imgwordimage.getLayoutParams().width=(int)(imgwordimage.getMeasuredHeight()*0.7);
+                else imgwordimage.getLayoutParams().width=imgwordimage.getMeasuredHeight();
                 imgwordimage.requestLayout();
-                Toast.makeText(LearnActivity.this,"Image changed",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(LearnActivity.this,"Image changed",Toast.LENGTH_SHORT).show();
 
             }
         } else

@@ -643,7 +643,7 @@ public class Controller {
     /////
     int getVolumeGame()
     {
-        return prefs.getInt("voulmegame",25);
+        return prefs.getInt("voulmegame",0);
     }
     void setVolumeGame(int volume)
     {
@@ -653,7 +653,7 @@ public class Controller {
     /////
     int getVolumeButtons()
     {
-        return prefs.getInt("voulmebuttons",100);
+        return prefs.getInt("voulmebuttons",50);
     }
     void setVolumeButtons(int volume)
     {
@@ -662,7 +662,7 @@ public class Controller {
     }/////
     int getVolumeMain()
     {
-        return prefs.getInt("voulmemain",30);
+        return prefs.getInt("voulmemain",0);
     }
     void setVolumeMain(int volume)
     {
@@ -674,9 +674,18 @@ public class Controller {
     {
         return prefs.getInt("tapshown",0);
     }
+    int getImageTapShown()
+    {
+        return prefs.getInt("imagetapshown",0);
+    }
     void setTapShown()
     {
         editor.putInt("tapshown",Math.min(prefs.getInt("tapshown",0)+1,100));
+        editor.commit();
+    }
+    void setImageTapShown()
+    {
+        editor.putInt("imagetapshown",Math.min(prefs.getInt("imagetapshown",0)+1,100));
         editor.commit();
     }
     /////
@@ -1470,41 +1479,33 @@ public class Controller {
         cursor.close();
         return count;
     }
-    public  void  loadGetLoading(final MainActivity ma)  throws UnsupportedEncodingException
-    {
+    public  void  loadGetLoading(final Activity ma)  throws UnsupportedEncodingException {
+
         RequestQueue queue = Volley.newRequestQueue(context);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>()
-                {
+        String url = "https://raw.githubusercontent.com/MortezaMaghrebi/Datesets-For-Word-Hero-Application/refs/heads/main/Messages.txt";
+
+        // Variable to store the file content
+        final String[] fileContent = {""}; // Using array to allow modification in inner class
+
+        StringRequest getRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // response
-                        if(response.contains("getLoading")) {
-                            String resp = response.substring(response.indexOf("{") + 1, response.indexOf("}"));
-                            setMessages(resp);
-                        }
-                        ma.ismessagesloaded=true;
+                        // Store the response (file content) in the variable
+                        setMessages(response);
+
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // error
-                        ma.ismessagesloaded=true;
+                        // Handle error
+                        //Toast.makeText(context, "Could not download file: " + error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("command", "getLoading"+","+getUser()+"~"+getPassword());
-                //params.put("domain", "http://itsalif.info");
-                return params;
-            }
-        };
-        queue.add(postRequest);
+        );
+        queue.getCache().clear();
+        queue.add(getRequest);
 
     }
 

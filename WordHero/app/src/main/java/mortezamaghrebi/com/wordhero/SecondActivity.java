@@ -78,6 +78,7 @@ import java.util.Map;
 
 import okhttp3.OkHttpClient;
 
+
 public class SecondActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_READ_STORAGE = 606;
@@ -1015,6 +1016,27 @@ public class SecondActivity extends AppCompatActivity {
         setPlayer();
         testDictionary();
         setMessagesUI();
+        try {
+            controller.loadGetLoading(SecondActivity.this);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        int messagescount=controller.getMessagesCount();
+        txtnummessages.setText(messagescount+"");
+        if(messagescount>0) txtnummessages.setVisibility(View.VISIBLE);
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int messagescount=controller.getMessagesCount();
+                    txtnummessages.setText(messagescount+"");
+                    if(messagescount>0) txtnummessages.setVisibility(View.VISIBLE);
+
+                }catch (Exception e){}
+
+            }
+        },3000);
+
     }
 
     private void testDictionary() {
@@ -2159,7 +2181,7 @@ public class SecondActivity extends AppCompatActivity {
                             String[] items = row.split("#");
                             if(items.length==7) {
                                 String word = items[0];
-                                int day = ((index / 4) + 1);
+                                int day = ((index / 5) + 1);
                                 String persian = items[1];
                                 String definition = items[3];
                                 String pronounce = items[5];
