@@ -2050,16 +2050,25 @@ public class SecondActivity extends AppCompatActivity {
     public void showDynamicDialog(String textData) {
         String[] lines = textData.split("\n");
 
+        // ساخت ScrollView و Layout اصلی
         ScrollView scrollView = new ScrollView(this);
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         int padding = (int) (getResources().getDisplayMetrics().density * 16);
         layout.setPadding(padding, padding, padding, padding);
+        scrollView.addView(layout);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("انتخاب فایل");
+        builder.setView(scrollView);
+        builder.setNegativeButton("بستن", (d, w) -> d.dismiss());
+
+        AlertDialog dialog = builder.create();
 
         for (String line : lines) {
             if (line.trim().isEmpty()) continue;
-            String[] parts = line.split("--");
 
+            String[] parts = line.split("--");
             if (parts.length == 3) {
                 String title = parts[0].trim();
                 String urlSmall = parts[1].trim();
@@ -2070,12 +2079,9 @@ public class SecondActivity extends AppCompatActivity {
                 btn.setAllCaps(false);
 
                 btn.setOnClickListener(v -> {
+                    dialog.dismiss();
                     try {
-
-                        GetWordsFromURL(urlSmall);
-                        GetImagesFromURL(urlLarge);
-
-
+                        GetWordsFromURL(urlSmall, urlLarge);
                     } catch (UnsupportedEncodingException e) {
                         throw new RuntimeException(e);
                     }
@@ -2085,19 +2091,22 @@ public class SecondActivity extends AppCompatActivity {
             }
         }
 
-        scrollView.addView(layout);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("انتخاب فایل")
-                .setView(scrollView)
-                .setNegativeButton("بستن", null)
-                .show();
+        dialog.show();
     }
 
 
 
 
-    public void GetWordsFromURL(String url) throws UnsupportedEncodingException {
+    public void GetWordsFromURL(String url,String urlimages) throws UnsupportedEncodingException {
+        ProgressBar progressBar = new ProgressBar(SecondActivity.this);
+        progressBar.setIndeterminate(true);
+        AlertDialog progressDialog = new AlertDialog.Builder(SecondActivity.this)
+                .setTitle("لطفاً منتظر بمانید")
+                .setView(progressBar)
+                .setCancelable(true)
+                .create();
+
+        progressDialog.show();
         controller = new Controller(SecondActivity.this, true);
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
         queue.getCache().clear();
@@ -2108,6 +2117,7 @@ public class SecondActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        progressDialog.dismiss();
                         // Store the response (file content) in the variable
                         int add=0,update=0,error=0;
                         fileContent[0] = response;
@@ -2134,7 +2144,7 @@ public class SecondActivity extends AppCompatActivity {
                             }else error++;
                             index++;
                         }
-                        showSummaryDialog(add,update,error);
+                        showSummaryDialog(add,update,error,urlimages);
 
 
                     }
@@ -2154,6 +2164,15 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void GetImagesFromURL(String url) throws UnsupportedEncodingException {
+        ProgressBar progressBar = new ProgressBar(SecondActivity.this);
+        progressBar.setIndeterminate(true);
+        AlertDialog progressDialog = new AlertDialog.Builder(SecondActivity.this)
+                .setTitle("لطفاً منتظر بمانید")
+                .setView(progressBar)
+                .setCancelable(true)
+                .create();
+
+        progressDialog.show();
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
         queue.getCache().clear();
 
@@ -2162,7 +2181,8 @@ public class SecondActivity extends AppCompatActivity {
                 response -> {
                     // response is byte[]
                     if (response != null && response.length > 0) {
-                        // Call the previous function with byte array
+                        progressDialog.dismiss();
+
                         controller.LoadImagesFromBytes(response);
                     } else {
                         Toast.makeText(SecondActivity.this, "Downloaded file is empty", Toast.LENGTH_LONG).show();
@@ -2175,23 +2195,38 @@ public class SecondActivity extends AppCompatActivity {
 
         queue.add(request);
     }
-    private void showSummaryDialog(int addCount, int updatedCount, int errorCount) {
+    private void showSummaryDialog(int addCount, int updatedCount, int errorCount,String urlimages) {
         AlertDialog.Builder builder = new AlertDialog.Builder(SecondActivity.this);
-        builder.setTitle("File Downloaded Successfully");
+        builder.setTitle("لغت ها به درستی دریافت شدند. دوست دارید تصاویر هم دانلود شوند؟");
 
         String message = "Summary:\n   Added: " + addCount +
                 "\n   Updated: " + updatedCount +
                 "\n   Errors: " + errorCount;
 
         builder.setMessage(message);
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setCancelable(false);
+        builder.setPositiveButton("دانلود تصاویر", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                try {
+                    GetImagesFromURL(urlimages);
+
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
         });
 
+        builder.setNeutralButton("تمام", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+
+            }
+        });
         builder.show();
     }
 
