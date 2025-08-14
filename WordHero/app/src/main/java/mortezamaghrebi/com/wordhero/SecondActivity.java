@@ -19,6 +19,7 @@ import android.os.Handler;
 
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.util.Base64;
 import android.view.GestureDetector;
@@ -450,7 +451,7 @@ public class SecondActivity extends AppCompatActivity {
                         mpbutton.start();
                         imgsynced.setBackgroundResource(R.drawable.synced);
                         try {
-                            GetStoragePermission();
+                            GetStoragePermission(false);
                             GetWordDatasets();
                             //Save();
                         } catch (UnsupportedEncodingException e) {
@@ -788,32 +789,54 @@ public class SecondActivity extends AppCompatActivity {
         super.onPostResume();
     }
 
-    void GetStoragePermission() {
+    private static final int REQUEST_CODE_STORAGE = 5101;
+    private static final int REQUEST_CODE_DOCS = 5102;
+
+    void GetStoragePermission(boolean opendocuments) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.setType("text/plain");
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            startActivityForResult(intent, 5101);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // if android 11+ request MANAGER_EXTERNAL_STORAGE
-            if (!Environment.isExternalStorageManager()) { // check if we already have permission
-                Uri uri = Uri.parse(String.format(Locale.ENGLISH, "package:%s", getApplicationContext().getPackageName()));
-                startActivity(
-                        new Intent(
-                                Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                                uri
-                        )
-                );
+            // اندروید 13 و بالاتر
+            if (!Environment.isExternalStorageManager()) {
+                // اول چک کن ببین آیا دسترسی همه فایل‌ها داریم یا نه
+                try {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    startActivity(intent);
+                }
+            } else {
+                // اگر دسترسی داریم، SAF برای پوشه Documents
+                openDocumentsFolderWithSAF();
             }
+
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // اندروید 11 و 12
+            if (!Environment.isExternalStorageManager()) {
+                Uri uri = Uri.parse(String.format(Locale.ENGLISH, "package:%s", getApplicationContext().getPackageName()));
+                startActivity(new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri));
+            } else {
+                //openDocumentsFolderWithSAF();
+            }
+
         } else {
-            if (ContextCompat.checkSelfPermission(SecondActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) { // check if we already have permission
-                ActivityCompat.requestPermissions(SecondActivity.this, new String[]{
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                }, 5101);
+            // اندروید 10 و پایین‌تر
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_CODE_STORAGE);
+            } else {
+                openDocumentsFolderWithSAF();
             }
         }
     }
-
+    private void openDocumentsFolderWithSAF() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("text/plain");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
+    }
     @Override
     protected void onStart() {
         TextView txtlevel, txtprogress;
@@ -1009,7 +1032,7 @@ public class SecondActivity extends AppCompatActivity {
         btnExportImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetStoragePermission();
+                GetStoragePermission(false);
                 mpbutton.seekTo(0);mpbutton.start();
                 controller.backupImagesToDocumentsWithProgress(SecondActivity.this);
             }
@@ -2069,10 +2092,10 @@ public class SecondActivity extends AppCompatActivity {
             if (line.trim().isEmpty()) continue;
 
             String[] parts = line.split("--");
-            if (parts.length == 3) {
+            if (parts.length >=2) {
                 String title = parts[0].trim();
                 String urlSmall = parts[1].trim();
-                String urlLarge = parts[2].trim();
+                String urlLarge = parts.length>2? parts[2].trim():"";
 
                 Button btn = new Button(this);
                 btn.setText(title);
@@ -2197,7 +2220,7 @@ public class SecondActivity extends AppCompatActivity {
     }
     private void showSummaryDialog(int addCount, int updatedCount, int errorCount,String urlimages) {
         AlertDialog.Builder builder = new AlertDialog.Builder(SecondActivity.this);
-        builder.setTitle("لغت ها به درستی دریافت شدند. دوست دارید تصاویر هم دانلود شوند؟");
+        builder.setTitle("لغت ها به درستی دریافت شدند. "+((urlimages.length()>0)?"دوست دارید تصاویر هم دانلود شوند؟":""));
 
         String message = "Summary:\n   Added: " + addCount +
                 "\n   Updated: " + updatedCount +
@@ -2205,19 +2228,21 @@ public class SecondActivity extends AppCompatActivity {
 
         builder.setMessage(message);
         builder.setCancelable(false);
-        builder.setPositiveButton("دانلود تصاویر", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                try {
-                    GetImagesFromURL(urlimages);
+        if(urlimages.length()>0) {
+            builder.setPositiveButton("دانلود تصاویر", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    try {
+                        GetImagesFromURL(urlimages);
 
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+
                 }
-
-            }
-        });
+            });
+        }
 
         builder.setNeutralButton("تمام", new DialogInterface.OnClickListener() {
             @Override
