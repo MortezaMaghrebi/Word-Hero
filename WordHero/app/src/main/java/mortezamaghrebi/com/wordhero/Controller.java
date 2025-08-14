@@ -66,7 +66,7 @@ public class Controller {
     final int HeartsMaximum=12;
     final int HeartIncreasTime=540; //seconds
     final int InitialExir=60;
-    final int NumberOfQuestions=14,RewardBad=4,RewardSoSo=6,RewardExcelent=12;
+    final int NumberOfQuestions=10,RewardBad=3,RewardSoSo=5,RewardExcelent=8;
     ProgressDialog progressDialog;
     ProgressDialog progressDialog2;
     public int Version=3;
@@ -770,7 +770,7 @@ public class Controller {
     void setMessages(String messages)
     {
         editor.putString("messages",messages);
-        editor.putInt("messagescount",(messages.length()>0?messages.split("#").length:0));
+        editor.putInt("messagescount",(messages.length()>0?messages.split("\n").length:0));
         editor.commit();
     }
     /////

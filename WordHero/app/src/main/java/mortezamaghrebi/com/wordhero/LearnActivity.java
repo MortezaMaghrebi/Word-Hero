@@ -68,7 +68,7 @@ public class LearnActivity extends AppCompatActivity {
     Boolean used_help_a=false,help_a_used=false;
     Boolean used_help_b=false;
     Boolean used_help_c=false;
-    int NumberOfQuestions=14;
+    int NumberOfQuestions=10;
     TextToSpeech tts;
     boolean ttsinit= false;
     boolean isproun=true;
@@ -469,11 +469,17 @@ public class LearnActivity extends AppCompatActivity {
             alertDialog.show();
         }
         else {
+
             questionsIndex = controller.GetQuestionsIndex(controller.NumberOfQuestions);
             results = new String[NumberOfQuestions];
             controller.inceaseHeartId();
             currentQuestionIndex = 0;
-            showNextQuestion();
+            (new Handler(Looper.getMainLooper())).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showNextQuestion();
+                }
+            },700);
         }
     }
 

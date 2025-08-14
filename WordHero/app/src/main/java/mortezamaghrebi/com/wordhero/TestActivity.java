@@ -55,7 +55,7 @@ public class TestActivity extends AppCompatActivity {
     Boolean used_help_a=false,help_a_used=false;
     Boolean used_help_b=false;
     Boolean used_help_c=false;
-    int NumberOfQuestions=14;
+    int NumberOfQuestions=10;
     final String uri = "http://kingsofleitner.ir/words1100/webservice.php";
     int timeperquestion=60;
     MediaPlayer mp_correct;

@@ -38,7 +38,7 @@ public class MessagesDialogClass extends Dialog  {
         list = (ListView) findViewById(R.id.listmessages);
         final Controller controller = new Controller(context,false);
         String datastr = controller.getMessages();
-        String[] data = datastr.split("#");
+        String[] data = datastr.split("\n");
         List<String> slist;
         slist = new ArrayList<String>();
         if(datastr.length()>1) {
