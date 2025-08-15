@@ -62,6 +62,7 @@ public class wordItem {
     public int box(){ //returns 1 to 16 box levels for the word
         String review=this.review;
         int box=0;
+        int easy=1;
         for(int i=0;i<review.length();i++)
         {
             String c= String.valueOf(review.charAt(i));
@@ -74,19 +75,23 @@ public class wordItem {
             else if(c.equals("w")){ if(box>1) box-=2; else if(box>0) box--;} //wrong
             else if(c.equals("f"))
             {
-                if(box<=4)box=0;
-                else if (box<=8) box=4;
-                else if (box<=11) box=8;
+                if(box<=3)box=Math.max(0, box-2);
+                else if (box<=7) box=Math.max(4, box-1);
+                else if (box<=11) box=Math.max(7, box-2);
                 else if (box<=13) box=11;
                 else if (box<15) box=13;
+            }else if(c.equals("z")){
+                box+=easy;
+                easy++;
             }
+            if(box<0)box=0;
             if(box>=15) break;
         }
         return box;
     }
 
     public int wrongpercent(){
-        String review=this.review;
+        String review=this.review.replace("z","");
         int wrong=0;
         int count=review.length();
         if(count==0)return 0;

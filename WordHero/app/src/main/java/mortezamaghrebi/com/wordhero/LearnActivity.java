@@ -81,6 +81,20 @@ public class LearnActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
+        ImageView backgroundImage = findViewById(R.id.backgroundImage);
+        int[] images = {
+                R.drawable.theme1,
+                R.drawable.theme2,
+                R.drawable.theme3,
+                R.drawable.theme4,
+                R.drawable.theme5,
+                R.drawable.theme6,
+                R.drawable.theme7,
+                R.drawable.theme8
+        };
+        int randomIndex = new Random().nextInt(images.length);
+        backgroundImage.setImageResource(images[randomIndex]);
+
         Handler timerHandler = new Handler(Looper.getMainLooper());
         Runnable timerRunnable = new Runnable() {
             @Override
@@ -387,14 +401,14 @@ public class LearnActivity extends AppCompatActivity {
             Point size = new Point();
             display.getSize(size);
             width = size.x*88/100;
-            lytactionbuttons.getLayoutParams().height = 134 * size.x / 720;
-            lytactionbuttons.requestLayout();
-            lytques.getLayoutParams().height = size.y * 386 / 1184;
-            lytques.requestLayout();
-            lytproga.getLayoutParams().width = width;
-            lytproga.requestLayout();
-            lytprogb.getLayoutParams().width = 0;
-            lytprogb.requestLayout();
+            //lytactionbuttons.getLayoutParams().height = 134 * size.x / 720;
+            //lytactionbuttons.requestLayout();
+            //lytques.getLayoutParams().height = size.y * 386 / 1184;
+            //lytques.requestLayout();
+            //lytproga.getLayoutParams().width = width;
+            //lytproga.requestLayout();
+            //lytprogb.getLayoutParams().width = 0;
+            //lytprogb.requestLayout();
         }catch (Exception e){}
         imgwordimage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -421,7 +435,7 @@ public class LearnActivity extends AppCompatActivity {
     void itsEasyQuestion()
     {
         try {
-            controller.wordItems[questionsIndex[currentQuestionIndex]].review += "t";
+            controller.wordItems[questionsIndex[currentQuestionIndex]].review += "z";
             wordItem wi = controller.wordItems[questionsIndex[currentQuestionIndex]];
             controller.myDB.UpdateWordReview(wi.id, wi.review, wi.lastheart);
         } catch (Exception e) {
@@ -559,7 +573,7 @@ public class LearnActivity extends AppCompatActivity {
 
             }else if(item.box()<12)
             {
-                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian + "?");
+                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian + "؟");
                 txtans1.setText(controller.wordItems[alist.get(0)].word);
                 txtans2.setText(controller.wordItems[alist.get(1)].word);
                 txtans3.setText(controller.wordItems[alist.get(2)].word);
@@ -576,7 +590,7 @@ public class LearnActivity extends AppCompatActivity {
 
             }else if(item.box()<14)
             {
-                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian + "?");
+                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian + "؟");
                 txtans1.setText(controller.wordItems[alist.get(0)].definition);
                 txtans2.setText(controller.wordItems[alist.get(1)].definition);
                 txtans3.setText(controller.wordItems[alist.get(2)].definition);
@@ -865,7 +879,7 @@ public class LearnActivity extends AppCompatActivity {
         Bitmap bit =controller.getWordImage(word);
         if(bit!=null && showimage) {
             imgwordimage.setImageBitmap(bit);
-            if(isquestion) imgwordimage.getLayoutParams().height=(int)(imgwordimage.getMeasuredWidth()*0.7);
+            if(isquestion) imgwordimage.getLayoutParams().height=(int)(imgwordimage.getMeasuredWidth()*0.8);
             else imgwordimage.getLayoutParams().height=imgwordimage.getMeasuredWidth();
             imgwordimage.requestLayout();
             if(!imagetapshown) {
@@ -983,7 +997,7 @@ public class LearnActivity extends AppCompatActivity {
             if(bit1!=null && showimage) {
                 //controller.getWordImage(fetch_current_word);
                 imgwordimage.setImageBitmap(controller.getWordImage(fetch_current_word));
-                if(isquestion) imgwordimage.getLayoutParams().height=(int)(imgwordimage.getMeasuredWidth()*0.7);
+                if(isquestion) imgwordimage.getLayoutParams().height=(int)(imgwordimage.getMeasuredWidth()*0.8);
                 else imgwordimage.getLayoutParams().height=imgwordimage.getMeasuredWidth();
                 imgwordimage.requestLayout();
                 //Toast.makeText(LearnActivity.this,"Image changed",Toast.LENGTH_SHORT).show();

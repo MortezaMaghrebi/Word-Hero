@@ -383,6 +383,18 @@ public class DBAdapter extends SQLiteOpenHelper {
 
         return db.update(DATABASE_TABLE_IMAGE, newValues, where, whereArgs) != 0;
     }
+    public Boolean UpdateWordProgress(String word, String review, int lastheart, int started, int finished) {
+        ContentValues newValues = new ContentValues();
+        newValues.put(key_review, review);
+        newValues.put(key_lastheart, lastheart);
+        newValues.put(key_started, started);
+        newValues.put(key_finished, finished);
+
+        String where = key_word + "=?";
+        String[] whereArgs = { word };
+
+        return db.update(DATABASE_TABLE, newValues, where, whereArgs) != 0;
+    }
 
     public Boolean updateWordRowFromSaved(String word, String review, int lastheart, int started, int finished) {
         ContentValues newValues = new ContentValues();

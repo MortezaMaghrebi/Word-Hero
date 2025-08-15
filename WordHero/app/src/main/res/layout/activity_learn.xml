@@ -6,8 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".LearnActivity"
     android:layoutDirection="ltr"
-    android:background="@drawable/learnback"
+    android:background="#000000"
     >
+
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:background="@drawable/theme4"
+        android:layout_gravity="center" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -112,7 +121,7 @@
                 />
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="250dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
@@ -120,7 +129,7 @@
                 android:id="@+id/lytques"
                 android:background="@drawable/curve_ques1">
                 <ImageView
-                    android:layout_width="130dp"
+                    android:layout_width="170dp"
                     android:background="#00ffffff"
                     android:layout_centerHorizontal="true"
                     android:layout_marginLeft="25dp"
@@ -128,7 +137,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_alignParentTop="true"
                     android:id="@+id/imgwordimage"
-                    android:layout_height="130dp" />
+                    android:layout_height="0dp" />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -305,6 +314,7 @@
                             android:orientation="vertical"
                             android:layout_marginBottom="10dp"
                             android:id="@+id/lytprogresslayout"
+                            android:background="@drawable/curve_progressback"
                             android:layout_alignParentBottom="true"
                             >
                             <TextView
@@ -326,7 +336,7 @@
                                 android:layout_toLeftOf="@+id/txtprogress"
                                 android:layout_marginTop="0dp"
                                 android:layout_marginRight="35dp"
-                                android:layout_marginLeft="35dp"
+                                android:layout_marginLeft="0dp"
                                 android:layout_alignParentTop="true"
                                 android:layout_height="20dp"
                                 android:id="@+id/lytwordprogres1"
@@ -378,6 +388,10 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentTop="true"
+                                    android:layout_marginRight="10dp"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginBottom="10dp"
                                     android:layout_above="@+id/lytprogresslayout"
                                     android:orientation="vertical">
                                     <TextView
@@ -409,18 +423,19 @@
                                         android:textSize="20dp"
                                         android:id="@+id/txtdefinitoin"
                                         android:layout_marginTop="10dp"
-                                        android:textColor="#44ff44"
+                                        android:textColor="#b4efb4"
                                         android:gravity="left"
                                         />
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:text="Example"
-                                        android:textSize="20dp"
+                                        android:textSize="17dp"
                                         android:textStyle="italic"
                                         android:id="@+id/txtexample"
                                         android:layout_marginTop="0dp"
-                                        android:textColor="#ffff44"
+                                        android:layout_marginBottom="10dp"
+                                        android:textColor="#efcfe4"
                                         android:gravity="left"
                                         />
                                 </LinearLayout>

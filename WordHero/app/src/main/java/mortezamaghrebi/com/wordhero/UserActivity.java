@@ -163,11 +163,11 @@ public class UserActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        imgpercent.setImageBitmap(createProgressBitmap(controller.getPercent()));
+                        imgpercent.setImageBitmap(createProgressBitmap(controller.getProgressPercent()));
                         txtnumofgames.setText("Number of games played: "+controller.getNumberOfPlayings());
                     }
                 },700);
-                txtpercent.setText(""+((int)controller.getPercent())+"%");
+                txtpercent.setText(""+((int)controller.getProgressPercent())+"%");
                 ListAdapterWordsProgress customAdapter = new ListAdapterWordsProgress(UserActivity.this, controller, slist,width);
                 lstwords.setAdapter(customAdapter);
                 lstwords.post(new Runnable() {

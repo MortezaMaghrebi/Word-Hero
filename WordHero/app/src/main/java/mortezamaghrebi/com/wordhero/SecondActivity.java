@@ -1,13 +1,10 @@
 package mortezamaghrebi.com.wordhero;
 
 import android.app.Activity;
-import android.app.DownloadManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -19,7 +16,6 @@ import android.os.Handler;
 
 import android.os.Bundle;
 import android.os.Looper;
-import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.util.Base64;
 import android.view.GestureDetector;
@@ -62,21 +58,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import okhttp3.OkHttpClient;
 
 
 public class SecondActivity extends AppCompatActivity {
@@ -1069,6 +1058,15 @@ public class SecondActivity extends AppCompatActivity {
             }
         });
 
+        btnExportImages.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                GetStoragePermission(false);
+                mpbutton.seekTo(0);mpbutton.start();
+                controller.backupProgressToDocumentsWithProgress(SecondActivity.this);
+                return false;
+            }
+        });
         btnImportImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1106,6 +1104,47 @@ public class SecondActivity extends AppCompatActivity {
                         controller.restoreImagesFromBackupDocuments(SecondActivity.this);
                     }
                 }
+            }
+        });
+
+        btnImportImages.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mpbutton.seekTo(0);mpbutton.start();
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.setType("text/plain");
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
+                }
+
+                else  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // if android 11+ request MANAGER_EXTERNAL_STORAGE
+                    if (!Environment.isExternalStorageManager()) { // check if we already have permission
+                        Uri uri = Uri.parse(String.format(Locale.ENGLISH, "package:%s", getApplicationContext().getPackageName()));
+                        startActivity(
+                                new Intent(
+                                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                        uri
+                                )
+                        );
+                    }else {
+                        controller.restoreProgressFromBackupDocuments(SecondActivity.this);
+                    }
+                } else {
+                    if (ContextCompat.checkSelfPermission(SecondActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) { // check if we already have permission
+                        ActivityCompat.requestPermissions(SecondActivity.this, new String[]{
+                                android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        }, REQUEST_CODE_READ_STORAGE);
+                    }else
+                    {
+                        controller.restoreProgressFromBackupDocuments(SecondActivity.this);
+                    }
+                }
+                return false;
             }
         });
 
@@ -2240,10 +2279,20 @@ public class SecondActivity extends AppCompatActivity {
                         controller.LoadImagesFromBytes(response);
                     } else {
                         Toast.makeText(SecondActivity.this, "Downloaded file is empty", Toast.LENGTH_LONG).show();
+                        progressDialog.setView(null); // حذف پروگرس‌بار
+                        progressDialog.setCancelable(true);
+                        progressDialog.setTitle("خطا");
+                        progressDialog.setMessage("فایل دانلود شده خالی است");
+
                     }
                 },
                 error -> {
                     Toast.makeText(SecondActivity.this, "Could not download file: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    progressDialog.setView(null);
+                    progressDialog.setCancelable(true);
+                    progressDialog.setTitle("خطا");
+                    progressDialog.setMessage("خطا در دانلود فایل:\n" + error.getMessage());
+
                 }
         );
 

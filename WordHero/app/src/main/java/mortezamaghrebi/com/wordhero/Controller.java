@@ -23,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -31,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
@@ -193,6 +195,57 @@ public class Controller {
             });
         }).start();
     }
+
+    public void backupProgressToDocumentsWithProgress(Context context) {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("Backing Up Progress");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        getAllImages(); // Make sure this is thread-safe
+        progressDialog.setMax(imageItems.length); // Set max progress
+        progressDialog.show();
+
+        new Thread(() -> {
+            boolean success = true;
+            try {
+                File docsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+                if (!docsDir.exists()) docsDir.mkdirs();
+
+                File backupFile = new File(docsDir, "Progress.txt");
+                FileOutputStream outChannel = new FileOutputStream(backupFile);
+                OutputStreamWriter writer = new OutputStreamWriter(outChannel);
+
+                getAllImages(); // Make sure this is thread-safe
+
+                for (int i = 0; i < wordItems.length; i++) {
+                    wordItem w = wordItems[i];
+                    String line= w.word+"#"+w.review+"#"+w.lastheart+"#"+w.started+"#"+w.finished+"\n";
+                    writer.write(line);
+                    int finalI = i;
+                    ((Activity) context).runOnUiThread(() -> progressDialog.setProgress(finalI + 1));
+                }
+
+                writer.close();
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error backing up database", e);
+                success = false;
+                String errMsg = e.getMessage();
+                ((Activity) context).runOnUiThread(() ->
+                        Toast.makeText(context, "Error backing up database: " + errMsg, Toast.LENGTH_LONG).show());
+            }
+
+            boolean finalSuccess = success;
+            ((Activity) context).runOnUiThread(() -> {
+                progressDialog.dismiss();
+                if (finalSuccess) {
+                    Toast.makeText(context, "Backup saved to Documents folder.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }).start();
+    }
+
     public boolean backupImagesToDocuments(Context context) {
         try {
             File docsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
@@ -263,6 +316,25 @@ public class Controller {
                 return false;
             }
             LoadImagesFromFile(backupFile);
+            return true;
+
+        } catch (Exception e) {
+            Toast.makeText(context,"Error restoring images from backup: "+e.getMessage(),Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Error restoring images from backup", e);
+            return false;
+        }
+    }
+
+    public boolean restoreProgressFromBackupDocuments(Context context) {
+        try {
+            int newwords=0,duplicatewords=0;
+            File docsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+            File backupFile = new File(docsDir, "Progress.txt");
+            if (!backupFile.exists()) {
+                Log.e(TAG, "Backup file does not exist");
+                return false;
+            }
+            LoadProgressFromFile(backupFile);
             return true;
 
         } catch (Exception e) {
@@ -374,6 +446,54 @@ public class Controller {
         }).start();
     }
 
+    public void LoadProgressFromFile(File backupFile) {
+        if (backupFile == null || !backupFile.exists()) {
+            Log.e("LoadProgressFromFile", "File is null or does not exist");
+            return;
+        }
+
+        StringBuilder textBuilder = new StringBuilder();
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(backupFile), StandardCharsets.UTF_8))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                textBuilder.append(line).append("\n");
+            }
+
+        } catch (IOException e) {
+            Log.e("LoadProgressFromFile", "Error reading file: " + e.getMessage(), e);
+            return;
+        }
+
+        String fileContent = textBuilder.toString();
+        String[] lines= fileContent.split("\n");
+        int numsuccess=0;
+        for(int i=0;i<lines.length;i++)
+        {
+            String[] items=lines[i].split("#");
+            //String line= w.word+"#"+w.review+"#"+w.lastheart+"#"+w.started+"#"+w.finished+"\n";
+
+            if(items.length==5)
+            {
+                String word=items[0];
+                String review=items[1];
+                String lastheart=items[2];
+                String started=items[3];
+                String finished=items[4];
+                myDB.UpdateWordProgress(word,review,Integer.parseInt(lastheart),Integer.parseInt(started),Integer.parseInt(finished));
+                numsuccess++;
+            }
+        }
+        new AlertDialog.Builder(context)
+                .setTitle("نتیجه آپدیت")
+                .setMessage(numsuccess + " از " + lines.length + " مورد با موفقیت آپدیت شد")
+                .setPositiveButton("باشه", null)
+                .show();
+
+        Log.d("LoadProgressFromFile", "File content:\n" + fileContent);
+    }
     public void LoadImagesFromBytes(byte[] backupData) {
         AlertDialog progressDialog;
         TextView progressText;
@@ -540,6 +660,16 @@ public class Controller {
         }
         return (correct*100/(correct+wrong));
     }
+    public int getProgressPercent()
+    {
+        double boxes=0;
+        for(int k=0;k<wordItems.length;k++)
+        {
+            boxes+=wordItems[k].box();
+
+        }
+        return (int)((boxes*100.0/(wordItems.length*15.0)));
+    }
     public void getWordItems(Cursor cursor) {
         wordItems = new wordItem[cursor.getCount()];
         int k = 0;
@@ -630,7 +760,7 @@ public class Controller {
     /////
     int getTimeLearn()
     {
-        return prefs.getInt("timelearn",30);
+        return prefs.getInt("timelearn",40);
     }
     void setTimeLearn(int time)
     {
@@ -639,7 +769,7 @@ public class Controller {
     }
     int getTimeTest()
     {
-        return prefs.getInt("timetest",45);
+        return prefs.getInt("timetest",55);
     }
     void setTimeTest(int time)
     {

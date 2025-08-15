@@ -38,9 +38,9 @@ import java.util.Random;
 
 public class TestActivity extends AppCompatActivity {
 
-    RelativeLayout lytques,lytans1,lytans2,lytans3,lytans4,lytproga,lytprogb,btnhelp1,btnhelp2,btnhelp3,btnnext,btneasy,lytactionbuttons;
+    RelativeLayout lytques,lytans1,lytans2,lytans3,lytans4,lytproga,lytprogb,btnhelp1,btnhelp2,btnhelp3,btnnext,btneasy,lytactionbuttons,p1,p2,p3;
     LinearLayout lytwait,lytchoices,lytcontent,lythelps;
-    TextView txtnum,txtques,txtweek,txtans1,txtans2,txtans3,txtans4,txtscore,txtanswer,txtdefinition,txtexample,txtnext;
+    TextView txtnum,txtques,txtweek,txtans1,txtans2,txtans3,txtans4,txtscore,txtanswer,txtdefinition,txtexample,txtnext,txtprogress;
     Controller controller;
     ImageView imgpron;
     int[] questionsIndex;
@@ -282,6 +282,10 @@ public class TestActivity extends AppCompatActivity {
         txtdefinition= (TextView)findViewById(R.id.txtdefinitoin);
         txtexample= (TextView)findViewById(R.id.txtexample);
         txtnext= (TextView)findViewById(R.id.txtnext);
+        txtprogress = (TextView) findViewById(R.id.txtprogress);
+        p1 = (RelativeLayout) findViewById(R.id.lytwordprogres1);
+        p2 = (RelativeLayout) findViewById(R.id.lytwordprogres2);
+        p3 = (RelativeLayout) findViewById(R.id.lytwordprogres3);
         imgpron = (ImageView)findViewById(R.id.imgpron);
         imgpron.setVisibility(View.INVISIBLE);
         lytans1.setTag("0");
@@ -357,14 +361,14 @@ public class TestActivity extends AppCompatActivity {
             Point size = new Point();
             display.getSize(size);
             width = size.x*88/100;
-            lytactionbuttons.getLayoutParams().height = 134 * size.x / 720;
-            lytactionbuttons.requestLayout();
-            lytques.getLayoutParams().height = size.y * 386 / 1184;
-            lytques.requestLayout();
-            lytproga.getLayoutParams().width = width;
-            lytproga.requestLayout();
-            lytprogb.getLayoutParams().width = 0;
-            lytprogb.requestLayout();
+            //lytactionbuttons.getLayoutParams().height = 134 * size.x / 720;
+            //lytactionbuttons.requestLayout();
+            //lytques.getLayoutParams().height = size.y * 386 / 1184;
+            //lytques.requestLayout();
+            //lytproga.getLayoutParams().width = width;
+            //lytproga.requestLayout();
+            //lytprogb.getLayoutParams().width = 0;
+            //lytprogb.requestLayout();
         }catch (Exception e){}
 
     }
@@ -372,7 +376,7 @@ public class TestActivity extends AppCompatActivity {
     void itsEasyQuestion()
     {
         try {
-            controller.wordItems[questionsIndex[currentQuestionIndex]].review += "t";
+            controller.wordItems[questionsIndex[currentQuestionIndex]].review += "z";
             wordItem wi = controller.wordItems[questionsIndex[currentQuestionIndex]];
             controller.myDB.UpdateWordReview(wi.id, wi.review, wi.lastheart);
         } catch (Exception e) {
@@ -585,6 +589,7 @@ public class TestActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                TextView shown = (TextView) findViewById(R.id.txtshown);
                 helpheight= lythelps.getMeasuredHeight();
                 lythelps.setVisibility(View.INVISIBLE);
                 lythelps.getLayoutParams().height=0;
@@ -601,6 +606,15 @@ public class TestActivity extends AppCompatActivity {
                 txtdefinition.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].definition);
                 txtexample.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].examplefa);
                 if(currentQuestionIndex==NumberOfQuestions-1)txtnext.setText("نتیجه");
+                txtprogress.setText("پیشرفت لغت: "+(controller.wordItems[questionsIndex[currentQuestionIndex]].box()*100/15)+"%");
+                shown.setText(""+controller.wordItems[questionsIndex[currentQuestionIndex]].review.length()+" times shown");
+                int maxwidth=p1.getMeasuredWidth();
+                int greenwitdh=maxwidth*controller.wordItems[questionsIndex[currentQuestionIndex]].box()/15;
+                int redwidth =greenwitdh*controller.wordItems[questionsIndex[currentQuestionIndex]].wrongpercent()/1000;
+                p2.getLayoutParams().width =greenwitdh;
+                p3.getLayoutParams().width =redwidth;
+                p1.requestLayout();p2.requestLayout();p3.requestLayout();
+
             }
         }, delay);
     }
