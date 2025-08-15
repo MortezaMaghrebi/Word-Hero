@@ -403,8 +403,6 @@ public class LearnActivity extends AppCompatActivity {
                 fetch_current_word=controller.wordItems[questionsIndex[currentQuestionIndex]].word;
                 fetchPexelsImageAndShowDialog(fetch_current_word,fetch_current_page,false);
                 fetch_current_page++;
-                wordItem item=controller.wordItems[questionsIndex[currentQuestionIndex]];
-                txtanswer.setTextSize(15);
 
             }
         });
@@ -534,7 +532,7 @@ public class LearnActivity extends AppCompatActivity {
                 int r= rnd.nextInt(4);
                 if(!alist.contains(list.get(r)))alist.add(list.get(r));
             }
-            imgwordimage.getLayoutParams().width=0;
+            imgwordimage.getLayoutParams().height=0;
             imgwordimage.requestLayout();
             showimage=false;
             currentAnswerIndex = alist.indexOf(questionsIndex[currentQuestionIndex]);
@@ -867,8 +865,8 @@ public class LearnActivity extends AppCompatActivity {
         Bitmap bit =controller.getWordImage(word);
         if(bit!=null && showimage) {
             imgwordimage.setImageBitmap(bit);
-            if(isquestion) imgwordimage.getLayoutParams().width=(int)(imgwordimage.getMeasuredHeight()*0.7);
-            else imgwordimage.getLayoutParams().width=imgwordimage.getMeasuredHeight();
+            if(isquestion) imgwordimage.getLayoutParams().height=(int)(imgwordimage.getMeasuredWidth()*0.7);
+            else imgwordimage.getLayoutParams().height=imgwordimage.getMeasuredWidth();
             imgwordimage.requestLayout();
             if(!imagetapshown) {
                 imagetapshown=true;
@@ -985,8 +983,8 @@ public class LearnActivity extends AppCompatActivity {
             if(bit1!=null && showimage) {
                 //controller.getWordImage(fetch_current_word);
                 imgwordimage.setImageBitmap(controller.getWordImage(fetch_current_word));
-                if(isquestion) imgwordimage.getLayoutParams().width=(int)(imgwordimage.getMeasuredHeight()*0.7);
-                else imgwordimage.getLayoutParams().width=imgwordimage.getMeasuredHeight();
+                if(isquestion) imgwordimage.getLayoutParams().height=(int)(imgwordimage.getMeasuredWidth()*0.7);
+                else imgwordimage.getLayoutParams().height=imgwordimage.getMeasuredWidth();
                 imgwordimage.requestLayout();
                 //Toast.makeText(LearnActivity.this,"Image changed",Toast.LENGTH_SHORT).show();
 

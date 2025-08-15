@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".LearnActivity"
     android:layoutDirection="ltr"
-    android:background="@drawable/quesback1"
+    android:background="@drawable/learnback"
     >
 
     <LinearLayout
@@ -112,7 +112,7 @@
                 />
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="193dp"
+                android:layout_height="220dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
@@ -120,17 +120,15 @@
                 android:id="@+id/lytques"
                 android:background="@drawable/curve_ques1">
                 <ImageView
-                    android:layout_width="0dp"
+                    android:layout_width="130dp"
                     android:background="#00ffffff"
-                    android:layout_centerVertical="false"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginLeft="25dp"
                     android:layout_marginRight="0dp"
                     android:layout_marginTop="10dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginBottom="5dp"
+                    android:layout_alignParentTop="true"
                     android:id="@+id/imgwordimage"
-                    android:layout_above="@+id/lytweek"
-                    android:layout_height="match_parent" />
+                    android:layout_height="130dp" />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -139,18 +137,18 @@
                     android:layout_centerVertical="false"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="30dp"
-                    android:layout_marginTop="25dp"
-                    android:layout_toRightOf="@+id/imgwordimage"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@+id/imgwordimage"
                     android:layout_marginBottom="35dp"
                     android:textColor="#000000"
                     android:gravity="center"
-                    android:textSize="24sp"
+                    android:textSize="30sp"
                     app:autoSizeTextType="uniform"
                     app:autoSizeMinTextSize="12sp"
                     app:autoSizeMaxTextSize="21sp"
                     app:autoSizeStepGranularity="2sp"
                     android:autoSizeTextType="uniform"
-                    android:autoSizeMaxTextSize="21sp"
+                    android:autoSizeMaxTextSize="30sp"
                     android:autoSizeMinTextSize="12sp"
                     android:autoSizeStepGranularity="2sp"
                     android:text=""
@@ -229,7 +227,7 @@
                             android:layout_marginTop="5dp"
                             android:id="@+id/lytactionbuttons"
                             android:layout_height="67dp"
-                            android:layout_alignParentBottom="true"
+                            android:layout_above="@id/lytprogresslayout"
                             android:layout_marginBottom="8dp">
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -307,7 +305,7 @@
                             android:orientation="vertical"
                             android:layout_marginBottom="10dp"
                             android:id="@+id/lytprogresslayout"
-                            android:layout_above="@+id/lytactionbuttons"
+                            android:layout_alignParentBottom="true"
                             >
                             <TextView
                                 android:layout_width="wrap_content"
@@ -369,7 +367,9 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_above="@id/lytprogresslayout"
+                            android:layout_above="@id/lytactionbuttons"
+                            android:layout_marginBottom="5dp"
+                            android:background="@drawable/curve_chat"
                             >
                             <ScrollView
                                 android:layout_width="match_parent"
@@ -398,7 +398,7 @@
                                         android:text="پاسخ"
                                         android:textSize="28dp"
                                         android:id="@+id/txtanswer"
-                                        android:layout_marginTop="30dp"
+                                        android:layout_marginTop="10dp"
                                         android:textColor="#efffff"
                                         android:gravity="center"
                                         />

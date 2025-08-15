@@ -2259,6 +2259,7 @@ public class SecondActivity extends AppCompatActivity {
 
         builder.setMessage(message);
         builder.setCancelable(false);
+        controller.UpdateWordList();
         if(urlimages.length()>0) {
             builder.setPositiveButton("دانلود تصاویر", new DialogInterface.OnClickListener() {
                 @Override

@@ -90,6 +90,13 @@ public class Controller {
         progressDialog2.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
     }
+
+    public void UpdateWordList()
+    {
+        Cursor cursor = myDB.getAllWords();
+        getWordItems(cursor);
+        cursor.close();
+    }
     private static final String TAG = "DatabaseBackup";
     public boolean backupDatabaseToDocuments(Context context) {
         try {
