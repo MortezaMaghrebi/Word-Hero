@@ -43,13 +43,27 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="20dp"
-            android:textSize="15dp"
+            android:textSize="18dp"
             android:textColor="#E86a8c"
             android:layout_below="@+id/tWordHero"
+            android:fontFamily="cursive"
+            android:id="@+id/tAddvertizeMe"
             android:text="✔ Learn easy\n✔ Remember fast\n✔ Minimize forgetfulness"
             />
 
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:textSize="13dp"
+        android:textColor="#98e3a5"
+        android:layout_below="@+id/tAddvertizeMe"
+        android:fontFamily="cursive"
+        android:text="Vesion 3.3.2"
+        />
 
 <RelativeLayout
     android:layout_width="match_parent"

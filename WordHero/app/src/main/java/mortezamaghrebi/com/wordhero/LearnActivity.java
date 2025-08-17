@@ -389,7 +389,7 @@ public class LearnActivity extends AppCompatActivity {
                     btneasy.setBackgroundResource(R.drawable.easybutton);
                     itsVeryEasyFinishIt();
                     goNextQuestion();
-                    Toast.makeText(btneasy.getContext(), "Finish it!", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(btneasy.getContext(), "Finish it!", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -475,7 +475,7 @@ public class LearnActivity extends AppCompatActivity {
     {
         try {
             int box=controller.wordItems[questionsIndex[currentQuestionIndex]].box();
-            while(box<14) {
+            while(box<13) {
                 controller.wordItems[questionsIndex[currentQuestionIndex]].review += "t";
                 box++;
             }
