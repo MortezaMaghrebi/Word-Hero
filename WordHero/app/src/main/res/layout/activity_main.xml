@@ -62,7 +62,7 @@
         android:textColor="#98e3a5"
         android:layout_below="@+id/tAddvertizeMe"
         android:fontFamily="cursive"
-        android:text="Vesion 3.3.2"
+        android:text="Vesion 3.3.2.2"
         />
 
 <RelativeLayout

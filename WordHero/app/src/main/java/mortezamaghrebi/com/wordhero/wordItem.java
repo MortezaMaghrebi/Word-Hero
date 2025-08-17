@@ -83,6 +83,8 @@ public class wordItem {
             }else if(c.equals("z")){
                 box+=easy;
                 easy++;
+            }else if(c.equals("k")){
+                box=14;
             }
             if(box<0)box=0;
             if(box>=15) break;

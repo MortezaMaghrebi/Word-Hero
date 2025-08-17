@@ -474,12 +474,8 @@ public class LearnActivity extends AppCompatActivity {
     void itsVeryEasyFinishIt()
     {
         try {
-            int box=controller.wordItems[questionsIndex[currentQuestionIndex]].box();
-            while(box<13) {
-                controller.wordItems[questionsIndex[currentQuestionIndex]].review += "t";
-                box++;
-            }
-            controller.wordItems[questionsIndex[currentQuestionIndex]].review += "z";
+
+            controller.wordItems[questionsIndex[currentQuestionIndex]].review += "k";
             wordItem wi = controller.wordItems[questionsIndex[currentQuestionIndex]];
             controller.myDB.UpdateWordReview(wi.id, wi.review, wi.lastheart);
         } catch (Exception e) {
