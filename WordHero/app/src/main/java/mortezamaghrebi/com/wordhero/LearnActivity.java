@@ -1,5 +1,6 @@
 package mortezamaghrebi.com.wordhero;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.speech.tts.TextToSpeech;
 
 import android.os.Bundle;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -278,6 +280,7 @@ public class LearnActivity extends AppCompatActivity {
     }
 
     int[] pronsrc = {R.drawable.pron2,R.drawable.pron1};
+    @SuppressLint("ClickableViewAccessibility")
     void initcontrols()
     {
         lytans1 = (RelativeLayout)findViewById(R.id.lytans1);
@@ -368,19 +371,45 @@ public class LearnActivity extends AppCompatActivity {
             }
         });
         btneasy.setOnTouchListener(new View.OnTouchListener() {
+            private boolean isLongPress = false;
+            private GestureDetector gestureDetector = new GestureDetector(btneasy.getContext(), new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    if (!isLongPress) {
+                        btneasy.setBackgroundResource(R.drawable.easybutton);
+                        itsEasyQuestion();
+                        goNextQuestion();
+                    }
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    isLongPress = true;
+                    btneasy.setBackgroundResource(R.drawable.easybutton);
+                    itsVeryEasyFinishIt();
+                    goNextQuestion();
+                    Toast.makeText(btneasy.getContext(), "Finish it!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        isLongPress = false;
                         btneasy.setBackgroundResource(R.drawable.easybuttonb);
+                        gestureDetector.onTouchEvent(motionEvent);
                         return true;
                     case MotionEvent.ACTION_CANCEL:
                         btneasy.setBackgroundResource(R.drawable.easybutton);
+                        isLongPress = false;
                         return true;
                     case MotionEvent.ACTION_UP:
-                        btneasy.setBackgroundResource(R.drawable.easybutton);
-                        itsEasyQuestion();
-                        goNextQuestion();
+                        gestureDetector.onTouchEvent(motionEvent);
+                        if (!isLongPress) {
+                            // اگر لانگ کلیک نبود، خودتان اقدامات لازم را انجام دهید
+                        }
                         return true;
                 }
                 return false;
@@ -435,6 +464,21 @@ public class LearnActivity extends AppCompatActivity {
     void itsEasyQuestion()
     {
         try {
+            controller.wordItems[questionsIndex[currentQuestionIndex]].review += "z";
+            wordItem wi = controller.wordItems[questionsIndex[currentQuestionIndex]];
+            controller.myDB.UpdateWordReview(wi.id, wi.review, wi.lastheart);
+        } catch (Exception e) {
+            Toast.makeText(LearnActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+    void itsVeryEasyFinishIt()
+    {
+        try {
+            int box=controller.wordItems[questionsIndex[currentQuestionIndex]].box();
+            while(box<14) {
+                controller.wordItems[questionsIndex[currentQuestionIndex]].review += "t";
+                box++;
+            }
             controller.wordItems[questionsIndex[currentQuestionIndex]].review += "z";
             wordItem wi = controller.wordItems[questionsIndex[currentQuestionIndex]];
             controller.myDB.UpdateWordReview(wi.id, wi.review, wi.lastheart);
