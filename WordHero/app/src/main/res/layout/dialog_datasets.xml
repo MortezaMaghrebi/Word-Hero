@@ -15,9 +15,9 @@
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:gravity="center"
-        android:text="Message Box"
+        android:text="Choose Your Book"
         android:textColor="#603525"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:textStyle="bold"
         />
     <RelativeLayout

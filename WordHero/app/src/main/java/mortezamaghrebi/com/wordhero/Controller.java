@@ -1699,7 +1699,7 @@ public class Controller {
                                 datasets_List.add(line);
                             }
                         }
-                        DatasetsDialogClass cdd = new DatasetsDialogClass(context);
+                        DatasetsDialogClass cdd = new DatasetsDialogClass(context,Controller.this);
                         cdd.show();
 
                     }

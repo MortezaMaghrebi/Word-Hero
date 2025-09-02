@@ -52,28 +52,52 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
         TextView txtbutton = (TextView) v.findViewById(R.id.txtdatasetbutton);
         String[] parts = getItem(position).split("--");
         RelativeLayout lytbutton= (RelativeLayout) v.findViewById(R.id.lytdatasetbutton);
+        RelativeLayout lytimagesbutton= (RelativeLayout) v.findViewById(R.id.lytgetImages);
         if (parts.length >=2) {
             String group = parts[0].trim().split("/")[0];
-            String name = parts[0].trim().split("/")[1];
+            String name= parts[0].trim();
+            if(parts[0].trim().split("/").length>1)  name = parts[0].trim().split("/")[1];
             String urlwords = parts[1].trim();
             String urlurlimages = parts.length>2? parts[2].trim():"";
             txtgroup.setText(group);
             txtname.setText(name);
-            lytbutton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        GetWordsFromURL(urlwords, urlurlimages);
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
+            if(urlwords.length()>5) {
+                lytbutton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            GetWordsFromURL(urlwords, urlurlimages);
+                        } catch (UnsupportedEncodingException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
-                    Toast.makeText(mContext,txtname.getText() +" selected",Toast.LENGTH_SHORT);
-                }
-            });
+                });
+                lytbutton.setVisibility(View.VISIBLE);
+            }else {
+                lytbutton.setVisibility(View.INVISIBLE);
+            }
+            if(urlurlimages.length()>5) {
+                lytimagesbutton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            GetImagesFromURL(urlurlimages);
+                        } catch (UnsupportedEncodingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+                lytimagesbutton.setVisibility(View.VISIBLE);
+            }else
+            {
+                lytimagesbutton.setVisibility(View.INVISIBLE);
+            }
         }else
         {
             lytbutton.getLayoutParams().height=0;
             lytbutton.requestLayout();
+            lytimagesbutton.getLayoutParams().height=0;
+            lytimagesbutton.requestLayout();
         }
 
         return v;
@@ -88,7 +112,7 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
         ProgressBar progressBar = new ProgressBar(mContext);
         progressBar.setIndeterminate(true);
         AlertDialog progressDialog = new AlertDialog.Builder(mContext)
-                .setTitle("لطفاً منتظر بمانید")
+                .setTitle("در حال دریافت لغات")
                 .setView(progressBar)
                 .setCancelable(true)
                 .create();
@@ -154,7 +178,7 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
         ProgressBar progressBar = new ProgressBar(mContext);
         progressBar.setIndeterminate(true);
         AlertDialog progressDialog = new AlertDialog.Builder(mContext)
-                .setTitle("لطفاً منتظر بمانید")
+                .setTitle("در حال دریافت تصاویر")
                 .setView(progressBar)
                 .setCancelable(true)
                 .create();
@@ -185,7 +209,7 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
                     progressDialog.setView(null);
                     progressDialog.setCancelable(true);
                     progressDialog.setTitle("خطا");
-                    progressDialog.setMessage("خطا در دانلود فایل:\n" + error.getMessage());
+                    progressDialog.setMessage("خطا در دانلود تصاویر، دوباره تلاش کنید\n" + error.getMessage());
 
                 }
         );

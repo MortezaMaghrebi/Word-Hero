@@ -23,11 +23,12 @@ public class DatasetsDialogClass extends Dialog  {
     Context context;
     Controller controller;
 
-    public DatasetsDialogClass(Context c) {
+    public DatasetsDialogClass(Context c,Controller controller) {
         super(c);
         // TODO Auto-generated constructor stub
         this.context = c;
         this.context= c;
+        this.controller=controller;
     }
      RelativeLayout btnok;
     ListView list;
@@ -43,7 +44,6 @@ public class DatasetsDialogClass extends Dialog  {
         btnok = (RelativeLayout)findViewById(R.id.lytok);
         list = (ListView) findViewById(R.id.listdatasets);
         search=(EditText) findViewById(R.id.etSearch);
-        final Controller controller =Controller.getInstance(context);
         controller.datasets_ListAdapter=new ListAdapterDatasets((Activity) context, R.layout.dataset_item,controller.datasets_List);
         list.setAdapter(controller.datasets_ListAdapter);
 
@@ -52,19 +52,22 @@ public class DatasetsDialogClass extends Dialog  {
 
             @Override
             public void afterTextChanged(Editable s) {
-                ArrayList<String> newlist=new ArrayList<String>();
-                for(int i=0;i<controller.datasets_List.size();i++)
-                {
-                    try{
-                        String title = controller.datasets_List.get(i).split("--")[0].split("/")[1];
-                        if(title.toLowerCase().contains(search.getText().toString().toLowerCase()))
-                        {
-                            newlist.add(controller.datasets_List.get(i));
+                if(search.getText().toString().length()==0){
+                    list.setAdapter(controller.datasets_ListAdapter);
+                }else {
+                    ArrayList<String> newlist = new ArrayList<String>();
+                    for (int i = 0; i < controller.datasets_List.size(); i++) {
+                        try {
+                            String title = controller.datasets_List.get(i).split("--")[0];
+                            if (title.toLowerCase().contains(search.getText().toString().toLowerCase())) {
+                                newlist.add(controller.datasets_List.get(i));
+                            }
+                        } catch (Exception e) {
                         }
-                    }catch (Exception e){}
+                    }
+                    ListAdapterDatasets listAdapterDatasets = new ListAdapterDatasets((Activity) context, R.layout.dataset_item, newlist);
+                    list.setAdapter(listAdapterDatasets);
                 }
-                controller.datasets_ListAdapter = new ListAdapterDatasets(DatasetsDialogClass.this.getOwnerActivity(), R.layout.dataset_item,newlist);
-                list.setAdapter(controller.datasets_ListAdapter);
             }
 
             @Override
