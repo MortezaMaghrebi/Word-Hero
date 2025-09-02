@@ -2112,7 +2112,7 @@ public class SecondActivity extends AppCompatActivity {
     public void GetWordDatasets() throws UnsupportedEncodingException {
         controller = new Controller(SecondActivity.this, true);
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
-        String url = "https://raw.githubusercontent.com/MortezaMaghrebi/Datesets-For-Word-Hero-Application/refs/heads/main/Datasets.txt";
+        String url = "https://raw.githubusercontent.com/MortezaMaghrebi/User_Datasets_For_WordHero_Application/refs/heads/main/Datasets.txt";
 
         // Variable to store the file content
         final String[] fileContent = {""}; // Using array to allow modification in inner class
