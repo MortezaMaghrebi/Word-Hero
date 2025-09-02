@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,7 +58,7 @@ public class Controller {
     Context context;
     SharedPreferences.Editor editor;
     SharedPreferences prefs;
-    DBAdapter myDB;
+    static DBAdapter myDB;
     int[] targets = {4,8,10,12,14,16,18,20,22,24,25,26,27,28,29,30,31,32,33,34,35}; //if number of correct answers arrive targets*20 level increases; each level releases 20 words;
     int[] heartOfBox={1,1,4,8,14,24,38,56,80,110,146,189,240,299,360};
     String encode = "پ,A~ر,B~ ,C~خ,D~و,E~،,F~س,G~ی,H~ن,I~ا,J~ذ,K~ب,L~ه,M~ک,N~د,O~ف,P~م,Q~ش,R~ج,S~ت,T~غ,U~ق,V~ز,W~آ,X~ل,Y~ژ,Z~گ,s~ض,b~ح,t~ط,d~چ,r~ث,f~ع,g~ص,h~ظ,i~ئ,j~-,k~p,l~e,m~n,n~a,o~c,p~ء,q";
@@ -72,7 +74,13 @@ public class Controller {
     ProgressDialog progressDialog;
     ProgressDialog progressDialog2;
     public int Version=3;
-
+    public static  Controller instance;
+    public static synchronized Controller getInstance(Context context) {
+        if (instance == null) {
+            instance = new Controller(context,true);
+        }
+        return instance;
+    }
     public Controller(Context context,Boolean getwords) {
         this.context = context;
         editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
@@ -1661,6 +1669,51 @@ public class Controller {
             persian=persian.replace(c2[j], c1[j]);
         }
         return persian;
+    }
+
+    public ArrayList<String> datasets_List;
+    public ListAdapterDatasets datasets_ListAdapter;
+    public void getAndShowDatasets() throws UnsupportedEncodingException {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = "https://raw.githubusercontent.com/MortezaMaghrebi/User_Datasets_For_WordHero_Application/refs/heads/main/Datasets.txt";
+
+        // Variable to store the file content
+        final String[] fileContent = {""}; // Using array to allow modification in inner class
+
+        StringRequest getRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Store the response (file content) in the variable
+                        int add=0,update=0,error=0;
+                        datasets_List= new ArrayList<String>();
+                        String[] lines = response.split("\n");
+                        for (String line : lines) {
+                            if (line.trim().isEmpty()) continue;
+
+                            String[] parts = line.split("--");
+                            if (parts.length >=2) {
+                                String title = parts[0].trim();
+                                String urlSmall = parts[1].trim();
+                                String urlLarge = parts.length>2? parts[2].trim():"";
+                                datasets_List.add(line);
+                            }
+                        }
+                        DatasetsDialogClass cdd = new DatasetsDialogClass(context);
+                        cdd.show();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Handle error
+                        Toast.makeText(context, "Could not download file: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+        queue.getCache().clear();
+        queue.add(getRequest);
     }
 
 }

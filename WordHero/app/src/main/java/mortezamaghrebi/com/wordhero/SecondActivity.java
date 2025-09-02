@@ -440,12 +440,11 @@ public class SecondActivity extends AppCompatActivity {
                         mpbutton.seekTo(0);
                         mpbutton.start();
                         imgsynced.setBackgroundResource(R.drawable.synced);
+                        GetStoragePermission(false);
                         try {
-                            GetStoragePermission(false);
-                            GetWordDatasets();
-                            //Save();
+                            controller.getAndShowDatasets();
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            throw new RuntimeException(e);
                         }
                         return false;
                 }
@@ -817,7 +816,7 @@ public class SecondActivity extends AppCompatActivity {
                         new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         REQUEST_CODE_STORAGE);
             } else {
-                openDocumentsFolderWithSAF();
+                //openDocumentsFolderWithSAF();
             }
         }
     }
@@ -946,10 +945,11 @@ public class SecondActivity extends AppCompatActivity {
                             if(controller.wordItems.length<30)
                             {
                                 try {
-                                    GetWordDatasets();
+                                    controller.getAndShowDatasets();
                                 } catch (UnsupportedEncodingException e) {
                                     throw new RuntimeException(e);
                                 }
+
                             }else {
                                 RewardsDialogClass cdd = new RewardsDialogClass(SecondActivity.this, LearnActivity.class, true);
                                 cdd.show();
