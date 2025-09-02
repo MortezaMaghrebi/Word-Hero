@@ -65,11 +65,29 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
                 lytbutton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        try {
-                            GetWordsFromURL(urlwords, urlurlimages);
-                        } catch (UnsupportedEncodingException e) {
-                            throw new RuntimeException(e);
-                        }
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which){
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        try {
+                                            GetWordsFromURL(urlwords, urlurlimages);
+                                        } catch (UnsupportedEncodingException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                        break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //No button clicked
+                                        break;
+                                }
+                            }
+                        };
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setMessage("آیا مطمئنید که میخواهید لغات را دانلود کنید؟").setPositiveButton("بله", dialogClickListener)
+                                .setNegativeButton("خیر", dialogClickListener).show();
+
                     }
                 });
                 lytbutton.setVisibility(View.VISIBLE);
@@ -80,11 +98,29 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
                 lytimagesbutton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        try {
-                            GetImagesFromURL(urlurlimages);
-                        } catch (UnsupportedEncodingException e) {
-                            throw new RuntimeException(e);
-                        }
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which){
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        try {
+
+                                        GetImagesFromURL(urlurlimages);
+                                        } catch (UnsupportedEncodingException e) {
+                                            throw new RuntimeException(e);
+                                        }break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //No button clicked
+                                        break;
+                                }
+                            }
+                        };
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setMessage("آیا مطمئنید که میخواهید تصاویر دانلود کنید؟").setPositiveButton("بله", dialogClickListener)
+                                .setNegativeButton("خیر", dialogClickListener).show();
+
                     }
                 });
                 lytimagesbutton.setVisibility(View.VISIBLE);

@@ -431,15 +431,15 @@ public class SecondActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        imgsynced.setBackgroundResource(R.drawable.synced2);
+                        imgsynced.setBackgroundResource(R.drawable.books2);
                         return true;
                     case MotionEvent.ACTION_CANCEL:
-                        imgsynced.setBackgroundResource(R.drawable.synced);
+                        imgsynced.setBackgroundResource(R.drawable.books);
                         return true;
                     case MotionEvent.ACTION_UP:
                         mpbutton.seekTo(0);
                         mpbutton.start();
-                        imgsynced.setBackgroundResource(R.drawable.synced);
+                        imgsynced.setBackgroundResource(R.drawable.books);
                         GetStoragePermission(false);
                         try {
                             controller.getAndShowDatasets();
