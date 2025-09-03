@@ -11,8 +11,8 @@ android {
         applicationId "mortezamaghrebi.com.wordhero"
         minSdk 24
         targetSdk 33
-        versionCode 21
-        versionName "3.4.1"
+        versionCode 22
+        versionName "3.4.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
