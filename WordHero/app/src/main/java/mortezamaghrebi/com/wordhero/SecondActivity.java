@@ -796,7 +796,7 @@ public class SecondActivity extends AppCompatActivity {
                 }
             } else {
                 // اگر دسترسی داریم، SAF برای پوشه Documents
-                openDocumentsFolderWithSAF();
+                //openDocumentsFolderWithSAF();
             }
 
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -942,9 +942,15 @@ public class SecondActivity extends AppCompatActivity {
                             NotEnoughDialogClass cdd = new NotEnoughDialogClass(SecondActivity.this);
                             cdd.show();
                         } else {
+                            if(controller.wordItems.length<30) {
+                                controller = new Controller(SecondActivity.this, true);
+                            }
                             if(controller.wordItems.length<30)
                             {
+                                controller=new Controller(SecondActivity.this,true);
+
                                 try {
+                                    GetStoragePermission(false);
                                     controller.getAndShowDatasets();
                                 } catch (UnsupportedEncodingException e) {
                                     throw new RuntimeException(e);

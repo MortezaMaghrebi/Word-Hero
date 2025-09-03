@@ -1673,6 +1673,18 @@ public class Controller {
 
     public ArrayList<String> datasets_List;
     public ListAdapterDatasets datasets_ListAdapter;
+    public void moveLastThreeToFront() {
+        if (datasets_List == null || datasets_List.size() < 3) {
+            return;
+        }
+        int size = datasets_List.size();
+        String item1 = datasets_List.get(size - 2);
+        String item2 = datasets_List.get(size - 1);
+        datasets_List.remove(size - 1);
+        datasets_List.remove(size - 2);
+        datasets_List.add(0, item1);
+        datasets_List.add(0, item2);
+    }
     public void getAndShowDatasets() throws UnsupportedEncodingException {
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = "https://raw.githubusercontent.com/MortezaMaghrebi/User_Datasets_For_WordHero_Application/refs/heads/main/Datasets.txt";
@@ -1699,6 +1711,7 @@ public class Controller {
                                 datasets_List.add(line);
                             }
                         }
+                        moveLastThreeToFront();
                         DatasetsDialogClass cdd = new DatasetsDialogClass(context,Controller.this);
                         cdd.show();
 
