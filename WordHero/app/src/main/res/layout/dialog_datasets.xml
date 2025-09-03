@@ -62,6 +62,13 @@
             android:layout_height="wrap_content"
             android:hint="Search"
             android:id="@+id/etSearch"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="It may take 10 minutes until you can see your book!"
+            android:textColor="#e7d6e7"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"/>
         <ListView
             android:layout_width="match_parent"
             android:id="@+id/listdatasets"
