@@ -345,17 +345,17 @@ public class DBAdapter extends SQLiteOpenHelper {
         c.close();
     }
     public boolean hasWordImage(String word) {
-        String where = key_word + " = ?";
+        String where = key_word + " = ? COLLATE NOCASE";
         Cursor c = db.query(
                 DATABASE_TABLE_IMAGE,
-                new String[] { key_word },
+                new String[]{ key_word },
                 where,
-                new String[] { word },
+                new String[]{ word },
                 null, null, null
         );
 
         boolean exists = (c != null && c.getCount() > 0);
-        if (c != null) c.close(); // یادت نره Cursor رو ببندی
+        if (c != null) c.close();
         return exists;
     }
     public Boolean updateWordRowFromBackup(String word, int day, String persian, String definition, String pronounce, String sound, String example, String examplefa)

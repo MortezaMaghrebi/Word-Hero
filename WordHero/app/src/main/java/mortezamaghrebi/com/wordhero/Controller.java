@@ -765,6 +765,16 @@ public class Controller {
         editor.putInt("swipeshown",Math.min(prefs.getInt("swipeshown",0)+1,100));
         editor.commit();
     }
+
+    int getLastImagePexel()
+    {
+        return prefs.getInt("lastimagepexel",0);
+    }
+    void setLastImagePexel(int lastImageId)
+    {
+        editor.putInt("lastimagepexel",lastImageId);
+        editor.commit();
+    }
     /////
     int getTimeLearn()
     {
@@ -1016,7 +1026,7 @@ public class Controller {
     /////
     Bitmap getWordImage(String word)
     {
-        Cursor cursor=myDB.getWordImage(word);
+        Cursor cursor=myDB.getWordImage(word.toLowerCase());
         String imstr="";
         if(cursor.getCount()>0){ if (cursor.moveToFirst()) imstr = cursor.getString(DBAdapter.COL_image);}
         else  return null;
@@ -1029,10 +1039,10 @@ public class Controller {
     }
     Bitmap setWordImageFromBase64(String word,String image)
     {
-        if(!myDB.hasWordImage(word)){
-            myDB.insertWordImage(word,image);
+        if(!myDB.hasWordImage(word.toLowerCase())){
+            myDB.insertWordImage(word.toLowerCase(),image);
         }
-        else myDB.updateWordImage(word,image);
+        else myDB.updateWordImage(word.toLowerCase(),image);
         return StringToWordImage(image);
     }
 

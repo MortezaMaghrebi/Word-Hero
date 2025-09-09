@@ -1187,8 +1187,10 @@ public class SecondActivity extends AppCompatActivity {
                     if (lastwordid < controller.wordItems.length - 1) lastwordid++;
                     else break;
                 }
+
                 errortimefetch=0;
-                fetchPexelsImageAndShowDialog(controller.wordItems[0].word,1);
+                lastwordid=controller.getLastImagePexel();
+                fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word,1);
             }
         });
 
@@ -1993,7 +1995,7 @@ public class SecondActivity extends AppCompatActivity {
         public void run() {
             fetch_countdown_timer--;
             if(fetch_countdown_timer==0) {
-                fetch_countdown_timer=600;
+                fetch_countdown_timer=100;
                 fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 1);
             }else if(fetch_countdown_timer>0)
             {
@@ -2002,13 +2004,19 @@ public class SecondActivity extends AppCompatActivity {
             }
         }
     };
+    static int currentApiIndex=0;
+
     public void fetchPexelsImageAndShowDialog(String keyword, int page) {
         if(fetch_Handler==null)
         {
             fetch_Handler=new Handler(Looper.getMainLooper());
         }
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
-        String apiKey = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
+        String apiKey1 = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
+        String apiKey2 ="nRExrAWfteFuXtvwD7P0blE7HxygA0tsI2bRn6Kxg0yWYvSAKAwvudHQ";
+        String apiKey3 ="iqLcgOAb43h1Edxu6gvvCAxCZixJFAAsORnspil9ljQ1XRofadKbAGF7";
+        String[] apikeys={apiKey1,apiKey2,apiKey3};
+        String apiKey=apikeys[currentApiIndex];
         String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=1&page=" + page;
         UserActivity.lastRequestedWord = keyword;
 
@@ -2073,11 +2081,13 @@ public class SecondActivity extends AppCompatActivity {
                         if(!globalCancel) {
                             if (lastwordid < controller.wordItems.length - 1) {
                                 lastwordid++;
-                                if(errortimefetch<3) {
+                                if(errortimefetch<4) {
+                                    currentApiIndex++;
+                                    if(currentApiIndex>=apikeys.length)currentApiIndex=0;
                                     fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 1);
                                 }else
                                 {
-                                    fetch_countdown_timer=600;
+                                    fetch_countdown_timer=100;
                                     fetch_Handler.postDelayed(fetch_Runnable,1000);
                                 }
                             }
@@ -2104,6 +2114,7 @@ public class SecondActivity extends AppCompatActivity {
             //Toast.makeText(SecondActivity.this, "Confirmed for "+word, Toast.LENGTH_SHORT).show();
         } else
             Toast.makeText(SecondActivity.this, "Image size too small", Toast.LENGTH_LONG).show();
+        controller.setLastImagePexel(lastwordid);
         lastwordid++;
         if(globalCancel) return;
         while (controller.hasWordImage(controller.wordItems[lastwordid].word)) {
