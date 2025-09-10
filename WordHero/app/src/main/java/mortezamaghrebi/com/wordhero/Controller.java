@@ -204,6 +204,68 @@ public class Controller {
         }).start();
     }
 
+    public void backupImagesFilesToDocumentsWithProgress(Context context) {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("Backing Up");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        getAllImages(); // Make sure this is thread-safe
+        progressDialog.setMax(imageItems.length);
+        progressDialog.show();
+
+        new Thread(() -> {
+            boolean success = true;
+            try {
+                // مسیر پوشه Documents
+                File docsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+                if (!docsDir.exists()) docsDir.mkdirs();
+
+                // ساخت پوشه مخصوص بکاپ عکس‌ها
+                File backupDir = new File(docsDir, "VocabImages");
+                if (!backupDir.exists()) backupDir.mkdirs();
+
+                getAllImages(); // Make sure this is thread-safe
+
+                for (int i = 0; i < imageItems.length; i++) {
+                    Bitmap bit = base64ToBitmap(imageItems[i].base64image);
+
+                    // اگر تصویر بزرگ بود تغییر اندازه بده
+                    if (bit.getWidth() > 220 || bit.getHeight() > 220) {
+                        bit = resizeImageToFitDatabase(bit);
+                    }
+
+                    // اسم فایل با توجه به word (غیرمجازها حذف بشه)
+                    String safeName = imageItems[i].word.toLowerCase();
+                    File imageFile = new File(backupDir, safeName + ".jpg");
+
+                    FileOutputStream fos = new FileOutputStream(imageFile);
+                    bit.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                    fos.flush();
+                    fos.close();
+
+                    int finalI = i;
+                    ((Activity) context).runOnUiThread(() -> progressDialog.setProgress(finalI + 1));
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error backing up images", e);
+                success = false;
+                String errMsg = e.getMessage();
+                ((Activity) context).runOnUiThread(() ->
+                        Toast.makeText(context, "Error backing up images: " + errMsg, Toast.LENGTH_LONG).show());
+            }
+
+            boolean finalSuccess = success;
+            ((Activity) context).runOnUiThread(() -> {
+                progressDialog.dismiss();
+                if (finalSuccess) {
+                    Toast.makeText(context, "Backup saved to Documents/VocabImages folder.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }).start();
+    }
+
     public void backupProgressToDocumentsWithProgress(Context context) {
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setTitle("Backing Up Progress");

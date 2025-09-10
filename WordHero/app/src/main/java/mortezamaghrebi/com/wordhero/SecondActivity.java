@@ -1194,6 +1194,14 @@ public class SecondActivity extends AppCompatActivity {
             }
         });
 
+        btnGetImagesNet.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                 controller.backupImagesFilesToDocumentsWithProgress(SecondActivity.this);
+                return false;
+            }
+        });
+
         btnCancelImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2015,7 +2023,9 @@ public class SecondActivity extends AppCompatActivity {
         String apiKey1 = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
         String apiKey2 ="nRExrAWfteFuXtvwD7P0blE7HxygA0tsI2bRn6Kxg0yWYvSAKAwvudHQ";
         String apiKey3 ="iqLcgOAb43h1Edxu6gvvCAxCZixJFAAsORnspil9ljQ1XRofadKbAGF7";
-        String[] apikeys={apiKey1,apiKey2,apiKey3};
+        String apiKey4 ="3ZNfaP1gv8df8iGZ7YcjWzCieuj2UIWy2QuMunStAoimWIvILANLm3RD";
+        String apiKey5 ="XafctQLDSbc0C2WkUdvx37Z0tfosPqGTOfiCiMzR87qKYS1TND3xru3o";
+        String[] apikeys={apiKey1,apiKey2,apiKey3,apiKey4,apiKey5};
         String apiKey=apikeys[currentApiIndex];
         String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=1&page=" + page;
         UserActivity.lastRequestedWord = keyword;
