@@ -2025,7 +2025,8 @@ public class SecondActivity extends AppCompatActivity {
         String apiKey3 ="iqLcgOAb43h1Edxu6gvvCAxCZixJFAAsORnspil9ljQ1XRofadKbAGF7";
         String apiKey4 ="3ZNfaP1gv8df8iGZ7YcjWzCieuj2UIWy2QuMunStAoimWIvILANLm3RD";
         String apiKey5 ="XafctQLDSbc0C2WkUdvx37Z0tfosPqGTOfiCiMzR87qKYS1TND3xru3o";
-        String[] apikeys={apiKey1,apiKey2,apiKey3,apiKey4,apiKey5};
+        String apiKey6 ="HqxRk3E8BJyBdqHbyasrXz5rQeCQFyZ1nmzWh2BDpDZpvh57cD7qbCep";
+        String[] apikeys={apiKey1,apiKey2,apiKey3,apiKey4,apiKey5,apiKey6};
         String apiKey=apikeys[currentApiIndex];
         String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=1&page=" + page;
         UserActivity.lastRequestedWord = keyword;
