@@ -9,12 +9,19 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +29,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -50,6 +58,8 @@ import java.util.Map;
 import java.util.Random;
 
 import static android.content.Context.MODE_PRIVATE;
+
+
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -210,8 +220,6 @@ public class Controller {
         progressDialog.setMessage("Please wait...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(false);
-        getAllImages(); // Make sure this is thread-safe
-        progressDialog.setMax(imageItems.length);
         progressDialog.show();
 
         new Thread(() -> {
@@ -222,31 +230,73 @@ public class Controller {
                 if (!docsDir.exists()) docsDir.mkdirs();
 
                 // ساخت پوشه مخصوص بکاپ عکس‌ها
-                File backupDir = new File(docsDir, "VocabImages");
-                if (!backupDir.exists()) backupDir.mkdirs();
-
-                getAllImages(); // Make sure this is thread-safe
-
-                for (int i = 0; i < imageItems.length; i++) {
-                    Bitmap bit = base64ToBitmap(imageItems[i].base64image);
-
-                    // اگر تصویر بزرگ بود تغییر اندازه بده
-                    if (bit.getWidth() > 220 || bit.getHeight() > 220) {
-                        bit = resizeImageToFitDatabase(bit);
-                    }
-
-                    // اسم فایل با توجه به word (غیرمجازها حذف بشه)
-                    String safeName = imageItems[i].word.toLowerCase();
-                    File imageFile = new File(backupDir, safeName + ".jpg");
-
-                    FileOutputStream fos = new FileOutputStream(imageFile);
-                    bit.compress(Bitmap.CompressFormat.JPEG, 90, fos);
-                    fos.flush();
-                    fos.close();
-
-                    int finalI = i;
-                    ((Activity) context).runOnUiThread(() -> progressDialog.setProgress(finalI + 1));
+                File backupDir = null;
+                boolean foldercreated=false;
+                int f=1;
+                while (!foldercreated) {
+                     backupDir = new File(docsDir, "VocabImages"+f);
+                     if (!backupDir.exists()){
+                         backupDir.mkdirs();
+                         foldercreated=true;
+                         break;
+                     }
+                     else {
+                         f++;
+                     }
                 }
+                Cursor cursor=myDB.getAllImages();
+                progressDialog.setMax(cursor.getCount());
+                int start = getLastImageSaved();
+                int k = start;
+                if (cursor.moveToPosition(k)) {
+                    do {
+                        k++;
+                        if(k<=start) continue;
+                        String word = cursor.getString(DBAdapter.COL_word).replace("|","").replace("*","");
+                        String base64image = cursor.getString(DBAdapter.COL_image);
+                        Bitmap bit = base64ToBitmap(base64image);
+
+                        // اگر تصویر بزرگ بود تغییر اندازه بده
+                        if (bit.getWidth() > 220 || bit.getHeight() > 220) {
+                            bit = resizeImageToFitDatabase(bit);
+                        }
+
+                        // اسم فایل با توجه به word (غیرمجازها حذف بشه)
+                        String safeName = word.toLowerCase();
+                        safeName = safeName.replace(" ", "_");
+                        safeName = safeName.replaceAll("[\\\\/:*?\"<>|]", "");
+                        File imageFile = new File(backupDir, safeName + ".jpg");
+
+                        FileOutputStream fos = new FileOutputStream(imageFile);
+                        bit.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                        fos.flush();
+                        fos.close();
+
+                        int finalI = k;
+                        ((Activity) context).runOnUiThread(() -> progressDialog.setProgress(finalI+1 ));
+                        setLastImageSaved(k);
+                        if(k%3000==1) {
+                            f=1;
+                            while (!foldercreated) {
+                                backupDir = new File(docsDir, "VocabImages"+f);
+                                if (!backupDir.exists()){
+                                    backupDir.mkdirs();
+                                    foldercreated=true;
+                                    break;
+                                }
+                                else {
+                                    f++;
+                                }
+                            }
+                            start=k;
+                        }
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+                final int until=k;
+                ((Activity) context).runOnUiThread(() ->
+                        Toast.makeText(context, "Finished until "+until, Toast.LENGTH_SHORT).show());
+
 
             } catch (Exception e) {
                 Log.e(TAG, "Error backing up images", e);
@@ -835,6 +885,16 @@ public class Controller {
     void setLastImagePexel(int lastImageId)
     {
         editor.putInt("lastimagepexel",lastImageId);
+        editor.commit();
+    }
+
+    int getLastImageSaved()
+    {
+        return prefs.getInt("lastimagesaved",0);
+    }
+    void setLastImageSaved(int lastImageId)
+    {
+        editor.putInt("lastimagesaved",lastImageId);
         editor.commit();
     }
     /////
@@ -1800,5 +1860,103 @@ public class Controller {
         queue.getCache().clear();
         queue.add(getRequest);
     }
+
+    public void getWordImagesFromGithubSequential(Context context) {
+        if (wordItems == null || wordItems.length == 0) {
+            Toast.makeText(context, "⚠️ لیست کلمات خالی است", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+
+        // ساخت دیالوگ سفارشی
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_progress_image_download, null);
+        ProgressBar progressBar = dialogView.findViewById(R.id.progressBar);
+        TextView txtPercent = dialogView.findViewById(R.id.txtPercent);
+        TextView txtTitle = dialogView.findViewById(R.id.txtTitle);
+        TextView txtWord = dialogView.findViewById(R.id.txtWord);
+        ImageView imgImage =dialogView.findViewById(R.id.imgImage);
+        txtTitle.setText("در حال دانلود تصاویر...");
+        AlertDialog progressDialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+        progressDialog.show();
+
+        progressBar.setMax(wordItems.length);
+
+        final int[] completed = {0}; // شمارشگر
+        final int[] success = {0};
+        final int[] failed = {0};
+
+        String uri = "@drawable/myresource";  // where myresource (without the extension) is the file
+
+
+
+        for (wordItem item : wordItems) {
+            String word = item.word.toLowerCase()
+                    .replace(" ", "_")
+                    .replaceAll("[\\\\/:*?\"<>|]", "");
+
+            String url = "https://raw.githubusercontent.com/MortezaMaghrebi/ImageDataset/main/VocabImages/" + word + ".jpg";
+             if (myDB.hasWordImage(item.word)) {
+                completed[0]++;
+                int percent = (completed[0] * 100) / wordItems.length;
+                progressBar.setProgress(completed[0]);
+                txtPercent.setText(percent + "% (" + completed[0] + "/" + wordItems.length + ")");
+                continue;
+            }
+
+            ImageRequest request = new ImageRequest(url,
+                    response -> {
+                        try {
+                            Bitmap resizedBit = resizeImageToFitDatabase(response);
+                            txtWord.setText(item.word);
+                            imgImage.setImageBitmap(null);
+                            imgImage.setImageBitmap(resizedBit);
+                            String base64 = bitmapToBase64(resizedBit);
+                            setWordImageFromBase64(item.word, base64);
+                            success[0]++;
+                        } catch (Exception e) {
+                            Log.e("DB_ERROR", "خطا در ذخیره تصویر " + item.word, e);
+                            failed[0]++;
+                        }
+
+                        completed[0]++;
+                        int percent = (completed[0] * 100) / wordItems.length;
+                        progressBar.setProgress(completed[0]);
+                        txtPercent.setText(percent + "% (" + completed[0] + "/" + wordItems.length + ")");
+
+                        if (completed[0] == wordItems.length) {
+                            progressDialog.dismiss();
+                            Toast.makeText(context,
+                                    "✅ دانلود تکمیل شد: " + success[0] + " موفق، " + failed[0] + " ناموفق",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    },
+                    0, 0, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888,
+                    error -> {
+                        Log.e("Volley", "خطا در دانلود تصویر: " + item.word, error);
+                        txtWord.setText(item.word);
+                        imgImage.setImageBitmap(null);
+                        failed[0]++;
+                        completed[0]++;
+                        int percent = (completed[0] * 100) / wordItems.length;
+                        progressBar.setProgress(completed[0]);
+                        txtPercent.setText(percent + "% (" + completed[0] + "/" + wordItems.length + ")");
+
+                        if (completed[0] == wordItems.length) {
+                            progressDialog.dismiss();
+                            Toast.makeText(context,
+                                    "✅ دانلود تکمیل شد: " + success[0] + " موفق، " + failed[0] + " ناموفق",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+            requestQueue.add(request);
+        }
+    }
+
+
 
 }

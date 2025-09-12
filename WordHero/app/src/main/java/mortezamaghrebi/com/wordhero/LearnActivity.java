@@ -954,11 +954,18 @@ public class LearnActivity extends AppCompatActivity {
             fetchPexelsImageAndShowDialog(word,1,isquestion);
         }
     }
-
+    int currentApiIndex=0;
     public void fetchPexelsImageAndShowDialog(String keyword, int page,boolean isqestion) {
 
         RequestQueue queue = Volley.newRequestQueue(LearnActivity.this);
-        String apiKey = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
+        String apiKey1 = "zYWL9R9DssJTKwjxZYK0zZj3oZPXzPK2w2dmSkyFmZOkkTUKZ85LSXH4";
+        String apiKey2 ="nRExrAWfteFuXtvwD7P0blE7HxygA0tsI2bRn6Kxg0yWYvSAKAwvudHQ";
+        String apiKey3 ="iqLcgOAb43h1Edxu6gvvCAxCZixJFAAsORnspil9ljQ1XRofadKbAGF7";
+        String apiKey4 ="3ZNfaP1gv8df8iGZ7YcjWzCieuj2UIWy2QuMunStAoimWIvILANLm3RD";
+        String apiKey5 ="XafctQLDSbc0C2WkUdvx37Z0tfosPqGTOfiCiMzR87qKYS1TND3xru3o";
+        String apiKey6 ="HqxRk3E8BJyBdqHbyasrXz5rQeCQFyZ1nmzWh2BDpDZpvh57cD7qbCep";
+        String[] apikeys={apiKey1,apiKey2,apiKey3,apiKey4,apiKey5,apiKey6};
+        String apiKey=apikeys[currentApiIndex];
         String url = "https://api.pexels.com/v1/search?query=" + Uri.encode(keyword) + "&per_page=1&page=" + page;
         UserActivity.lastRequestedWord = keyword;
 
@@ -1013,7 +1020,8 @@ public class LearnActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                        // Toast.makeText(LearnActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-
+                        currentApiIndex++;
+                        if(currentApiIndex>=apikeys.length)currentApiIndex=0;
                     }
                 }) {
             @Override

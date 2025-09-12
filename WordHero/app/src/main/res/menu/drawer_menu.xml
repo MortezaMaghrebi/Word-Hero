@@ -1,0 +1,43 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_export_progress"
+        android:title="Save Learning Progress"/>
+
+    <item
+        android:id="@+id/nav_import_progress"
+        android:title="Load Lerning Progress"/>
+
+    <item
+        android:id="@+id/nav_get_images_github"
+        android:title="Get Images from Github"/>
+
+    <item
+        android:id="@+id/nav_get_images_pexels"
+        android:title="Get Images from Pexels"/>
+
+    <item
+        android:id="@+id/nav_export_images_base64"
+        android:title="Export Images as Base64"/>
+
+    <item
+        android:id="@+id/nav_export_images_jpg"
+        android:title="Export Images as Jpg"/>
+
+    <item
+        android:id="@+id/nav_goto_website"
+        android:title="Go To Website"/>
+
+    <item
+        android:id="@+id/nav_update_application"
+        android:title="Update Application"/>
+
+    <item
+        android:id="@+id/nav_comment_on_cafebazaar"
+        android:title="Comment on CafeBazaar"/>
+
+    <item
+        android:id="@+id/nav_comment_on_myket"
+        android:title="Comment on Myket"/>
+
+</menu>

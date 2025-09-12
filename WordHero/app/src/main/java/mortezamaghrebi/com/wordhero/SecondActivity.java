@@ -1,6 +1,7 @@
 package mortezamaghrebi.com.wordhero;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Base64;
 import android.view.GestureDetector;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -43,6 +45,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -53,6 +56,7 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,6 +96,8 @@ public class SecondActivity extends AppCompatActivity {
     Boolean inited = false;
     MediaPlayer mPlayer;
     MediaPlayer mpbutton;// = MediaPlayer.create(this, R.raw.select2);
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
 
     ImageView imgavatar;
     //String urp = "http://kingsofleitner.ir/words1100/webservice.php?command=avatar,";
@@ -878,6 +884,9 @@ public class SecondActivity extends AppCompatActivity {
         final RelativeLayout btnmatch = (RelativeLayout) findViewById(R.id.btnmatch);
         controller = new Controller(SecondActivity.this, true);
         txtexir1 = (TextView) findViewById(R.id.txtexir1);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
+
         if (!inited) initControls();
         btnusersetting.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -892,9 +901,9 @@ public class SecondActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         mpbutton.seekTo(0);mpbutton.start();
                         btnusersetting.setBackgroundResource(R.drawable.curve_buttoninsideusera);
-                        UserMenuDialogClass cdd = new UserMenuDialogClass(SecondActivity.this);
-                        cdd.show();
-
+                        //UserMenuDialogClass cdd = new UserMenuDialogClass(SecondActivity.this);
+                        //cdd.show();
+                        drawerLayout.openDrawer(navigationView);
                         return true;
                 }
                 return false;
@@ -1008,6 +1017,103 @@ public class SecondActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                mpbutton.seekTo(0);mpbutton.start();
+
+                if (id == R.id.nav_export_progress) {
+                    GetStoragePermission(false);
+                    controller.backupProgressToDocumentsWithProgress(SecondActivity.this);
+                } else if (id == R.id.nav_import_progress) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                        intent.setType("text/plain");
+                        intent.addCategory(Intent.CATEGORY_OPENABLE);
+                        startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
+                    }
+                    else  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // if android 11+ request MANAGER_EXTERNAL_STORAGE
+                        if (!Environment.isExternalStorageManager()) { // check if we already have permission
+                            Uri uri = Uri.parse(String.format(Locale.ENGLISH, "package:%s", getApplicationContext().getPackageName()));
+                            startActivity(
+                                    new Intent(
+                                            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                            uri
+                                    )
+                            );
+                        }else {
+                            controller.restoreProgressFromBackupDocuments(SecondActivity.this);
+                        }
+                    } else {
+                        if (ContextCompat.checkSelfPermission(SecondActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                                != PackageManager.PERMISSION_GRANTED) { // check if we already have permission
+                            ActivityCompat.requestPermissions(SecondActivity.this, new String[]{
+                                    android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            }, REQUEST_CODE_READ_STORAGE);
+                        }else
+                        {
+                            controller.restoreProgressFromBackupDocuments(SecondActivity.this);
+                        }
+                    }
+                } else if (id == R.id.nav_get_images_github) {
+                    controller.UpdateWordList();
+                    controller.getWordImagesFromGithubSequential(SecondActivity.this);
+                } else if (id == R.id.nav_get_images_pexels) {
+                    lastwordid=0;
+                    while (controller.hasWordImage(controller.wordItems[lastwordid].word)) {
+                        if (lastwordid < controller.wordItems.length - 1) lastwordid++;
+                        else break;
+                    }
+
+                    errortimefetch=0;
+                    lastwordid=controller.getLastImagePexel();
+                    fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word,1);
+                } else if (id == R.id.nav_export_images_base64) {
+                    GetStoragePermission(false);
+                    controller.backupImagesToDocumentsWithProgress(SecondActivity.this);
+                } else if (id == R.id.nav_export_images_jpg) {
+                    controller.setLastImageSaved(0);
+                    controller.backupImagesFilesToDocumentsWithProgress(SecondActivity.this);
+                } else if (id == R.id.nav_goto_website) {
+                    String url = "https://wordhero.ir";  // آدرس سایتت
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+                    intent.setPackage("com.android.chrome");
+
+                    try {
+                        startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        // اگه کروم نصب نبود، با مرورگر پیش‌فرض باز کن
+                        intent.setPackage(null);
+                        startActivity(intent);
+                    }
+                } else if (id == R.id.nav_update_application) {
+                    String url = "https://github.com/MortezaMaghrebi/Word-Hero/raw/refs/heads/main/WordHero/app/release/app-release.apk";  // آدرس سایتت
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+                    intent.setPackage("com.android.chrome");
+
+                    try {
+                        startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        intent.setPackage(null);
+                        startActivity(intent);
+                    } // آپدیت برنامه
+                } else if (id == R.id.nav_comment_on_cafebazaar) {
+                    // باز کردن صفحه کافه‌بازار برای نظر دادن
+                } else if (id == R.id.nav_comment_on_myket) {
+                    // باز کردن صفحه مایکت برای نظر دادن
+                }
+                drawerLayout.closeDrawers();
+                return true;
+            }
+        });
+
         setPlayer();
         testDictionary();
         setMessagesUI();
@@ -1055,24 +1161,7 @@ public class SecondActivity extends AppCompatActivity {
         Button btnDeleteImages = (Button) findViewById(R.id.btndeleteallimages);
         Button btnGetImagesNet = (Button) findViewById(R.id.btngetimages);
         Button btnCancelImages = (Button) findViewById(R.id.btnCancelgetimages);
-        btnExportImages.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GetStoragePermission(false);
-                mpbutton.seekTo(0);mpbutton.start();
-                controller.backupImagesToDocumentsWithProgress(SecondActivity.this);
-            }
-        });
 
-        btnExportImages.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                GetStoragePermission(false);
-                mpbutton.seekTo(0);mpbutton.start();
-                controller.backupProgressToDocumentsWithProgress(SecondActivity.this);
-                return false;
-            }
-        });
         btnImportImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1182,23 +1271,16 @@ public class SecondActivity extends AppCompatActivity {
         btnGetImagesNet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lastwordid=0;
-                while (controller.hasWordImage(controller.wordItems[lastwordid].word)) {
-                    if (lastwordid < controller.wordItems.length - 1) lastwordid++;
-                    else break;
-                }
 
-                errortimefetch=0;
-                lastwordid=controller.getLastImagePexel();
-                fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word,1);
             }
         });
 
         btnGetImagesNet.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                 controller.backupImagesFilesToDocumentsWithProgress(SecondActivity.this);
-                return false;
+                controller.setLastImageSaved(0);
+                Toast.makeText(SecondActivity.this,"Set to zero",Toast.LENGTH_SHORT).show();
+                return true;
             }
         });
 
@@ -1206,6 +1288,12 @@ public class SecondActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 globalCancel=true;
+            }
+        });
+        btnCancelImages.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                return true;
             }
         });
     }
@@ -2070,7 +2158,7 @@ public class SecondActivity extends AppCompatActivity {
 
                                 queue.add(imageRequest);
                             } else {
-                                Toast.makeText(SecondActivity.this, "No images found", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(SecondActivity.this, "No images found", Toast.LENGTH_SHORT).show();
                                 if(!globalCancel) {
                                     if (lastwordid < controller.wordItems.length - 1) {
                                         lastwordid++;
@@ -2079,15 +2167,15 @@ public class SecondActivity extends AppCompatActivity {
                                 }
                             }
                         } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(SecondActivity.this, "JSON parsing error", Toast.LENGTH_SHORT).show();
+                            //e.printStackTrace();
+                            //Toast.makeText(SecondActivity.this, "JSON parsing error", Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(SecondActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SecondActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                         errortimefetch++;
                         if(!globalCancel) {
                             if (lastwordid < controller.wordItems.length - 1) {
@@ -2112,7 +2200,7 @@ public class SecondActivity extends AppCompatActivity {
                 return headers;
             }
         };
-
+        queue.getCache().clear();
         queue.add(jsonObjectRequest);
     }
     int errortimefetch=0;

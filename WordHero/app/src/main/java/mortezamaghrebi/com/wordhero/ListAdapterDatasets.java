@@ -1,14 +1,21 @@
 package mortezamaghrebi.com.wordhero;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,11 +27,14 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ListAdapterDatasets extends ArrayAdapter<String> {
 
@@ -143,71 +153,92 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-
-    public void GetWordsFromURL(String url,String urlimages) throws UnsupportedEncodingException {
-        ProgressBar progressBar = new ProgressBar(mContext);
-        progressBar.setIndeterminate(true);
-        AlertDialog progressDialog = new AlertDialog.Builder(mContext)
-                .setTitle("در حال دریافت لغات")
-                .setView(progressBar)
-                .setCancelable(true)
-                .create();
-
-        progressDialog.show();
+    int add = 0, update = 0, error = 0;
+    public void GetWordsFromURL(String url, String urlimages) throws UnsupportedEncodingException {
         controller = new Controller(mContext, true);
         RequestQueue queue = Volley.newRequestQueue(mContext);
         queue.getCache().clear();
-        // Variable to store the file content
-        final String[] fileContent = {""}; // Using array to allow modification in inner class
-
+        add = 0; update = 0; error = 0;
         StringRequest getRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        progressDialog.dismiss();
-                        // Store the response (file content) in the variable
-                        int add=0,update=0,error=0;
-                        fileContent[0] = response;
-                        String[] rows = fileContent[0].split("\n");
-                        int index=0;
-                        for (String row:rows) {
-                            String[] items = row.split("#");
-                            if(items.length==7) {
-                                String word = items[0];
-                                int day = ((index / 5) + 1);
-                                String persian = items[1];
-                                String definition = items[3];
-                                String pronounce = items[5];
-                                String sound = "";
-                                String example = items[2];
-                                String examplefa = items[6];
-                                if (!controller.myDB.hasWord(word)) {
-                                    controller.myDB.insertWord(word, day, persian, definition, pronounce, sound, example, examplefa);
-                                    add++;
-                                } else {
-                                    controller.myDB.updateWordRowFromBackup(word, day, persian, definition, pronounce, sound, example, examplefa);
-                                    update++;
-                                }
-                            }else error++;
-                            index++;
-                        }
-                        showSummaryDialog(add,update,error,urlimages);
+                        // وقتی فایل دانلود شد، پردازش شروع میشه
 
+                        // ساخت دیالوگ سفارشی
+                        View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_progress, null);
+                        ProgressBar progressBar = dialogView.findViewById(R.id.progressBar);
+                        TextView txtPercent = dialogView.findViewById(R.id.txtPercent);
+                        TextView txtTitle = dialogView.findViewById(R.id.txtTitle);
+                        txtTitle.setText("در حال پردازش لغات...");
 
+                        AlertDialog progressDialog = new AlertDialog.Builder(mContext)
+                                .setView(dialogView)
+                                .setCancelable(false)
+                                .create();
+                        progressDialog.show();
+
+                        // حالا پردازش در بک‌گراند
+                        ExecutorService executor = Executors.newSingleThreadExecutor();
+                        Handler handler = new Handler(Looper.getMainLooper());
+
+                        executor.execute(() -> {
+
+                            String[] rows = response.split("\n");
+                            progressBar.setMax(rows.length);
+
+                            int index = 0;
+                            for (String row : rows) {
+                                String[] items = row.split("#");
+                                if (items.length == 7) {
+                                    String word = items[0];
+                                    int day = ((index / 5) + 1);
+                                    String persian = items[1];
+                                    String definition = items[3];
+                                    String pronounce = items[5];
+                                    String sound = "";
+                                    String example = items[2];
+                                    String examplefa = items[6];
+
+                                    if (!controller.myDB.hasWord(word)) {
+                                        controller.myDB.insertWord(word, day, persian, definition, pronounce, sound, example, examplefa);
+                                        add++;
+                                    } else {
+                                        controller.myDB.updateWordRowFromBackup(word, day, persian, definition, pronounce, sound, example, examplefa);
+                                        update++;
+                                    }
+                                } else error++;
+                                index++;
+
+                                int finalIndex = index;
+                                int finalAdd = add;
+                                int finalUpdate = update;
+                                int finalError = error;
+
+                                // آپدیت UI
+                                handler.post(() -> {
+                                    progressBar.setProgress(finalIndex);
+                                    int percent = (finalIndex * 100) / rows.length;
+                                    txtPercent.setText(percent + "% (" + finalIndex + "/" + rows.length + ")");
+                                });
+                            }
+
+                            // بعد از اتمام حلقه
+                            handler.post(() -> {
+                                progressDialog.dismiss();
+                                showSummaryDialog(add, update, error, urlimages);
+                            });
+                        });
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // Handle error
-                        Toast.makeText(mContext, "Could not download file: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, "خطا در دانلود فایل: " + error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
         );
         queue.add(getRequest);
-
-        // If you need to return fileContent[0], you might want to handle it asynchronously
-        // For now, it's stored in fileContent[0] and can be accessed after the response
     }
 
     public void GetImagesFromURL(String url) throws UnsupportedEncodingException {
@@ -254,7 +285,7 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
     }
     private void showSummaryDialog(int addCount, int updatedCount, int errorCount,String urlimages) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("لغت ها به درستی دریافت شدند. "+((urlimages.length()>0)?"دوست دارید تصاویر هم دانلود شوند؟":""));
+        builder.setTitle("لغت ها به درستی دریافت شدند. "+"دوست دارید تصاویر هم دانلود شوند؟");
 
         String message = "Summary:\n   Added: " + addCount +
                 "\n   Updated: " + updatedCount +
@@ -262,22 +293,22 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
 
         builder.setMessage(message);
         builder.setCancelable(false);
-        controller.UpdateWordList();
-        if(urlimages.length()>0) {
+        //if(urlimages.length()>0) {
             builder.setPositiveButton("دانلود تصاویر", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                     try {
-                        GetImagesFromURL(urlimages);
-
-                    } catch (UnsupportedEncodingException e) {
+                        //GetImagesFromURL(urlimages);
+                        controller.UpdateWordList();
+                        controller.getWordImagesFromGithubSequential(mContext);
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
 
                 }
             });
-        }
+        //}
 
         builder.setNeutralButton("تمام", new DialogInterface.OnClickListener() {
             @Override
@@ -289,4 +320,6 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
         });
         builder.show();
     }
+
+
 }
