@@ -818,8 +818,10 @@ public class Controller {
         String search=word.toLowerCase();
         for(int i=0;i<wordItems.length;i++)
         {
-            if(wordItems[i].word.toLowerCase().contains(search)) {
-                response +=wordItems[i].word+ ": Week: " + (1+(wordItems[i].day-1) / 4) + ", Day: " + (1+(wordItems[i].day-1) % 4) + "\r\n";
+            if(wordItems[i].word.toLowerCase().contains(search)&&wordItems[i].word.length()>2) {
+                response +=
+                        wordItems[i].word.substring(0,1).toUpperCase()+ wordItems[i].word.substring(1).toLowerCase()+ ":"+ "\r\nPronounciation: "+wordItems[i].pronounce+ "\r\nDefinition: "+wordItems[i].definition+"\r\nExample: "+wordItems[i].example
+                        + "\r\nمعنی: "+wordItems[i].persian+"\r\n"+"مثال: "+wordItems[i].examplefa+"\r\n-------------------------------\r\n";
             }
 
         }

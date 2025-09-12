@@ -2,12 +2,11 @@
 <androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_alignParentTop="true"
@@ -1197,6 +1196,15 @@
                                                 android:textColor="#aaffff"
                                                 android:textSize="17dp"
                                                 android:textStyle="bold" />
+
+                                            <Button
+                                                android:id="@+id/btnsearch"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="30dp"
+                                                android:layout_marginRight="30dp"
+                                                android:background="@drawable/button2a"
+                                                android:text="Search in book" />
                                         </RelativeLayout>
 
                                         <RelativeLayout
@@ -1633,16 +1641,27 @@
                             android:hint="Type word ..."
                             android:textColor="#000000"
                             android:textColorHint="#454500" />
-
                         <Button
-                            android:id="@+id/btnsearch"
+                            android:id="@+id/btnsearchword"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="30dp"
                             android:layout_marginRight="30dp"
+                            android:layout_marginTop="25dp"
                             android:background="@drawable/button2a"
-                            android:text="Search in book" />
+                            android:text="Search in Words" />
                     </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnAddYourOwnBook"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginRight="30dp"
+                        android:layout_marginTop="25dp"
+                        android:background="@drawable/button1a"
+                        android:text="ADD YOUR OWN BOOK" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -1655,47 +1674,7 @@
 
                         />
 
-                    <Button
-                        android:id="@+id/btnexportimages"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="30dp"
-                        android:layout_marginRight="30dp"
-                        android:layout_marginTop="25dp"
-                        android:visibility="invisible"
-                        android:background="@drawable/button2a"
-                        android:text="Export Image Database" />
 
-                    <Button
-                        android:id="@+id/btnimportimages"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="30dp"
-                        android:layout_marginRight="30dp"
-                        android:layout_marginTop="15dp"
-                        android:visibility="invisible"
-                        android:background="@drawable/button2a"
-                        android:text="Import Image Database" />
-                    <Button
-                        android:id="@+id/btngetimages"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="30dp"
-                        android:layout_marginRight="30dp"
-                        android:layout_marginTop="15dp"
-                        android:visibility="invisible"
-                        android:background="@drawable/button2a"
-                        android:text="Get images from net" />
-                    <Button
-                        android:id="@+id/btnCancelgetimages"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="30dp"
-                        android:layout_marginRight="30dp"
-                        android:layout_marginTop="15dp"
-                        android:background="@drawable/button2a"
-                        android:visibility="invisible"
-                        android:text="Cancel Get Images" />
 
 
 

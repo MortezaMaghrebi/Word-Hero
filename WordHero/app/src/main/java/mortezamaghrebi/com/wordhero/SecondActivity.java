@@ -990,8 +990,24 @@ public class SecondActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         mpbutton.seekTo(0);mpbutton.start();
                         btnexam.setBackgroundResource(R.drawable.button1a);
-                        RewardsDialogClass cdd = new RewardsDialogClass(SecondActivity.this, TestActivity.class, false);
-                        cdd.show();
+                        if(controller.wordItems.length<30) {
+                            controller = new Controller(SecondActivity.this, true);
+                        }
+                        if(controller.wordItems.length<30)
+                        {
+                            controller=new Controller(SecondActivity.this,true);
+
+                            try {
+                                GetStoragePermission(false);
+                                controller.getAndShowDatasets();
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                        }else {
+                            RewardsDialogClass cdd = new RewardsDialogClass(SecondActivity.this, TestActivity.class, false);
+                            cdd.show();
+                        }
                         return false;
                 }
                 return true;
@@ -1010,8 +1026,24 @@ public class SecondActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         mpbutton.seekTo(0);mpbutton.start();
                         btnmatch.setBackgroundResource(R.drawable.button1a);
-                        Intent intent = new Intent(SecondActivity.this, MatchingActivity.class);
-                        startActivity(intent);
+                        if(controller.wordItems.length<30) {
+                            controller = new Controller(SecondActivity.this, true);
+                        }
+                        if(controller.wordItems.length<30)
+                        {
+                            controller=new Controller(SecondActivity.this,true);
+
+                            try {
+                                GetStoragePermission(false);
+                                controller.getAndShowDatasets();
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                        }else {
+                            Intent intent = new Intent(SecondActivity.this, MatchingActivity.class);
+                            startActivity(intent);
+                        }
                         return false;
                 }
                 return true;
@@ -1105,8 +1137,10 @@ public class SecondActivity extends AppCompatActivity {
                         startActivity(intent);
                     } // آپدیت برنامه
                 } else if (id == R.id.nav_comment_on_cafebazaar) {
+                    openCafeBazaarForComment();
                     // باز کردن صفحه کافه‌بازار برای نظر دادن
                 } else if (id == R.id.nav_comment_on_myket) {
+                    openMyketForComment();
                     // باز کردن صفحه مایکت برای نظر دادن
                 }
                 drawerLayout.closeDrawers();
@@ -1141,107 +1175,42 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     private void testDictionary() {
-        Button btnsearch = (Button) findViewById(R.id.btnsearch);
+        Button btnsearch = (Button) findViewById(R.id.btnsearchword);
         final EditText txtword = (EditText) findViewById(R.id.txtword);
         btnsearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mpbutton.seekTo(0);mpbutton.start();
                 String word = txtword.getText().toString();
+                if(word.length()>0){
                 try {
                     controller.Dictionary(word);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
-                }
+                }}
             }
         });
 
-        Button btnExportImages = (Button) findViewById(R.id.btnexportimages);
-        Button btnImportImages = (Button) findViewById(R.id.btnimportimages);
+        Button btnAddYourOwnBook = (Button) findViewById(R.id.btnAddYourOwnBook);
         Button btnDeleteImages = (Button) findViewById(R.id.btndeleteallimages);
-        Button btnGetImagesNet = (Button) findViewById(R.id.btngetimages);
-        Button btnCancelImages = (Button) findViewById(R.id.btnCancelgetimages);
 
-        btnImportImages.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mpbutton.seekTo(0);mpbutton.start();
-
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.setType("text/plain");
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
-                }
-
-               else  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // if android 11+ request MANAGER_EXTERNAL_STORAGE
-                    if (!Environment.isExternalStorageManager()) { // check if we already have permission
-                        Uri uri = Uri.parse(String.format(Locale.ENGLISH, "package:%s", getApplicationContext().getPackageName()));
-                        startActivity(
-                                new Intent(
-                                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                                        uri
-                                )
-                        );
-                    }else {
-                        controller.restoreImagesFromBackupDocuments(SecondActivity.this);
-                    }
-                } else {
-                    if (ContextCompat.checkSelfPermission(SecondActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED) { // check if we already have permission
-                        ActivityCompat.requestPermissions(SecondActivity.this, new String[]{
-                                android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        }, REQUEST_CODE_READ_STORAGE);
-                    }else
-                    {
-                        controller.restoreImagesFromBackupDocuments(SecondActivity.this);
-                    }
-                }
-            }
-        });
-
-        btnImportImages.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                mpbutton.seekTo(0);mpbutton.start();
+       btnAddYourOwnBook.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               mpbutton.seekTo(0);mpbutton.start();
+               String url = "https://wordhero.ir";  // آدرس سایتت
+               Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+               intent.setPackage("com.android.chrome");
+               try {
+                   startActivity(intent);
+               } catch (ActivityNotFoundException e) {
+                   intent.setPackage(null);
+                   startActivity(intent);
+               }
+           }
+       });
 
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.setType("text/plain");
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
-                }
-
-                else  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // if android 11+ request MANAGER_EXTERNAL_STORAGE
-                    if (!Environment.isExternalStorageManager()) { // check if we already have permission
-                        Uri uri = Uri.parse(String.format(Locale.ENGLISH, "package:%s", getApplicationContext().getPackageName()));
-                        startActivity(
-                                new Intent(
-                                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                                        uri
-                                )
-                        );
-                    }else {
-                        controller.restoreProgressFromBackupDocuments(SecondActivity.this);
-                    }
-                } else {
-                    if (ContextCompat.checkSelfPermission(SecondActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED) { // check if we already have permission
-                        ActivityCompat.requestPermissions(SecondActivity.this, new String[]{
-                                android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        }, REQUEST_CODE_READ_STORAGE);
-                    }else
-                    {
-                        controller.restoreProgressFromBackupDocuments(SecondActivity.this);
-                    }
-                }
-                return false;
-            }
-        });
 
         btnDeleteImages.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1268,34 +1237,11 @@ public class SecondActivity extends AppCompatActivity {
             }
         });
 
-        btnGetImagesNet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
 
-        btnGetImagesNet.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                controller.setLastImageSaved(0);
-                Toast.makeText(SecondActivity.this,"Set to zero",Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
 
-        btnCancelImages.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                globalCancel=true;
-            }
-        });
-        btnCancelImages.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                return true;
-            }
-        });
+
+
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -1430,7 +1376,36 @@ public class SecondActivity extends AppCompatActivity {
         inputMethodManager.hideSoftInputFromWindow(
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
-
+    private void openMyketForComment() {
+        final String packageName = getPackageName(); // اسم پکیج همین اپ
+        try {
+            // باز کردن صفحه‌ی اپ در مایکت
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("myket://comment?id=" + packageName));
+            intent.setPackage("ir.mservices.market");
+            startActivity(intent);
+        } catch (Exception e) {
+            // اگر مایکت نصب نبود، لینک وبی مایکت باز بشه
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://myket.ir/app/" + packageName));
+            startActivity(intent);
+        }
+    }
+    private void openCafeBazaarForComment() {
+        final String packageName = getPackageName(); // اسم پکیج همین اپ
+        try {
+            // باز کردن صفحه‌ی اپ در بازار (بخش کامنت و امتیاز)
+            Intent intent = new Intent(Intent.ACTION_EDIT);
+            intent.setData(Uri.parse("bazaar://details?id=" + packageName));
+            intent.setPackage("com.farsitel.bazaar");
+            startActivity(intent);
+        } catch (Exception e) {
+            // اگر بازار نصب نبود، لینک وبی بازار باز بشه
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://cafebazaar.ir/app/" + packageName));
+            startActivity(intent);
+        }
+    }
     void GetChats() throws UnsupportedEncodingException {
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
         StringRequest postRequest = new StringRequest(Request.Method.POST, uri,
@@ -2189,6 +2164,9 @@ public class SecondActivity extends AppCompatActivity {
                                     fetch_countdown_timer=100;
                                     fetch_Handler.postDelayed(fetch_Runnable,1000);
                                 }
+
+                            }else {
+                                controller.setLastImagePexel(0);
                             }
                         }
                     }
@@ -2214,11 +2192,18 @@ public class SecondActivity extends AppCompatActivity {
         } else
             Toast.makeText(SecondActivity.this, "Image size too small", Toast.LENGTH_LONG).show();
         controller.setLastImagePexel(lastwordid);
+
         lastwordid++;
+        if(lastwordid==controller.wordItems.length)
+        {
+            controller.setLastImagePexel(0);
+        }
         if(globalCancel) return;
         while (controller.hasWordImage(controller.wordItems[lastwordid].word)) {
             if (lastwordid < controller.wordItems.length - 1) lastwordid++;
-            else break;
+            else {
+                break;
+            }
         }
         fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 0);
         txtGetimagesprogress.setText(""+lastwordid+"/"+controller.wordItems.length+"\n"+word);
