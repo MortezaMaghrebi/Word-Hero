@@ -96,8 +96,8 @@ public class Controller {
         editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
         prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
 
-        openDB(context);
         if(getwords) {
+            openDB(context);
             Cursor cursor = myDB.getAllWords();
             getWordItems(cursor);
             cursor.close();
@@ -808,6 +808,8 @@ public class Controller {
                 wordItems[k].finished = cursor.getInt(DBAdapter.COL_finished);
                 wordItems[k].lastheart = cursor.getInt(DBAdapter.COL_lastheart);
                 wordItems[k].pronounce = cursor.getString(DBAdapter.COL_pronounce);
+                wordItems[k].synonyms = cursor.getString(DBAdapter.COL_synonyms);
+                wordItems[k].cefrLevel = cursor.getString(DBAdapter.COL_cefr_level);
                 k++;
             } while (cursor.moveToNext());
         }
@@ -897,6 +899,16 @@ public class Controller {
     void setLastImageSaved(int lastImageId)
     {
         editor.putInt("lastimagesaved",lastImageId);
+        editor.commit();
+    }
+
+    int getDatabaseVersion()
+    {
+        return prefs.getInt("databaseversion",0);
+    }
+    void setDatabaseVersion(int databaseVersion)
+    {
+        editor.putInt("databaseversion",databaseVersion);
         editor.commit();
     }
     /////

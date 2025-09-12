@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout btnstart;
     int width;
     final String uri = "http://kingsofleitner.ir/words1100/webservice.php";
-    NoInternetDialogClass cdd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,102 +46,18 @@ public class MainActivity extends AppCompatActivity {
         btnstart = (RelativeLayout)findViewById(R.id.btnstart);
         lytproga=(RelativeLayout)findViewById(R.id.lytproga);
         lytprogb=(RelativeLayout)findViewById(R.id.lytprogb);
-        Controller controller=new Controller(MainActivity.this,true);
-       if(controller.gethearts()<10)controller.addheart(10);
-        if(controller.getExir()<10) controller.increaseExir(10);
-        if(controller.getPassword().equals(""))
-        {
-            nouser=true;
-            controller.setUser("Word Hero");
-            controller.setPassword("1234");
-            controller.setAvatar("");
+        Controller controller=new Controller(MainActivity.this,false);
 
+
+        try {
+            create(true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        else nouser=false;
-        cdd=new NoInternetDialogClass(MainActivity.this,controller);
-        if(!nouser)
-        {
-           Display display = getWindowManager().getDefaultDisplay();
-           Point size = new Point();
-           display.getSize(size);
-           width = size.x*8/10;
-           lytproga.getLayoutParams().width = width;
-           lytproga.requestLayout();
-           lytprogb.getLayoutParams().width = 0;
-           lytprogb.requestLayout();
-           progress=0;
-           lytproga.setVisibility(View.VISIBLE);
-           btnstart.setVisibility(View.INVISIBLE);
-       }
-       //Intent secondact = new Intent(MainActivity.this, SecondActivity.class);
-       //MainActivity.this.startActivity(secondact);
-      try {
-           CheckInternet(true);
-      } catch (UnsupportedEncodingException e) {
-           e.printStackTrace();
-      }
+
        
     }
-    public void  CheckInternet(final Boolean offline)  throws UnsupportedEncodingException
-    {
-        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, uri,
-                new Response.Listener<String>()
-                {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            // response
-                            String resp = response.substring(response.indexOf("{") + 1, response.indexOf("}"));
-                            if(resp.contains("connected")) create(offline);
-                            else {
-                                if(offline) create(offline);
-                                else notconnected();
-                            }
-                        }catch (Exception e){
-                            if(offline) {
-                                try {
-                                    create(offline);
-                                } catch (IOException ex) {
-                                    throw new RuntimeException(ex);
-                                }
-                            }
-                            else notconnected();
-                        }
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // error
-                        if(offline) {
-                            try {
-                                create(offline);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        else notconnected();
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("command", "checkinternet");
-                return params;
-            }
-        };
-        queue.add(postRequest);
 
-    }
-
-    private void notconnected()
-    {
-        cdd.show();
-    }
     private void create(Boolean offline) throws IOException {
         workoffline=offline;
          btnstart.setOnTouchListener(new View.OnTouchListener() {
@@ -173,31 +89,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Controller con= new Controller(MainActivity.this,true);
-
-            //con.backupDatabaseToDocuments(MainActivity.this);
-
-
-        //if(con.getDBVersion()==0)
-        {
-          // try {
-          //     // فراخوانی DBAdapter برای کپی دیتابیس در اولین اجرا
-
-          //     //con.checkVersionAndUpdate();
-          // } catch (UnsupportedEncodingException e) {
-          //     Toast.makeText(MainActivity.this,"Could not connect to internet\nWe need to get words online",Toast.LENGTH_LONG).show();
-          // } catch (IOException e) {
-          //     throw new RuntimeException(e);
-          // }
-        }
+        Controller con= new Controller(MainActivity.this,false);
+        if(con.gethearts()<10)con.addheart(10);
+        if(con.getExir()<10) con.increaseExir(10);
         if(con.getPassword().equals(""))
         {
-            nouser=true;
-        }
-        else nouser=false;
-
-        if(!nouser)
+            con.setUser("Word Hero");
+            con.setPassword("1234");
+            con.setAvatar("");
+        }else
         {
+           int databaseVersion= con.getDatabaseVersion();
+           if(databaseVersion==0)
+           {
+              DatabaseUpdater.recreateDatabase(MainActivity.this);
+           }
+        }
+        con.setDatabaseVersion(3);
+
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
@@ -211,10 +120,7 @@ public class MainActivity extends AppCompatActivity {
             btnstart.setVisibility(View.INVISIBLE);
             mHandler = new Handler();
             mHandler.postDelayed(mUpdate,100);
-        }
-        else {
-            btnstart.setVisibility(View.VISIBLE);
-        }
+
     }
 
     public boolean ismessagesloaded=false;

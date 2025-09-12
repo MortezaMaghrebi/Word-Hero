@@ -811,7 +811,7 @@ public class LearnActivity extends AppCompatActivity {
                     txtanswer.setText(item.word+"\n"+item.persian);
                 }
                 txtanswer.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian);
-                txtdefinition.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].definition);
+                txtdefinition.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].definition +"\nLevel: "+controller.wordItems[questionsIndex[currentQuestionIndex]].cefrLevel);
                 txtexample.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].example+"\n"+controller.wordItems[questionsIndex[currentQuestionIndex]].examplefa);
                 //txtanswer.setTextSize(25);
                 txtprogress.setText("پیشرفت لغت: "+(controller.wordItems[questionsIndex[currentQuestionIndex]].box()*100/15)+"%");

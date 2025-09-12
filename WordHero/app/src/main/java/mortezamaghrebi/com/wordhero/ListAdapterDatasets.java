@@ -194,17 +194,23 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
                                     String word = items[0];
                                     int day = ((index / 5) + 1);
                                     String persian = items[1];
+                                    String example = items[2];
                                     String definition = items[3];
+                                    String synonyms="";
+                                    String cefr_level=items[4].toUpperCase().trim();
                                     String pronounce = items[5];
                                     String sound = "";
-                                    String example = items[2];
                                     String examplefa = items[6];
+                                    if (!cefr_level.matches("A[12]|B[12]|C[12]")) {
+                                        cefr_level = "B1";
+                                    }
+
 
                                     if (!controller.myDB.hasWord(word)) {
-                                        controller.myDB.insertWord(word, day, persian, definition, pronounce, sound, example, examplefa);
+                                        controller.myDB.insertWord(word, day, persian, definition, pronounce, sound, example, examplefa,synonyms,cefr_level);
                                         add++;
                                     } else {
-                                        controller.myDB.updateWordRowFromBackup(word, day, persian, definition, pronounce, sound, example, examplefa);
+                                        controller.myDB.updateWordRowFromBackup(word, day, persian, definition, pronounce, sound, example, examplefa,synonyms,cefr_level);
                                         update++;
                                     }
                                 } else error++;

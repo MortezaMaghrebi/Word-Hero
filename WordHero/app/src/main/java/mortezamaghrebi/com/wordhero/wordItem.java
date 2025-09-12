@@ -4,7 +4,9 @@ package mortezamaghrebi.com.wordhero;
 public class wordItem {
     int id;
     String word="",persian="",definition="",review="",pronounce="",sound="",example="",examplefa="";
+    String synonyms="", cefrLevel=""; // Added new fields
     int started=0,day=0,finished=0,lastheart=0;
+
     public void setparam(String param,String value)
     {
         switch (param)
@@ -17,7 +19,7 @@ public class wordItem {
                 break;
             case "day":
                 day = Integer.parseInt(value);
-                 break;
+                break;
             case "persian":
                 persian = value;
                 break;
@@ -45,6 +47,12 @@ public class wordItem {
             case "lastheart":
                 lastheart = Integer.parseInt(value);
                 break;
+            case "synonyms": // Added new case
+                synonyms = value;
+                break;
+            case "cefr_level": // Added new case
+                cefrLevel = value;
+                break;
         }
     }
     @Override
@@ -56,6 +64,8 @@ public class wordItem {
                 ", persian='" + persian + '\'' +
                 ", pronounce='" + pronounce + '\'' +
                 ", definition='" + definition + '\'' +
+                ", synonyms='" + synonyms + '\'' + // Added new field
+                ", cefrLevel='" + cefrLevel + '\'' + // Added new field
                 '}';
     }
 

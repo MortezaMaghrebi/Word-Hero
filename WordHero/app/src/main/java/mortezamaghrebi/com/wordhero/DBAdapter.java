@@ -37,9 +37,11 @@ public class DBAdapter extends SQLiteOpenHelper {
     public static final String key_example         = "example";
     public static final String key_examplefa         = "examplefa";
     public static final String key_image         = "image";
+    public static final String key_synonyms      = "synonyms";
+    public static final String key_cefr_level    = "cefr_level";
 
 
-    public static final int DATABASE_VERSION=2;
+    public static final int DATABASE_VERSION=3;
     // TODO: Setup your field members here ( 0 = KEY_ROWID, 1= ...)
     public  static  final  int COL_id        = 0;
     public  static  final  int COL_word      = 1;
@@ -54,17 +56,19 @@ public class DBAdapter extends SQLiteOpenHelper {
     public  static  final  int COL_sound     = 10;
     public  static  final  int COL_example     = 11;
     public  static  final  int COL_examplefa     = 12;
+    public  static  final  int COL_synonyms  = 13;
+    public  static  final  int COL_cefr_level= 14;
     public  static  final  int COL_image     = 2;
 
 
-    public static  final  String[] ALL_KEYS = new String[] {key_id,key_word,key_day,key_persian,key_definition,key_pronounce,key_review,key_lastheart,key_started,key_finished,key_sound,key_example,key_examplefa};
+    public static  final  String[] ALL_KEYS = new String[] {key_id,key_word,key_day,key_persian,key_definition,key_pronounce,key_review,key_lastheart,key_started,key_finished,key_sound,key_example,key_examplefa,key_synonyms,key_cefr_level};
     public static  final  String[] ALL_KEYS_IMAGE = new String[] {key_id,key_word,key_image};
 
     public static final String DATABASE_NAME = "DB1100";
     public static final String  DATABASE_TABLE = "words";
     public static final String  DATABASE_TABLE_IMAGE = "images";
 
-    private static final String DATABASE_CREATE_SQL = "create table " + DATABASE_TABLE + " (" + key_id + " integer primary key autoincrement, "
+    public static final String DATABASE_CREATE_SQL = "create table " + DATABASE_TABLE + " (" + key_id + " integer primary key autoincrement, "
             // TODO: place your fileds here
             + key_word      + " string not null, "
             + key_day       + " integer not null, "
@@ -77,9 +81,11 @@ public class DBAdapter extends SQLiteOpenHelper {
             + key_finished  + " integer not null, "
             + key_sound     + " integer not null, "
             + key_example    + " string not null, "
-            + key_examplefa    + " string not null"
+            + key_examplefa    + " string not null, "
+            + key_synonyms    + " string, "
+            + key_cefr_level    + " string"
             + ");";
-    private static final String DATABASE_CREATE_SQL_IMAGE = "create table " + DATABASE_TABLE_IMAGE + " (" + key_id + " integer primary key autoincrement, "
+    public static final String DATABASE_CREATE_SQL_IMAGE = "create table " + DATABASE_TABLE_IMAGE + " (" + key_id + " integer primary key autoincrement, "
             // TODO: place your fileds here
             + key_word      + " string not null, "
             + key_image       + " string not null"
@@ -111,41 +117,41 @@ public class DBAdapter extends SQLiteOpenHelper {
         }
         return instance;
     }
-   // public boolean isDatabaseValid() {
-   //     SQLiteDatabase db = null;
-   //     try {
-   //         db = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
-   //         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + DATABASE_TABLE, null);
-   //         if (cursor != null) {
-   //             cursor.moveToFirst();
-   //             int count = cursor.getInt(0);
-   //             cursor.close();
-   //             return count > 0;
-   //         }
-   //         return false;
-   //     } catch (Exception e) {
-   //         Log.e("DBAdapter", "Database validation error: " + e.getMessage());
-   //         return false;
-   //     } finally {
-   //         if (db != null) {
-   //             db.close();
-   //         }
-   //     }
-   // }
+    // public boolean isDatabaseValid() {
+    //     SQLiteDatabase db = null;
+    //     try {
+    //         db = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
+    //         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + DATABASE_TABLE, null);
+    //         if (cursor != null) {
+    //             cursor.moveToFirst();
+    //             int count = cursor.getInt(0);
+    //             cursor.close();
+    //             return count > 0;
+    //         }
+    //         return false;
+    //     } catch (Exception e) {
+    //         Log.e("DBAdapter", "Database validation error: " + e.getMessage());
+    //         return false;
+    //     } finally {
+    //         if (db != null) {
+    //             db.close();
+    //         }
+    //     }
+    // }
 
-   public void createDatabaseIfNeeded() {
-       File dbFile = new File(DB_PATH + DB_NAME);
-       if (!dbFile.exists()) {
-           this.getReadableDatabase(); // ایجاد مسیر databases
-           this.close(); // دیتابیس خالی را ببند
-           copyDatabase(); // کپی دیتابیس از assets
-          // Toast.makeText(context,"Database copied from assets.",Toast.LENGTH_SHORT).show();
-          // Log.d("DBAdapter", "Database copied from assets.");
-       } else {
-          // Toast.makeText(context,"Database already exists.",Toast.LENGTH_SHORT).show();
-          // Log.d("DBAdapter", "Database already exists.");
-       }
-   }
+    public void createDatabaseIfNeeded() {
+        File dbFile = new File(DB_PATH + DB_NAME);
+        if (!dbFile.exists()) {
+            this.getReadableDatabase(); // ایجاد دیتابیس خالی
+            this.close(); // دیتابیس خالی را ببند
+            copyDatabase(); // کپی دیتابیس از assets
+            // Toast.makeText(context,"Database copied from assets.",Toast.LENGTH_SHORT).show();
+            // Log.d("DBAdapter", "Database copied from assets.");
+        } else {
+            // Toast.makeText(context,"Database already exists.",Toast.LENGTH_SHORT).show();
+            // Log.d("DBAdapter", "Database already exists.");
+        }
+    }
     private void copyDatabase() {
         try {
             InputStream myInput = context.getAssets().open(DB_NAME);
@@ -167,9 +173,9 @@ public class DBAdapter extends SQLiteOpenHelper {
             myInput.close();
 
             File f = new File(outFileName);
-           // Toast.makeText(context,"DB copied, size = " + f.length() + " , "+ size,Toast.LENGTH_SHORT).show();
+            // Toast.makeText(context,"DB copied, size = " + f.length() + " , "+ size,Toast.LENGTH_SHORT).show();
 
-           // Log.d("DBAdapter", "DB copied, size = " + f.length() + " bytes");
+            // Log.d("DBAdapter", "DB copied, size = " + f.length() + " bytes");
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(context,"Error copy database: "+e.getMessage(),Toast.LENGTH_SHORT).show();
@@ -191,10 +197,10 @@ public class DBAdapter extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        Toast.makeText(context,"Upgrafe",Toast.LENGTH_SHORT).show();
     }
 
-    public long insertWord(String word,int day,String persian,String definition,String pronounce,String sound,String example,String examplefa)
+    public long insertWord(String word,int day,String persian,String definition,String pronounce,String sound,String example,String examplefa,String Synonyms,String CEFR_Level)
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(key_word    ,word);
@@ -209,6 +215,8 @@ public class DBAdapter extends SQLiteOpenHelper {
         initialValues.put(key_lastheart,0);
         initialValues.put(key_started ,0);
         initialValues.put(key_finished,0);
+        initialValues.put(key_synonyms, Synonyms);
+        initialValues.put(key_cefr_level, CEFR_Level);
         return db.insert(DATABASE_TABLE,null,initialValues);
     }
     public long insertWordImage(String word,String image)
@@ -325,7 +333,7 @@ public class DBAdapter extends SQLiteOpenHelper {
     }
     public void deleteAllImages() {
         // Passing null for the whereClause deletes all rows in the table
-         db.delete(DATABASE_TABLE_IMAGE, null, null);
+        db.delete(DATABASE_TABLE_IMAGE, null, null);
     }
     public void deleteAllImages1()
     {
@@ -358,7 +366,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         if (c != null) c.close();
         return exists;
     }
-    public Boolean updateWordRowFromBackup(String word, int day, String persian, String definition, String pronounce, String sound, String example, String examplefa)
+    public Boolean updateWordRowFromBackup(String word, int day, String persian, String definition, String pronounce, String sound, String example, String examplefa,String synonyms,String cefr_level)
     {
         ContentValues newValues = new ContentValues();
         newValues.put(key_day     , day);
@@ -368,6 +376,8 @@ public class DBAdapter extends SQLiteOpenHelper {
         newValues.put(key_sound , sound);
         newValues.put(key_example , example);
         newValues.put(key_examplefa, examplefa);
+        newValues.put(key_synonyms, synonyms);
+        newValues.put(key_cefr_level, cefr_level);
 
         String where = key_word + "=?";
         String[] whereArgs = { word };
@@ -444,9 +454,9 @@ public class DBAdapter extends SQLiteOpenHelper {
         try {
             Cursor cursor = getWord(word.word);
             if (cursor.getCount() == 0) {
-                insertWord(word.word, word.day, word.persian, word.definition, word.pronounce, word.sound,word.example,word.examplefa);
+                insertWord(word.word, word.day, word.persian, word.definition, word.pronounce, word.sound,word.example,word.examplefa,word.synonyms,word.cefrLevel);
             } else
-                updateWordRowFromBackup(word.word, word.day, word.persian, word.definition, word.pronounce, word.sound,word.example,word.examplefa);
+                updateWordRowFromBackup(word.word, word.day, word.persian, word.definition, word.pronounce, word.sound,word.example,word.examplefa,word.synonyms,word.cefrLevel);
             return true;
         }catch (Exception e)
         {
@@ -484,13 +494,24 @@ public class DBAdapter extends SQLiteOpenHelper {
     private static class DatabaseHelper extends SQLiteOpenHelper
     {
         DatabaseHelper(Context context){super(context,DATABASE_NAME,null,DATABASE_VERSION);}
-        public void onCreate(SQLiteDatabase _db){_db.execSQL(DATABASE_CREATE_SQL);_db.execSQL(DATABASE_CREATE_SQL_IMAGE);}
+        public void onCreate(SQLiteDatabase _db){
+            _db.execSQL(DATABASE_CREATE_SQL);
+            _db.execSQL(DATABASE_CREATE_SQL_IMAGE);
+        }
         public void onUpgrade(SQLiteDatabase _db, int oldVersion,int newVersion){
             Log.w(TAG, "Upgrading application's database from version " + oldVersion
                     + " to " + newVersion + ", which will destroy all old data!");
-            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
-            _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_IMAGE);
-            onCreate(_db);
+
+            // برای نسخه 2 به 3، فقط فیلدهای جدید را اضافه کنید
+            if (oldVersion < 3) {
+                _db.execSQL("ALTER TABLE " + DATABASE_TABLE + " ADD COLUMN " + key_synonyms + " TEXT DEFAULT ''");
+                _db.execSQL("ALTER TABLE " + DATABASE_TABLE + " ADD COLUMN " + key_cefr_level + " TEXT DEFAULT ''");
+            } else {
+                // برای تغییرات اساسی‌تر
+                _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
+                _db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_IMAGE);
+                onCreate(_db);
+            }
         }
     }
 

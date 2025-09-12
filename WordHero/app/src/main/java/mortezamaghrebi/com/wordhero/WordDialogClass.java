@@ -79,7 +79,7 @@ public class WordDialogClass extends Dialog {
                 txtword = (TextView) findViewById(R.id.txtword);
                 txtcontent = (TextView) findViewById(R.id.txtcontent);
                 txtword.setText(witem.word);
-                txtcontent.setText(witem.pronounce + "\n" + witem.definition + "\n" + witem.persian + "\nExample: " + witem.example.replace("_______", witem.word) + "\n" + witem.examplefa);
+                txtcontent.setText(witem.pronounce + "\n[Level " + witem.cefrLevel+"]\n" + witem.definition + "\n" + witem.persian + "\nExample: " + witem.example.replace("_______", witem.word) + "\n" + witem.examplefa);
                 imgword = (ImageView) findViewById(R.id.imgword);
                 txtword.setOnClickListener(new View.OnClickListener() {
                     @Override

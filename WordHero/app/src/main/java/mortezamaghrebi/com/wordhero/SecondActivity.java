@@ -113,6 +113,13 @@ public class SecondActivity extends AppCompatActivity {
     void initControls() {
         mpbutton = MediaPlayer.create(SecondActivity.this, R.raw.clicksound);
         mpbutton.setVolume((float) (controller.getVolumeButtons() / 100.0), (float) (controller.getVolumeButtons() / 100.0));
+        final RelativeLayout btnlearn = (RelativeLayout) findViewById(R.id.btnlearn);
+        final RelativeLayout btnexam = (RelativeLayout) findViewById(R.id.btntest);
+        final RelativeLayout btnmatch = (RelativeLayout) findViewById(R.id.btnmatch);
+        Button btnsearch = (Button) findViewById(R.id.btnsearchword);
+        final EditText txtword = (EditText) findViewById(R.id.txtword);
+        Button btnAddYourOwnBook = (Button) findViewById(R.id.btnAddYourOwnBook);
+        Button btnDeleteImages = (Button) findViewById(R.id.btndeleteallimages);
         txtheart1 = (TextView) findViewById(R.id.txtheart1);
         txtheart2 = (TextView) findViewById(R.id.txtheart2);
         txtexir1 = (TextView) findViewById(R.id.txtexir1);
@@ -158,6 +165,10 @@ public class SecondActivity extends AppCompatActivity {
         imgacceptavatar = (ImageView) findViewById(R.id.imgacceptavatar);
         imgacceptuser = (ImageView) findViewById(R.id.imgacceptusers);
         prgavatar = (ProgressBar) findViewById(R.id.prgavatar);
+        txtexir1 = (TextView) findViewById(R.id.txtexir1);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
+
         imgsynced.setVisibility(View.VISIBLE);
         txtuser.setText(controller.getUser());
         progrefwidth = controller.getProgWidth();
@@ -481,6 +492,338 @@ public class SecondActivity extends AppCompatActivity {
             Animation connectingAnimation = AnimationUtils.loadAnimation(SecondActivity.this, R.anim.acceptbuttonavatar);
             imginfo.startAnimation(connectingAnimation);
         }
+        btnusersetting.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        btnusersetting.setBackgroundResource(R.drawable.curve_buttoninsideuserb);
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        btnusersetting.setBackgroundResource(R.drawable.curve_buttoninsideusera);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        mpbutton.seekTo(0);mpbutton.start();
+                        btnusersetting.setBackgroundResource(R.drawable.curve_buttoninsideusera);
+                        //UserMenuDialogClass cdd = new UserMenuDialogClass(SecondActivity.this);
+                        //cdd.show();
+                        drawerLayout.openDrawer(navigationView);
+                        return true;
+                }
+                return false;
+            }
+        });
+        btnmessages.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        btnmessages.setBackgroundResource(R.drawable.curve_buttoninsideuserb);
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        btnmessages.setBackgroundResource(R.drawable.curve_buttoninsideusera);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        mpbutton.seekTo(0);mpbutton.start();
+                        btnmessages.setBackgroundResource(R.drawable.curve_buttoninsideusera);
+                        MessagesDialogClass cdd = new MessagesDialogClass(SecondActivity.this);
+                        cdd.show();
+                        return true;
+                }
+                return false;
+            }
+        });
+        btnlearn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        btnlearn.setBackgroundResource(R.drawable.button2b);
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        btnlearn.setBackgroundResource(R.drawable.button2a);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        // String DATE_FORMAT_NOW = "yyyy-MM-dd kk:mm:ss";
+                        // Date date = new Date();
+                        //  SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+                        //dt1 = sdf.format(date);
+
+                        mpbutton.seekTo(0);mpbutton.start();
+                        btnlearn.setBackgroundResource(R.drawable.button2a);
+                        if (controller.getExir() == 0 || (controller.gethearts() + controller.getheartsBought()) == 0) {
+                            NotEnoughDialogClass cdd = new NotEnoughDialogClass(SecondActivity.this);
+                            cdd.show();
+                        } else {
+                            if(controller.wordItems.length<30) {
+                                controller = new Controller(SecondActivity.this, true);
+                            }
+                            if(controller.wordItems.length<30)
+                            {
+                                controller=new Controller(SecondActivity.this,true);
+
+                                try {
+                                    GetStoragePermission(false);
+                                    controller.getAndShowDatasets();
+                                } catch (UnsupportedEncodingException e) {
+                                    throw new RuntimeException(e);
+                                }
+
+                            }else {
+                                RewardsDialogClass cdd = new RewardsDialogClass(SecondActivity.this, LearnActivity.class, true);
+                                cdd.show();
+                            }
+
+                        }
+                        return false;
+                }
+                return true;
+            }
+        });
+
+        btnexam.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        btnexam.setBackgroundResource(R.drawable.button1b);
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        btnexam.setBackgroundResource(R.drawable.button1a);
+                        return false;
+                    case MotionEvent.ACTION_UP:
+                        mpbutton.seekTo(0);mpbutton.start();
+                        btnexam.setBackgroundResource(R.drawable.button1a);
+                        if(controller.wordItems.length<30) {
+                            controller = new Controller(SecondActivity.this, true);
+                        }
+                        if(controller.wordItems.length<30)
+                        {
+                            controller=new Controller(SecondActivity.this,true);
+
+                            try {
+                                GetStoragePermission(false);
+                                controller.getAndShowDatasets();
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                        }else {
+                            RewardsDialogClass cdd = new RewardsDialogClass(SecondActivity.this, TestActivity.class, false);
+                            cdd.show();
+                        }
+                        return false;
+                }
+                return true;
+            }
+        });
+        btnmatch.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        btnmatch.setBackgroundResource(R.drawable.button1b);
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        btnmatch.setBackgroundResource(R.drawable.button1a);
+                        return false;
+                    case MotionEvent.ACTION_UP:
+                        mpbutton.seekTo(0);mpbutton.start();
+                        btnmatch.setBackgroundResource(R.drawable.button1a);
+                        if(controller.wordItems.length<30) {
+                            controller = new Controller(SecondActivity.this, true);
+                        }
+                        if(controller.wordItems.length<30)
+                        {
+                            controller=new Controller(SecondActivity.this,true);
+
+                            try {
+                                GetStoragePermission(false);
+                                controller.getAndShowDatasets();
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                        }else {
+                            Intent intent = new Intent(SecondActivity.this, MatchingActivity.class);
+                            startActivity(intent);
+                        }
+                        return false;
+                }
+                return true;
+            }
+        });
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                mpbutton.seekTo(0);mpbutton.start();
+                if (id == R.id.nav_goto_website) {
+                    String url = "https://wordhero.ir";  // آدرس سایتت
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+                    intent.setPackage("com.android.chrome");
+
+                    try {
+                        startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        // اگه کروم نصب نبود، با مرورگر پیش‌فرض باز کن
+                        intent.setPackage(null);
+                        startActivity(intent);
+                    }
+                }  else if (id == R.id.nav_comment_on_cafebazaar) {
+                    openCafeBazaarForComment();
+                    // باز کردن صفحه کافه‌بازار برای نظر دادن
+                } else if (id == R.id.nav_comment_on_myket) {
+                    openMyketForComment();
+                    // باز کردن صفحه مایکت برای نظر دادن
+                }else {
+
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    if (id == R.id.nav_export_progress) {
+                                        GetStoragePermission(false);
+                                        controller.backupProgressToDocumentsWithProgress(SecondActivity.this);
+                                    } else if (id == R.id.nav_import_progress) {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                                            intent.setType("text/plain");
+                                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                            startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
+                                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // if android 11+ request MANAGER_EXTERNAL_STORAGE
+                                            if (!Environment.isExternalStorageManager()) { // check if we already have permission
+                                                Uri uri = Uri.parse(String.format(Locale.ENGLISH, "package:%s", getApplicationContext().getPackageName()));
+                                                startActivity(
+                                                        new Intent(
+                                                                Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                                                uri
+                                                        )
+                                                );
+                                            } else {
+                                                controller.restoreProgressFromBackupDocuments(SecondActivity.this);
+                                            }
+                                        } else {
+                                            if (ContextCompat.checkSelfPermission(SecondActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                                                    != PackageManager.PERMISSION_GRANTED) { // check if we already have permission
+                                                ActivityCompat.requestPermissions(SecondActivity.this, new String[]{
+                                                        android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                }, REQUEST_CODE_READ_STORAGE);
+                                            } else {
+                                                controller.restoreProgressFromBackupDocuments(SecondActivity.this);
+                                            }
+                                        }
+                                    } else if (id == R.id.nav_get_images_github) {
+                                        controller.UpdateWordList();
+                                        controller.getWordImagesFromGithubSequential(SecondActivity.this);
+                                    } else if (id == R.id.nav_get_images_pexels) {
+                                        lastwordid = 0;
+                                        while (controller.hasWordImage(controller.wordItems[lastwordid].word)) {
+                                            if (lastwordid < controller.wordItems.length - 1)
+                                                lastwordid++;
+                                            else break;
+                                        }
+
+                                        errortimefetch = 0;
+                                        lastwordid = controller.getLastImagePexel();
+                                        fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word, 1);
+                                    } else if (id == R.id.nav_export_images_base64) {
+                                        GetStoragePermission(false);
+                                        controller.backupImagesToDocumentsWithProgress(SecondActivity.this);
+                                    } else if (id == R.id.nav_export_images_jpg) {
+                                        controller.setLastImageSaved(0);
+                                        controller.backupImagesFilesToDocumentsWithProgress(SecondActivity.this);
+                                    } else if (id == R.id.nav_update_application) {
+                                        String url = "https://github.com/MortezaMaghrebi/Word-Hero/raw/refs/heads/main/WordHero/app/release/app-release.apk";  // آدرس سایتت
+
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+                                        intent.setPackage("com.android.chrome");
+
+                                        try {
+                                            startActivity(intent);
+                                        } catch (ActivityNotFoundException e) {
+                                            intent.setPackage(null);
+                                            startActivity(intent);
+                                        } // آپدیت برنامه
+                                    }
+
+                                        break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    //No button clicked
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SecondActivity.this);
+                    builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                            .setNegativeButton("No", dialogClickListener).show();
+                }
+                drawerLayout.closeDrawers();
+                return true;
+            }
+        });
+        btnsearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mpbutton.seekTo(0);mpbutton.start();
+                String word = txtword.getText().toString();
+                if(word.length()>0){
+                    try {
+                        controller.Dictionary(word);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }}
+            }
+        });
+
+
+        btnAddYourOwnBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mpbutton.seekTo(0);mpbutton.start();
+                String url = "https://wordhero.ir";  // آدرس سایتت
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                intent.setPackage("com.android.chrome");
+                try {
+                    startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    intent.setPackage(null);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        btnDeleteImages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mpbutton.seekTo(0);mpbutton.start();
+                new AlertDialog.Builder(SecondActivity.this)
+                        .setTitle("Confirm Deletion")
+                        .setMessage("Are you sure you want to delete all images?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                boolean result = controller.deleteAllImages(SecondActivity.this);
+                                if(result) Toast.makeText(SecondActivity.this,"All images deleted",Toast.LENGTH_SHORT).show();
+                                else Toast.makeText(SecondActivity.this,"Error occurred in image deletion",Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .create()
+                        .show();
+            }
+        });
     }
 
     String order = "";
@@ -700,14 +1043,34 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     void setMessagesUI() {
-        if (controller.getMessagesCount() < controller.getMessagesShownCount())
-            controller.setMessagesShownCount(0);
-        if ((controller.getMessagesCount() - controller.getMessagesShownCount()) > 0) {
-            txtnummessages.setText("" + (controller.getMessagesCount() - controller.getMessagesShownCount()));
-            txtnummessages.setVisibility(View.VISIBLE);
-        } else {
-            txtnummessages.setVisibility(View.INVISIBLE);
+        //if (controller.getMessagesCount() < controller.getMessagesShownCount())
+        //    controller.setMessagesShownCount(0);
+        //if ((controller.getMessagesCount() - controller.getMessagesShownCount()) > 0) {
+        //    txtnummessages.setText("" + (controller.getMessagesCount() - controller.getMessagesShownCount()));
+        //    txtnummessages.setVisibility(View.VISIBLE);
+        //} else {
+        //    txtnummessages.setVisibility(View.INVISIBLE);
+        //}
+        try {
+            controller.loadGetLoading(SecondActivity.this);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
+        int messagescount=controller.getMessagesCount();
+        txtnummessages.setText(messagescount+"");
+        if(messagescount>0) txtnummessages.setVisibility(View.VISIBLE);
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int messagescount=controller.getMessagesCount();
+                    txtnummessages.setText(messagescount+"");
+                    if(messagescount>0) txtnummessages.setVisibility(View.VISIBLE);
+
+                }catch (Exception e){}
+
+            }
+        },3000);
     }
 
     int seconds = 0;
@@ -879,370 +1242,13 @@ public class SecondActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
-        final RelativeLayout btnlearn = (RelativeLayout) findViewById(R.id.btnlearn);
-        final RelativeLayout btnexam = (RelativeLayout) findViewById(R.id.btntest);
-        final RelativeLayout btnmatch = (RelativeLayout) findViewById(R.id.btnmatch);
         controller = new Controller(SecondActivity.this, true);
-        txtexir1 = (TextView) findViewById(R.id.txtexir1);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.navigation_view);
-
         if (!inited) initControls();
-        btnusersetting.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        btnusersetting.setBackgroundResource(R.drawable.curve_buttoninsideuserb);
-                        return true;
-                    case MotionEvent.ACTION_CANCEL:
-                        btnusersetting.setBackgroundResource(R.drawable.curve_buttoninsideusera);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        mpbutton.seekTo(0);mpbutton.start();
-                        btnusersetting.setBackgroundResource(R.drawable.curve_buttoninsideusera);
-                        //UserMenuDialogClass cdd = new UserMenuDialogClass(SecondActivity.this);
-                        //cdd.show();
-                        drawerLayout.openDrawer(navigationView);
-                        return true;
-                }
-                return false;
-            }
-        });
-        btnmessages.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        btnmessages.setBackgroundResource(R.drawable.curve_buttoninsideuserb);
-                        return true;
-                    case MotionEvent.ACTION_CANCEL:
-                        btnmessages.setBackgroundResource(R.drawable.curve_buttoninsideusera);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        mpbutton.seekTo(0);mpbutton.start();
-                        btnmessages.setBackgroundResource(R.drawable.curve_buttoninsideusera);
-                        MessagesDialogClass cdd = new MessagesDialogClass(SecondActivity.this);
-                        cdd.show();
-                        return true;
-                }
-                return false;
-            }
-        });
-        btnlearn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        btnlearn.setBackgroundResource(R.drawable.button2b);
-                        return true;
-                    case MotionEvent.ACTION_CANCEL:
-                        btnlearn.setBackgroundResource(R.drawable.button2a);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        // String DATE_FORMAT_NOW = "yyyy-MM-dd kk:mm:ss";
-                        // Date date = new Date();
-                        //  SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-                        //dt1 = sdf.format(date);
-
-                        mpbutton.seekTo(0);mpbutton.start();
-                        btnlearn.setBackgroundResource(R.drawable.button2a);
-                        if (controller.getExir() == 0 || (controller.gethearts() + controller.getheartsBought()) == 0) {
-                            NotEnoughDialogClass cdd = new NotEnoughDialogClass(SecondActivity.this);
-                            cdd.show();
-                        } else {
-                            if(controller.wordItems.length<30) {
-                                controller = new Controller(SecondActivity.this, true);
-                            }
-                            if(controller.wordItems.length<30)
-                            {
-                                controller=new Controller(SecondActivity.this,true);
-
-                                try {
-                                    GetStoragePermission(false);
-                                    controller.getAndShowDatasets();
-                                } catch (UnsupportedEncodingException e) {
-                                    throw new RuntimeException(e);
-                                }
-
-                            }else {
-                                RewardsDialogClass cdd = new RewardsDialogClass(SecondActivity.this, LearnActivity.class, true);
-                                cdd.show();
-                            }
-
-                        }
-                        return false;
-                }
-                return true;
-            }
-        });
-
-        btnexam.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        btnexam.setBackgroundResource(R.drawable.button1b);
-                        return true;
-                    case MotionEvent.ACTION_CANCEL:
-                        btnexam.setBackgroundResource(R.drawable.button1a);
-                        return false;
-                    case MotionEvent.ACTION_UP:
-                        mpbutton.seekTo(0);mpbutton.start();
-                        btnexam.setBackgroundResource(R.drawable.button1a);
-                        if(controller.wordItems.length<30) {
-                            controller = new Controller(SecondActivity.this, true);
-                        }
-                        if(controller.wordItems.length<30)
-                        {
-                            controller=new Controller(SecondActivity.this,true);
-
-                            try {
-                                GetStoragePermission(false);
-                                controller.getAndShowDatasets();
-                            } catch (UnsupportedEncodingException e) {
-                                throw new RuntimeException(e);
-                            }
-
-                        }else {
-                            RewardsDialogClass cdd = new RewardsDialogClass(SecondActivity.this, TestActivity.class, false);
-                            cdd.show();
-                        }
-                        return false;
-                }
-                return true;
-            }
-        });
-        btnmatch.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        btnmatch.setBackgroundResource(R.drawable.button1b);
-                        return true;
-                    case MotionEvent.ACTION_CANCEL:
-                        btnmatch.setBackgroundResource(R.drawable.button1a);
-                        return false;
-                    case MotionEvent.ACTION_UP:
-                        mpbutton.seekTo(0);mpbutton.start();
-                        btnmatch.setBackgroundResource(R.drawable.button1a);
-                        if(controller.wordItems.length<30) {
-                            controller = new Controller(SecondActivity.this, true);
-                        }
-                        if(controller.wordItems.length<30)
-                        {
-                            controller=new Controller(SecondActivity.this,true);
-
-                            try {
-                                GetStoragePermission(false);
-                                controller.getAndShowDatasets();
-                            } catch (UnsupportedEncodingException e) {
-                                throw new RuntimeException(e);
-                            }
-
-                        }else {
-                            Intent intent = new Intent(SecondActivity.this, MatchingActivity.class);
-                            startActivity(intent);
-                        }
-                        return false;
-                }
-                return true;
-            }
-        });
-
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                mpbutton.seekTo(0);mpbutton.start();
-
-                if (id == R.id.nav_export_progress) {
-                    GetStoragePermission(false);
-                    controller.backupProgressToDocumentsWithProgress(SecondActivity.this);
-                } else if (id == R.id.nav_import_progress) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                    {
-                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                        intent.setType("text/plain");
-                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                        startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
-                    }
-                    else  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // if android 11+ request MANAGER_EXTERNAL_STORAGE
-                        if (!Environment.isExternalStorageManager()) { // check if we already have permission
-                            Uri uri = Uri.parse(String.format(Locale.ENGLISH, "package:%s", getApplicationContext().getPackageName()));
-                            startActivity(
-                                    new Intent(
-                                            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                                            uri
-                                    )
-                            );
-                        }else {
-                            controller.restoreProgressFromBackupDocuments(SecondActivity.this);
-                        }
-                    } else {
-                        if (ContextCompat.checkSelfPermission(SecondActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                                != PackageManager.PERMISSION_GRANTED) { // check if we already have permission
-                            ActivityCompat.requestPermissions(SecondActivity.this, new String[]{
-                                    android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            }, REQUEST_CODE_READ_STORAGE);
-                        }else
-                        {
-                            controller.restoreProgressFromBackupDocuments(SecondActivity.this);
-                        }
-                    }
-                } else if (id == R.id.nav_get_images_github) {
-                    controller.UpdateWordList();
-                    controller.getWordImagesFromGithubSequential(SecondActivity.this);
-                } else if (id == R.id.nav_get_images_pexels) {
-                    lastwordid=0;
-                    while (controller.hasWordImage(controller.wordItems[lastwordid].word)) {
-                        if (lastwordid < controller.wordItems.length - 1) lastwordid++;
-                        else break;
-                    }
-
-                    errortimefetch=0;
-                    lastwordid=controller.getLastImagePexel();
-                    fetchPexelsImageAndShowDialog(controller.wordItems[lastwordid].word,1);
-                } else if (id == R.id.nav_export_images_base64) {
-                    GetStoragePermission(false);
-                    controller.backupImagesToDocumentsWithProgress(SecondActivity.this);
-                } else if (id == R.id.nav_export_images_jpg) {
-                    controller.setLastImageSaved(0);
-                    controller.backupImagesFilesToDocumentsWithProgress(SecondActivity.this);
-                } else if (id == R.id.nav_goto_website) {
-                    String url = "https://wordhero.ir";  // آدرس سایتت
-
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-
-                    intent.setPackage("com.android.chrome");
-
-                    try {
-                        startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-                        // اگه کروم نصب نبود، با مرورگر پیش‌فرض باز کن
-                        intent.setPackage(null);
-                        startActivity(intent);
-                    }
-                } else if (id == R.id.nav_update_application) {
-                    String url = "https://github.com/MortezaMaghrebi/Word-Hero/raw/refs/heads/main/WordHero/app/release/app-release.apk";  // آدرس سایتت
-
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-
-                    intent.setPackage("com.android.chrome");
-
-                    try {
-                        startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-                        intent.setPackage(null);
-                        startActivity(intent);
-                    } // آپدیت برنامه
-                } else if (id == R.id.nav_comment_on_cafebazaar) {
-                    openCafeBazaarForComment();
-                    // باز کردن صفحه کافه‌بازار برای نظر دادن
-                } else if (id == R.id.nav_comment_on_myket) {
-                    openMyketForComment();
-                    // باز کردن صفحه مایکت برای نظر دادن
-                }
-                drawerLayout.closeDrawers();
-                return true;
-            }
-        });
-
         setPlayer();
-        testDictionary();
         setMessagesUI();
-        try {
-            controller.loadGetLoading(SecondActivity.this);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        int messagescount=controller.getMessagesCount();
-        txtnummessages.setText(messagescount+"");
-        if(messagescount>0) txtnummessages.setVisibility(View.VISIBLE);
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    int messagescount=controller.getMessagesCount();
-                    txtnummessages.setText(messagescount+"");
-                    if(messagescount>0) txtnummessages.setVisibility(View.VISIBLE);
-
-                }catch (Exception e){}
-
-            }
-        },3000);
-
     }
 
-    private void testDictionary() {
-        Button btnsearch = (Button) findViewById(R.id.btnsearchword);
-        final EditText txtword = (EditText) findViewById(R.id.txtword);
-        btnsearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mpbutton.seekTo(0);mpbutton.start();
-                String word = txtword.getText().toString();
-                if(word.length()>0){
-                try {
-                    controller.Dictionary(word);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }}
-            }
-        });
 
-        Button btnAddYourOwnBook = (Button) findViewById(R.id.btnAddYourOwnBook);
-        Button btnDeleteImages = (Button) findViewById(R.id.btndeleteallimages);
-
-       btnAddYourOwnBook.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-               mpbutton.seekTo(0);mpbutton.start();
-               String url = "https://wordhero.ir";  // آدرس سایتت
-               Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-               intent.setPackage("com.android.chrome");
-               try {
-                   startActivity(intent);
-               } catch (ActivityNotFoundException e) {
-                   intent.setPackage(null);
-                   startActivity(intent);
-               }
-           }
-       });
-
-
-
-        btnDeleteImages.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mpbutton.seekTo(0);mpbutton.start();
-                new AlertDialog.Builder(SecondActivity.this)
-                        .setTitle("Confirm Deletion")
-                        .setMessage("Are you sure you want to delete all images?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                boolean result = controller.deleteAllImages(SecondActivity.this);
-                                if(result) Toast.makeText(SecondActivity.this,"All images deleted",Toast.LENGTH_SHORT).show();
-                                else Toast.makeText(SecondActivity.this,"Error occurred in image deletion",Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .create()
-                        .show();
-            }
-        });
-
-
-
-
-
-
-    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -2328,11 +2334,13 @@ public class SecondActivity extends AppCompatActivity {
                                 String sound = "";
                                 String example = items[2];
                                 String examplefa = items[6];
+                                String CEFR_level = items[4];
+                                String Synonyms = "";
                                 if (!controller.myDB.hasWord(word)) {
-                                    controller.myDB.insertWord(word, day, persian, definition, pronounce, sound, example, examplefa);
+                                    controller.myDB.insertWord(word, day, persian, definition, pronounce, sound, example, examplefa,Synonyms,CEFR_level);
                                     add++;
                                 } else {
-                                    controller.myDB.updateWordRowFromBackup(word, day, persian, definition, pronounce, sound, example, examplefa);
+                                    controller.myDB.updateWordRowFromBackup(word, day, persian, definition, pronounce, sound, example, examplefa,Synonyms,CEFR_level);
                                     update++;
                                 }
                             }else error++;
