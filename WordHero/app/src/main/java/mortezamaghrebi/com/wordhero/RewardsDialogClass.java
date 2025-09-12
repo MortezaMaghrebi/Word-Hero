@@ -42,16 +42,16 @@ public class RewardsDialogClass extends Dialog  {
         Runnable timerRunnable = new Runnable() {
             @Override
             public void run() {
-                btnok = (RelativeLayout)findViewById(R.id.lytok);
                 txtbad=(TextView)findViewById(R.id.txtbad);
                 txtexcellent=(TextView)findViewById(R.id.txtexcelent);
                 txtsoso=(TextView)findViewById(R.id.txtsoso);
-                txtexcellent.setText(""+controller.RewardExcelent+"+ Corrects" );
-                txtsoso.setText(""+controller.RewardSoSo+"+ Corrects" );
-                txtbad.setText(""+(controller.RewardBad-1)+"- Corrects" );
+                txtexcellent.setText(""+controller.RewardExcelent+"+ صحیح" );
+                txtsoso.setText(""+controller.RewardSoSo+"+ صحیح" );
+                txtbad.setText(""+(controller.RewardBad-1)+"- صحیح" );
                 try {
                     ((Dialog) RewardsDialogClass.this).getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 }catch (Exception e){}
+                btnok = (RelativeLayout)findViewById(R.id.lytok);
                 btnok.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {

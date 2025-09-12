@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/curve_answra1"
+    android:background="@drawable/curve_dialog_download_progress"
     android:gravity="center"
     android:padding="20dp">
 
@@ -12,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="در حال پردازش لغات..."
+        android:fontFamily="@font/yekan"
         android:textSize="24dp"
         android:paddingBottom="10dp"
         android:textColor="@android:color/black"/>

@@ -762,7 +762,7 @@ public class SecondActivity extends AppCompatActivity {
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(SecondActivity.this);
-                    builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                    builder.setMessage("آیا مطمئنی برای "+item.getTitle()).setPositiveButton("Yes", dialogClickListener)
                             .setNegativeButton("No", dialogClickListener).show();
                 }
                 drawerLayout.closeDrawers();
@@ -2479,9 +2479,63 @@ public class SecondActivity extends AppCompatActivity {
                 bookcontentlayout=0;
             }catch (Exception e){}
         }
-        else  super.onBackPressed();
+        else{
+            if(!checkAndShowCommentDialog())
+            super.onBackPressed();
+        }
+    }
+    private boolean checkAndShowCommentDialog() {
+        // دریافت تعداد بازی‌های انجام شده
+        int gamesPlayed = controller.getNumberOfGamesPlayed();
+
+        // افزایش تعداد بازی‌ها
+        controller.setNumberOfGamesPlayed(gamesPlayed + 1);
+
+        // بررسی شرایط نمایش دیالوگ (مثلاً پس از ۱۰ بازی)
+        if (gamesPlayed >= 4 && gamesPlayed %2==0 && !controller.getIsCommentedBazaar() && !controller.getIsCommentedMyket()) {
+            showCommentDialog();
+            return true;
+        }
+        return false;
+    }
+    private void showCommentDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("از برنامه راضی هستید؟ 🌟");
+        builder.setMessage("با گذاشتن نظر و امتیاز، از ما حمایت کنید!");
+        builder.setCancelable(false);
+
+        builder.setPositiveButton("کافه‌بازار", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                openCafeBazaarForComment();
+                controller.setIsCommentedBazaar(true);
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("مایکت", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                openMyketForComment();
+                controller.setIsCommentedMyket(true);
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNeutralButton("بعداً", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
+
+
+
 /*    void  GetAvatar(final int number)  throws UnsupportedEncodingException
     {
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);

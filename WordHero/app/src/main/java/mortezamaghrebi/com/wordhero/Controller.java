@@ -75,7 +75,7 @@ public class Controller {
     public wordItem[] wordItems;
     public ImageItem[] imageItems;
     final String url = "http://kingsofleitner.ir/words1100/webservice.php";
-    public final String infourl = "https://wordhero.ir/";
+    public final String infourl = "https://github.com/MortezaMaghrebi/Word-Hero";
     final int DecreasExirEachMin=60; //use functions please: getDecreaseExirTime()
     final int HeartsMaximum=12;
     final int HeartIncreasTime=540; //seconds
@@ -909,6 +909,39 @@ public class Controller {
     void setDatabaseVersion(int databaseVersion)
     {
         editor.putInt("databaseversion",databaseVersion);
+        editor.commit();
+    }
+
+    int getNumberOfGamesPlayed()
+    {
+        return prefs.getInt("numberofgamesplayed",0);
+    }
+    void setNumberOfGamesPlayed(int numberofgamesplayed)
+    {
+
+        editor.putInt("numberofgamesplayed",numberofgamesplayed);
+        editor.commit();
+    }
+
+    Boolean getIsCommentedBazaar()
+    {
+        return prefs.getBoolean("isCommentedBazaar",false);
+    }
+    void setIsCommentedBazaar(Boolean isCommentedBazaar)
+    {
+
+        editor.putBoolean("isCommentedBazaar",isCommentedBazaar);
+        editor.commit();
+    }
+
+    Boolean getIsCommentedMyket()
+    {
+        return prefs.getBoolean("isCommentedMyket",false);
+    }
+    void setIsCommentedMyket(Boolean isCommentedBazaar)
+    {
+
+        editor.putBoolean("isCommentedMyket",isCommentedBazaar);
         editor.commit();
     }
     /////

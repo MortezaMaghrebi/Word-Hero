@@ -962,7 +962,6 @@
                                             <TextView
                                                 android:layout_width="match_parent"
                                                 android:layout_height="match_parent"
-                                                android:layout_centerInParent="true"
                                                 android:gravity="center"
                                                 android:text="+10"
                                                 android:textColor="#ffdddd"
@@ -1204,7 +1203,7 @@
                                                 android:layout_marginLeft="30dp"
                                                 android:layout_marginRight="30dp"
                                                 android:background="@drawable/button2a"
-                                                android:text="Search in book" />
+                                                android:text="در کتاب جستجو کن" />
                                         </RelativeLayout>
 
                                         <RelativeLayout
@@ -1371,7 +1370,7 @@
                                 android:gravity="center_horizontal"
                                 android:maxLines="1"
                                 android:maxWidth="160dp"
-                                android:text="Word Hero"
+                                android:text="ورد هیرو"
                                 android:textColor="#ffffff"
                                 android:textStyle="bold"
                                 app:autoSizeMaxTextSize="36sp"
@@ -1492,7 +1491,8 @@
                                 android:autoSizeTextType="uniform"
                                 android:gravity="center"
                                 android:maxLines="1"
-                                android:text="TEST"
+                                android:text="آزمون"
+                                android:fontFamily="@font/yekan"
                                 android:textColor="#ffffff"
                                 android:textStyle="bold"
                                 app:autoSizeMaxTextSize="21dp"
@@ -1547,7 +1547,8 @@
                                 android:autoSizeTextType="uniform"
                                 android:gravity="center"
                                 android:maxLines="1"
-                                android:text="MATCH"
+                                android:text="تطبیق"
+                                android:fontFamily="@font/yekan"
                                 android:textColor="#ffffff"
                                 android:textStyle="bold"
                                 app:autoSizeMaxTextSize="21dp"
@@ -1603,7 +1604,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:layout_marginLeft="45dp"
+                                android:layout_marginLeft="75dp"
                                 android:layout_marginRight="5dp"
                                 android:layout_toLeftOf="@+id/txtminusheart"
                                 android:autoSizeMaxTextSize="25dp"
@@ -1612,7 +1613,8 @@
                                 android:autoSizeTextType="uniform"
                                 android:gravity="center"
                                 android:maxLines="1"
-                                android:text="▶ LEARN"
+                                android:text=" یاد بگیر ▶"
+                                android:fontFamily="@font/yekan"
                                 android:textColor="#ffffff"
                                 android:textStyle="bold"
                                 app:autoSizeMaxTextSize="25dp"
@@ -1638,7 +1640,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="15dp"
                             android:layout_marginRight="15dp"
-                            android:hint="Type word ..."
+                            android:hint="کلمه انگلیسی رو تایپ کن ..."
                             android:textColor="#000000"
                             android:textColorHint="#454500" />
                         <Button
@@ -1649,7 +1651,9 @@
                             android:layout_marginRight="30dp"
                             android:layout_marginTop="25dp"
                             android:background="@drawable/button2a"
-                            android:text="Search in Words" />
+                            android:textSize="18dp"
+                            android:fontFamily="@font/yekan"
+                            android:text="تو کتاب بگرد" />
                     </LinearLayout>
 
                     <Button
@@ -1660,7 +1664,9 @@
                         android:layout_marginRight="30dp"
                         android:layout_marginTop="25dp"
                         android:background="@drawable/button1a"
-                        android:text="ADD YOUR OWN BOOK" />
+                        android:fontFamily="@font/yekan"
+                        android:textSize="18dp"
+                        android:text="کتاب دلخواهتو ایجاد کن" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -1731,12 +1737,14 @@
         android:id="@+id/navigation_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        app:menu="@menu/drawer_menu"
+        android:layout_gravity="end"
         android:background="#5CA280"
+        app:menu="@menu/drawer_menu"
         app:itemTextColor="#ffffff"
         app:itemIconTint="#ffffff"
         app:itemRippleColor="#E1BEE7"
-    />
+        app:theme="@style/NavigationViewStyle"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

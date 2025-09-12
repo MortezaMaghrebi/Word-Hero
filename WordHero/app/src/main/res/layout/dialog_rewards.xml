@@ -25,7 +25,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="START"
+                    android:text="شروع"
+                    android:fontFamily="@font/yekan"
                     android:textColor="#be6275"
                     android:textSize="25dp"
                     android:gravity="center"
@@ -87,9 +88,10 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="17+ Corrects"
+                android:text="پاسخ عالی"
                 android:id="@+id/txtexcelent"
                 android:textColor="#d5cef6"
+                android:fontFamily="@font/yekan"
                 android:textSize="20dp"
                 android:gravity="center"
                 android:layout_marginRight="15dp"
@@ -136,7 +138,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="8+ Corrects"
+                    android:text="پاسخ متوسط"
+                    android:fontFamily="@font/yekan"
                     android:textColor="#d5cef6"
                     android:textSize="20dp"
                     android:id="@+id/txtsoso"
@@ -185,7 +188,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="5- Corrects"
+                    android:fontFamily="@font/yekan"
+                    android:text="پاسخ کم"
                     android:textColor="#d5cef6"
                     android:textSize="20dp"
                     android:id="@+id/txtbad"

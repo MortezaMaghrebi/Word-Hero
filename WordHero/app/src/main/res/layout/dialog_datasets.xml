@@ -15,9 +15,10 @@
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:gravity="center"
-        android:text="Choose Your Book"
+        android:text="کتاب خودتو انتخاب کن"
         android:textColor="#603525"
         android:textSize="20dp"
+        android:fontFamily="@font/yekan"
         android:textStyle="bold"
         />
     <RelativeLayout
@@ -60,13 +61,15 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Search"
+            android:hint="جستجو"
+            android:fontFamily="@font/yekan"
             android:id="@+id/etSearch"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="It may take 10 minutes until you can see your book!"
+            android:text="اگه کتابتو الان تو سایت ایجاد کردی ممکنه 10 دقیقه طول بکشه تا بتونی اینجا ببینیش!"
             android:textColor="#e7d6e7"
+            android:fontFamily="@font/yekan"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"/>
         <ListView

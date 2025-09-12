@@ -14,4 +14,11 @@
         <item name="android:windowExitAnimation">@anim/fadeout</item>
     </style>
 
+
+    <style name="NavigationViewStyle" parent="Widget.Material3.NavigationView">
+        <item name="android:fontFamily">@font/yekan</item>
+        <item name="android:textDirection">rtl</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textSize">34dp</item>
+    </style>
 </resources>

@@ -6,15 +6,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -289,42 +293,55 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
 
         queue.add(request);
     }
-    private void showSummaryDialog(int addCount, int updatedCount, int errorCount,String urlimages) {
+    AlertDialog dialog_summary;
+    private void showSummaryDialog(int addCount, int updatedCount, int errorCount, String urlimages) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("لغت ها به درستی دریافت شدند. "+"دوست دارید تصاویر هم دانلود شوند؟");
 
-        String message = "Summary:\n   Added: " + addCount +
-                "\n   Updated: " + updatedCount +
-                "\n   Errors: " + errorCount;
+        // inflate کردن layout سفارشی
+        View dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_download_summary, null);
+        builder.setView(dialogView);
 
-        builder.setMessage(message);
+        TextView titleView = dialogView.findViewById(R.id.title);
+        TextView messageView = dialogView.findViewById(R.id.message);
+        RelativeLayout btnok = dialogView.findViewById(R.id.lytok);
+        String message = "خلاصه:\n   اضافه شده: " + addCount +
+                "\n   به‌روز شده: " + updatedCount +
+                "\n   خطا: " + errorCount;
+
+        messageView.setText(message);
+
         builder.setCancelable(false);
-        //if(urlimages.length()>0) {
-            builder.setPositiveButton("دانلود تصاویر", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    try {
-                        //GetImagesFromURL(urlimages);
-                        controller.UpdateWordList();
-                        controller.getWordImagesFromGithubSequential(mContext);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-
-                }
-            });
-        //}
-
-        builder.setNeutralButton("تمام", new DialogInterface.OnClickListener() {
+        btnok.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        btnok.setBackgroundResource(R.drawable.outline_button1b);
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        btnok.setBackgroundResource(R.drawable.outline_button1);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        btnok.setBackgroundResource(R.drawable.outline_button1);
+                        try {
+                            dialog_summary.dismiss();
+                            controller.UpdateWordList();
+                            controller.getWordImagesFromGithubSequential(mContext);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
 
-
+                        return true;
+                }
+                return false;
             }
         });
-        builder.show();
+
+        dialog_summary = builder.create();
+        dialog_summary.show();
+
+
+        dialog_summary.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
     }
 
 

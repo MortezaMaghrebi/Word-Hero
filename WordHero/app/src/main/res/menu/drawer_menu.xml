@@ -2,42 +2,46 @@
 
     <item
         android:id="@+id/nav_export_progress"
-        android:title="Save Learning Progress"/>
+        android:title="ذخیره پیشرفت یادگیری" />
 
     <item
         android:id="@+id/nav_import_progress"
-        android:title="Load Lerning Progress"/>
+        android:title="بازخوانی پیشرفت یادگیری" />
+    <!-- یا "بارگذاری پیشرفت یادگیری" -->
 
     <item
         android:id="@+id/nav_get_images_github"
-        android:title="Get Images from Github"/>
+        android:title="دریافت تصاویر از گیت‌هاب" />
 
     <item
         android:id="@+id/nav_get_images_pexels"
-        android:title="Get Images from Pexels"/>
+        android:title="دریافت تصاویر از پکسلس" />
 
     <item
         android:id="@+id/nav_export_images_base64"
-        android:title="Export Images as Base64"/>
+        android:title="خروجی تصاویر به صورت Base64" />
+    <!-- یا "صدور تصاویر با فرمت Base64" -->
 
     <item
         android:id="@+id/nav_export_images_jpg"
-        android:title="Export Images as Jpg"/>
+        android:title="خروجی تصاویر به صورت JPG" />
+    <!-- یا "صدور تصاویر با فرمت JPG" -->
 
     <item
         android:id="@+id/nav_goto_website"
-        android:title="Go To Website"/>
+        android:title="مراجعه به وب‌سایت" />
+    <!-- یا "رفتن به وب‌سایت" -->
 
     <item
         android:id="@+id/nav_update_application"
-        android:title="Update Application"/>
+        android:title="بروزرسانی برنامه" />
 
     <item
         android:id="@+id/nav_comment_on_cafebazaar"
-        android:title="Comment on CafeBazaar"/>
+        android:title="ثبت نظر در کافه‌بازار" />
 
     <item
         android:id="@+id/nav_comment_on_myket"
-        android:title="Comment on Myket"/>
+        android:title="ثبت نظر در مایکت" />
 
 </menu>
