@@ -673,10 +673,11 @@ public class SecondActivity extends AppCompatActivity {
                         intent.setPackage(null);
                         startActivity(intent);
                     }
-                }  else if (id == R.id.nav_comment_on_cafebazaar) {
-                    openCafeBazaarForComment();
+                } // else if (id == R.id.nav_comment_on_cafebazaar) {
+                   // openCafeBazaarForComment();
                     // باز کردن صفحه کافه‌بازار برای نظر دادن
-                } else if (id == R.id.nav_comment_on_myket) {
+                //}
+                else if (id == R.id.nav_comment_on_myket) {
                     openMyketForComment();
                     // باز کردن صفحه مایکت برای نظر دادن
                 }else {
