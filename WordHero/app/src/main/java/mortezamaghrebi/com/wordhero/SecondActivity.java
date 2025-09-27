@@ -109,7 +109,7 @@ public class SecondActivity extends AppCompatActivity {
     Boolean longs = false;
     int avatarindex = 1;
     final int REQUEST_CODE_OPEN_DOCUMENT = 609;
-
+    final boolean MYKET=true;
     void initControls() {
         mpbutton = MediaPlayer.create(SecondActivity.this, R.raw.clicksound);
         mpbutton.setVolume((float) (controller.getVolumeButtons() / 100.0), (float) (controller.getVolumeButtons() / 100.0));
@@ -739,18 +739,22 @@ public class SecondActivity extends AppCompatActivity {
                                         controller.setLastImageSaved(0);
                                         controller.backupImagesFilesToDocumentsWithProgress(SecondActivity.this);
                                     } else if (id == R.id.nav_update_application) {
-                                        String url = "https://github.com/MortezaMaghrebi/Word-Hero/raw/refs/heads/main/WordHero/app/release/app-release.apk";  // آدرس سایتت
+                                        if(MYKET){
+                                            checkUpdateInMyket(SecondActivity.this);
+                                        }else {
+                                            String url = "https://github.com/MortezaMaghrebi/Word-Hero/raw/refs/heads/main/WordHero/app/release/app-release.apk";  // آدرس سایتت
 
-                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 
-                                        intent.setPackage("com.android.chrome");
+                                            intent.setPackage("com.android.chrome");
 
-                                        try {
-                                            startActivity(intent);
-                                        } catch (ActivityNotFoundException e) {
-                                            intent.setPackage(null);
-                                            startActivity(intent);
-                                        } // آپدیت برنامه
+                                            try {
+                                                startActivity(intent);
+                                            } catch (ActivityNotFoundException e) {
+                                                intent.setPackage(null);
+                                                startActivity(intent);
+                                            } // آپدیت برنامه
+                                        }
                                     }
 
                                         break;
@@ -943,7 +947,20 @@ public class SecondActivity extends AppCompatActivity {
         buyp2.setOnTouchListener(buys);
         buyp3.setOnTouchListener(buys);
     }
-
+    public void checkUpdateInMyket(Context context) {
+        String packageName = context.getPackageName(); // شناسه پکیج اپ شما
+        try {
+            String url = "myket://check-update?id=" + packageName;
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.setPackage("ir.mservices.market"); // مشخص کردن مایکت
+            context.startActivity(intent);
+        } catch (Exception e) {
+            // اگر مایکت نصب نبود، مثلا به وب مایکت منتقل می‌شود
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://myket.ir/app/" + packageName));
+            context.startActivity(intent);
+        }
+    }
     public void BuyOnline(final String user) throws UnsupportedEncodingException {
         String uri = url + "?" + "command=buypotionheart," + user + "~" + order + "~" + price + "~" + quantity + "";
         RequestQueue queue = Volley.newRequestQueue(SecondActivity.this);
