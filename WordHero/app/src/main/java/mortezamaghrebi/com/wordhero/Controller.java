@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
@@ -871,6 +872,91 @@ public class Controller {
     {
         editor.putInt("dbversion",version);
         editor.commit();
+    }
+
+    public boolean getTourShown(int tournum)
+    {
+        String tourState = prefs.getString("tournum", "ffffffffffffff");
+        return tourState.charAt(tournum) == 't';
+    }
+
+    public void setTourShown(int tournum) {
+        String tourState = prefs.getString("tournum", "ffffffffffffff");
+
+        StringBuilder sb = new StringBuilder(tourState);
+        sb.setCharAt(tournum, 't'); // این مرحله رو "نمایش داده شده" علامت می‌زنیم
+
+        editor.putString("tournum", sb.toString());
+        editor.commit();
+    }
+
+
+
+    public String getTourMessage(int message)
+    {
+        switch (message)
+        {
+            case 1:
+                return "سلام خوشحالیم که این برنامه رو نصب کردی، دوست داری نحوه کارشو برات توضیح بدم؟";
+            case 2:
+                return "در این برنامه میتونی لغات جدید انگلیسی رو به روش لایتنر آموزش ببینی، برنامه لغات رو به ترتیب هوشمند به تو نشون میده و ازت سوال میپرسه طوری که ناخودآگاه یاد میگیری بدون این که تلاش کنی اون ها رو حفظ کنی";
+            case 3:
+                return "همچنین این برنامه یک مجموعه 24000 تایی از تصاویر داره که تقریبا برای 90 درصد کلمات پر کاربرد انگلیسی تصویر موجوده و این تصاویر بهت کمک میکنن کلمه رو بهتر به خاطر بسپاری";
+            case 4:
+                return "تو میتونی لغات کتاب مورد علاقه حودت رو یاد بگیری یا اینکه از کتابهایی که قبلا ایجاد شده توسط خود من یا بقیه کاربران استفاده کنی مثلا میتونی از کتاب های 504 یا 1100 یا سری کتاب های اینترچنج یا امریکن انگلیش فایلز استفاده کنی که لغات استانداری دارن ";
+            case 5:
+                return "برای شروع دکمه یاد بگیر رو بزن";
+            case 6:
+                return  "لیست کتاب ها بهت نشون داده میشه، میتونی کتاب Interchange 1 to 3 رو برای شروع انتخاب کنی که تمام لغات مجموعه اینترچنج رو داره";
+            case 7:
+                return "کلمات بصورت پرسش های چهارگزینه ای نمایش داده میشن و هر کلمه 16 بار بهت نشون داده میشه اگه دکمه آسون بود رو بزنی کلمه زودتر پیشرفتشو طی میکنه و اگه دستت رو روی دکمه آسون بود نگه داری یک راست میره به مرحله 16";
+            case 8:
+                return "ابتدا وقتی هنوز کلمه رو بلد نیست همراه تصویر بهت نشون داده میشه، بعد بدون تصویر، بعد جلوتر که بری حالت های مختلف رو میپرسه مثلا فارسی رو میگه انگلیسیش رو میگی و یا توی جمله ازت میپرسه و خلاصه حسابی اون کلمه رو یاد میگیری!";
+            case 9:
+                return "اگه فیلترشکنت روشن باشه میتونی روی عکس کلیک کنی و تصویر جدید براش از اینترنت بگیری حد اقل دو بار کلیک کن تا مطمئن شی عوض شده";
+            case 10:
+                return "تو این بازی قلب ها و اکسیرها رایگان هستن پس نگران تموم شدنشون نباش، اون ها فقط برای مدیریت بهتر زمان طراحی شدن، پس اگه قلب تموم شد میتونی برنامه رو ببندی و دوباره باز گنی، ترچیجا یکمی بعد تا مغزت یکم استراحت کنه، دوباره قلب جدید میگیری!";
+            case 11:
+                return "قسمت های تطبیق و آزمون هم کاملا مشابه یاد بگیر هستند فقط مدل سوال پرسیدنشون فرق میکنه، اون ها هم از جعبه لایتنر استفاده میکنن و اگه درست چواب بدی اون کلمه توی جعبه پیشرفت میکنه و میره به خونه بعدی";
+            case 12:
+                return "اگه روی عکس پروفایل ورد هیرو کلیک کنی میتونی لیست تمام لغات رو ببینی و میزان پیشرفت هر لغت رو مشاهده کنی";
+        }
+        return  "";
+    }
+
+    public void showTourMessage(Context context, int tourNum,int maxTourNumShow) {
+        if(getTourShown(tourNum)&& tourNum<maxTourNumShow)
+        {
+            showTourMessage(context,tourNum+1,maxTourNumShow);
+            return;
+        }
+        String message = getTourMessage(tourNum);
+
+        TextView textView = new TextView(context);
+        textView.setText(message);
+        textView.setTextSize(16);
+        textView.setPadding(40, 40, 40, 40);
+
+        try {
+            Typeface typeface = Typeface.createFromAsset(context.getAssets(), "font/yekan.ttf");
+            textView.setTypeface(typeface);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle("راهنما")
+                .setIcon(context.getApplicationInfo().icon)
+                .setView(textView)
+                .setPositiveButton("برو بعدی", (d, which) -> {
+                    setTourShown(tourNum);
+                    if(tourNum<maxTourNumShow) showTourMessage(context, tourNum + 1,maxTourNumShow);
+                })
+                .setNegativeButton("همشو بلدم", (d, which) -> {
+                    for(int i=1;i<12;i++)setTourShown(i);
+                })
+                .create();
+        dialog.show();
     }
     int getSwipeShown()
     {
@@ -1893,6 +1979,7 @@ public class Controller {
                         moveLastThreeToFront();
                         DatasetsDialogClass cdd = new DatasetsDialogClass(context,Controller.this);
                         cdd.show();
+                        showTourMessage(context,6,6);
 
                     }
                 },

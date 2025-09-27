@@ -829,6 +829,10 @@ public class SecondActivity extends AppCompatActivity {
                         .show();
             }
         });
+        if(controller.getTourShown(9))
+        {
+            controller.showTourMessage(SecondActivity.this,11,12);
+        }else controller.showTourMessage(SecondActivity.this,1,5);
     }
 
     String order = "";
@@ -1061,14 +1065,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     void setMessagesUI() {
-        //if (controller.getMessagesCount() < controller.getMessagesShownCount())
-        //    controller.setMessagesShownCount(0);
-        //if ((controller.getMessagesCount() - controller.getMessagesShownCount()) > 0) {
-        //    txtnummessages.setText("" + (controller.getMessagesCount() - controller.getMessagesShownCount()));
-        //    txtnummessages.setVisibility(View.VISIBLE);
-        //} else {
-        //    txtnummessages.setVisibility(View.INVISIBLE);
-        //}
+
         try {
             controller.loadGetLoading(SecondActivity.this);
         } catch (UnsupportedEncodingException e) {

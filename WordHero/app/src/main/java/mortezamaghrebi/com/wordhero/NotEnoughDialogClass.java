@@ -64,6 +64,7 @@ public class NotEnoughDialogClass extends Dialog  {
                 return false;
             }
         });
+        controller.showTourMessage(context,10,10);
     }
 
 }

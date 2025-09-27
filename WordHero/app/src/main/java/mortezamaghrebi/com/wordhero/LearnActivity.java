@@ -459,6 +459,7 @@ public class LearnActivity extends AppCompatActivity {
                 return false;
             }
         });
+
     }
 
     void itsEasyQuestion()
@@ -831,7 +832,7 @@ public class LearnActivity extends AppCompatActivity {
                 }
                 if(currentQuestionIndex==NumberOfQuestions-1)txtnext.setText("نتیجه");
                 fetch_current_page=2;
-
+                controller.showTourMessage(LearnActivity.this, 7,9);
 
             }
         }, delay);
