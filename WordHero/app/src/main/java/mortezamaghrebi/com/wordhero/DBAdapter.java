@@ -429,6 +429,16 @@ public class DBAdapter extends SQLiteOpenHelper {
 
         return db.update(DATABASE_TABLE, newValues, where, whereArgs) != 0;
     }
+
+    public int UpdateWordReview(String word, String review) {
+        ContentValues newValues = new ContentValues();
+        newValues.put(key_review, review);
+
+        String where = key_word + " = ? COLLATE NOCASE";
+        String[] whereArgs = { word };
+
+        return db.update(DATABASE_TABLE, newValues, where, whereArgs);
+    }
     public Boolean UpdateWordStarted(long rowId, int started) {
         ContentValues newValues = new ContentValues();
         newValues.put(key_started, started);

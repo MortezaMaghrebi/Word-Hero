@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
@@ -874,14 +875,127 @@ public class Controller {
         editor.commit();
     }
 
+    // ذخیره متن در فایل
+    private void saveToFile(Context context, String fileName, String data) {
+        try {
+            FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+            fos.write(data.getBytes(StandardCharsets.UTF_8));
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // خوندن متن از فایل
+    private String loadFromFile(Context context, String fileName) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            FileInputStream fis = context.openFileInput(fileName);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString().trim();
+    }
+
+    public class WordProgress{
+        public String word;
+        public String progress;
+    }
+    void refreshWordItems()
+    {
+        openDB(context);
+        Cursor cursor = myDB.getAllWords();
+        getWordItems(cursor);
+        cursor.close();
+    }
+    public List<WordProgress> getWordsProgress(Context context) {
+        List<WordProgress> progresses = new ArrayList<>();
+        String allwordsprogress = loadFromFile(context, "allwordsprogress.txt"); // از فایل می‌خونه
+        if(allwordsprogress.isEmpty()) return progresses;
+
+        String[] items = allwordsprogress.split("#");
+        for (String item : items) {
+            String[] subitems = item.split("~");
+            if (subitems.length == 2) {
+                WordProgress progress = new WordProgress();
+                progress.word = subitems[0];
+                progress.progress = subitems[1];
+                progresses.add(progress);
+            }
+        }
+        return progresses;
+    }
+
+
+    public void setWordProgresses(Context context) {
+        try {
+            StringBuilder allwordsprogress = new StringBuilder();
+            List<WordProgress> progresses = getWordsProgress(context);
+            refreshWordItems();
+
+            for (int i = 0; i < wordItems.length; i++) {
+                String word = wordItems[i].word.toLowerCase().trim();
+                String review = wordItems[i].review;
+                if (review.length() > 0) {
+                    boolean find = false;
+
+                    for (int j = 0; j < progresses.size(); j++) {
+                        if (progresses.get(j).word.equals(word)) {
+                            progresses.get(j).progress = review;
+                            find = true;
+                            break;
+                        }
+                    }
+
+                    if (!find) {
+                        WordProgress progress1 = new WordProgress();
+                        progress1.word = word;
+                        progress1.progress = review;
+                        progresses.add(progress1);
+                    }
+                }
+            }
+
+            for (int i = 0; i < progresses.size(); i++) {
+                String item = progresses.get(i).word + "~" + progresses.get(i).progress;
+                allwordsprogress.append((i > 0 ? "#" : "")).append(item);
+            }
+            saveToFile(context, "allwordsprogress.txt", allwordsprogress.toString()); // ذخیره در فایل
+
+            Toast.makeText(context, "تعداد " + progresses.size() + " کلمه پیشرفت داشته اند و ذخیره شده", Toast.LENGTH_SHORT).show();
+        }catch (Exception e){
+
+        }
+    }
+
+    void applyWordProgresses()
+    {
+        try {
+            List<WordProgress> progresses = getWordsProgress(context);
+            int count = 0;
+            for (int i = 0; i < progresses.size(); i++) {
+                WordProgress item = progresses.get(i);
+                count += myDB.UpdateWordReview(item.word, item.progress);
+            }
+
+            Toast.makeText(context, "Num " + count + " words review updated", Toast.LENGTH_SHORT).show();
+        }catch (Exception e){}
+    }
+
     public boolean getTourShown(int tournum)
     {
-        String tourState = prefs.getString("tournum", "ffffffffffffff");
+        String tourState = prefs.getString("tournum", "ffffffffffffffffffff");
         return tourState.charAt(tournum) == 't';
     }
 
     public void setTourShown(int tournum) {
-        String tourState = prefs.getString("tournum", "ffffffffffffff");
+        String tourState = prefs.getString("tournum", "ffffffffffffffffffff");
 
         StringBuilder sb = new StringBuilder(tourState);
         sb.setCharAt(tournum, 't'); // این مرحله رو "نمایش داده شده" علامت می‌زنیم
@@ -890,52 +1004,69 @@ public class Controller {
         editor.commit();
     }
 
+    void removeAllWords()
+    {
+        myDB.deleteAllWords();
+    }
 
 
     public String getTourMessage(int message)
     {
-        switch (message)
-        {
+        switch (message) {
             case 1:
-                return "سلام خوشحالیم که این برنامه رو نصب کردی، دوست داری نحوه کارشو برات توضیح بدم؟";
+                return "سلام! خیلی خوشحالیم که اومدی تو اپ ما! 😊 آماده‌ای یه سفر باحال به دنیای کلمات شروع کنیم؟";
             case 2:
-                return "در این برنامه میتونی لغات جدید انگلیسی رو به روش لایتنر آموزش ببینی، برنامه لغات رو به ترتیب هوشمند به تو نشون میده و ازت سوال میپرسه طوری که ناخودآگاه یاد میگیری بدون این که تلاش کنی اون ها رو حفظ کنی";
+                return "اینجا می‌تونی کلی لغت انگلیسی یاد بگیری، اونم با روش لایتنر! 😄 برنامه خودش حواسش هست چی بهت نشون بده تا راحت یاد بگیری.";
             case 3:
-                return "همچنین این برنامه یک مجموعه 24000 تایی از تصاویر داره که تقریبا برای 90 درصد کلمات پر کاربرد انگلیسی تصویر موجوده و این تصاویر بهت کمک میکنن کلمه رو بهتر به خاطر بسپاری";
+                return "ما یه عالمه عکس مرتبط، چیزی حدود 24هزارتا داریم! 📸 برای بیشتر کلمات پرکاربرد، که کمکت می‌کنن لغتا تو ذهنت بمونن.";
             case 4:
-                return "تو میتونی لغات کتاب مورد علاقه حودت رو یاد بگیری یا اینکه از کتابهایی که قبلا ایجاد شده توسط خود من یا بقیه کاربران استفاده کنی مثلا میتونی از کتاب های 504 یا 1100 یا سری کتاب های اینترچنج یا امریکن انگلیش فایلز استفاده کنی که لغات استانداری دارن ";
+                return "دوست داری لغتای کتاب مورد علاقه‌ت رو کار کنی؟ یا از کتابای آماده‌مون مثل 504، 1100 یا سری Interchange و American English Files استفاده کنی؟ 📚";
             case 5:
-                return "برای شروع دکمه یاد بگیر رو بزن";
+                return "خب، دیگه منتظر چی هستی؟ دکمه‌ی «یاد بگیر» رو بزن و بریم! 🚀";
             case 6:
-                return  "لیست کتاب ها بهت نشون داده میشه، میتونی کتاب Interchange 1 to 3 رو برای شروع انتخاب کنی که تمام لغات مجموعه اینترچنج رو داره";
+                return "لیست کتابا جلوت باز میشه! 😊 برای شروع، Interchange 1 to 3 رو پیشنهاد می‌کنم، پر از لغتای کاربردی و باحاله.";
             case 7:
-                return "کلمات بصورت پرسش های چهارگزینه ای نمایش داده میشن و هر کلمه 16 بار بهت نشون داده میشه اگه دکمه آسون بود رو بزنی کلمه زودتر پیشرفتشو طی میکنه و اگه دستت رو روی دکمه آسون بود نگه داری یک راست میره به مرحله 16";
+                return "هر کلمه 16 بار میاد جلوت. اگه بگی «آسون بود»، زودتر میره جلو! اگه دکمه رو نگه داری، یه‌راست میره مرحله آخر! 🏃‍♂️";
             case 8:
-                return "ابتدا وقتی هنوز کلمه رو بلد نیست همراه تصویر بهت نشون داده میشه، بعد بدون تصویر، بعد جلوتر که بری حالت های مختلف رو میپرسه مثلا فارسی رو میگه انگلیسیش رو میگی و یا توی جمله ازت میپرسه و خلاصه حسابی اون کلمه رو یاد میگیری!";
+                return "اول با عکس نشونت می‌دیم، بعد بدون عکس، بعدشم تو جمله‌ها می‌پرسیم. خلاصه کلمه رو انقدر قشنگ تو ذهنت جا می‌ندازیم! 😊";
             case 9:
-                return "اگه فیلترشکنت روشن باشه میتونی روی عکس کلیک کنی و تصویر جدید براش از اینترنت بگیری حد اقل دو بار کلیک کن تا مطمئن شی عوض شده";
+                return "اگه فیلترشکن داری، روی عکس بزن و یه تصویر جدید از نت بگیر! دوبار بزن که مطمئن شی عوض شده. 🔄";
             case 10:
-                return "تو این بازی قلب ها و اکسیرها رایگان هستن پس نگران تموم شدنشون نباش، اون ها فقط برای مدیریت بهتر زمان طراحی شدن، پس اگه قلب تموم شد میتونی برنامه رو ببندی و دوباره باز گنی، ترچیجا یکمی بعد تا مغزت یکم استراحت کنه، دوباره قلب جدید میگیری!";
+                return "اینجا قلب و اکسیر رایگانه! 😍 نگران تموم شدنشون نباش. قلبت تموم شد؟ یه کم استراحت کن، بعد دوباره پر میشه!";
             case 11:
-                return "قسمت های تطبیق و آزمون هم کاملا مشابه یاد بگیر هستند فقط مدل سوال پرسیدنشون فرق میکنه، اون ها هم از جعبه لایتنر استفاده میکنن و اگه درست چواب بدی اون کلمه توی جعبه پیشرفت میکنه و میره به خونه بعدی";
+                return "بخش آزمون و تطبیق هم مثل «یاد بگیر»ه، فقط سؤالا یه جور دیگه‌ست. جواب درست بدی، کلمه تو جعبه لایتنر میره مرحله بعدی! 💪";
             case 12:
-                return "اگه روی عکس پروفایل ورد هیرو کلیک کنی میتونی لیست تمام لغات رو ببینی و میزان پیشرفت هر لغت رو مشاهده کنی";
+                return "روی پروفایل بزن تا لیست لغتا و پیشرفتت رو ببینی. انگار یه نقشه گنج داری! 🗺️";
+            case 13:
+                return "حالا دکمه‌ی «کتاب دلخواه خودت رو ایجاد کن» رو بزن، می‌گم چی به چیه! 😎";
+            case 14:
+                return "می‌خوای کتاب خودت رو یاد بگیری؟ متنشو تو سایت بذار، سطحتو انتخاب کن، بعد تو کمتر از 10 دقیقه تو اپه! 😄";
+            case 15:
+                return "کتابت PDFه؟ با یه چیزی مثل PDF OCR متنشو دربیار، بده به سایت تا لغتاشو برات آماده کنیم. 📖";
+            case 16:
+                return "لیست کتابا رو می‌خوای؟ اون دکمه‌ی آبی خوشگل پایین سمت راست رو بزن! 🔵";
+            case 17:
+                return "هر موقع خواستی می‌تونی کتابتو عوض کنی. موقع دانلود کتاب جدید، خودت انتخاب کن که پیشرفتت بمونه یا نه! ✨";
         }
-        return  "";
+        return "";
     }
-
     public void showTourMessage(Context context, int tourNum,int maxTourNumShow) {
         if(getTourShown(tourNum)&& tourNum<maxTourNumShow)
         {
             showTourMessage(context,tourNum+1,maxTourNumShow);
             return;
         }
+
+        if(getTourShown(tourNum)) return;
         String message = getTourMessage(tourNum);
 
         TextView textView = new TextView(context);
         textView.setText(message);
-        textView.setTextSize(16);
+        textView.setTextSize(18);
         textView.setPadding(40, 40, 40, 40);
+        textView.setBackgroundColor(Color.parseColor("#2B2B2B")); // خاکستری تیره
+        textView.setTextColor(Color.WHITE); // متن سفید
+
 
         try {
             Typeface typeface = Typeface.createFromAsset(context.getAssets(), "font/yekan.ttf");
@@ -948,15 +1079,18 @@ public class Controller {
                 .setTitle("راهنما")
                 .setIcon(context.getApplicationInfo().icon)
                 .setView(textView)
-                .setPositiveButton("برو بعدی", (d, which) -> {
-                    setTourShown(tourNum);
+                .setPositiveButton(tourNum<=1?"برو بریم، آماده ام!":"فهمیدم", (d, which) -> {
                     if(tourNum<maxTourNumShow) showTourMessage(context, tourNum + 1,maxTourNumShow);
                 })
-                .setNegativeButton("همشو بلدم", (d, which) -> {
-                    for(int i=1;i<12;i++)setTourShown(i);
+                .setNegativeButton("برنامه رو کامل بلدم", (d, which) -> {
+                    for(int i=1;i<=15;i++)setTourShown(i);
                 })
                 .create();
         dialog.show();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2B2B2B")));
+        setTourShown(tourNum);
+
+
     }
     int getSwipeShown()
     {

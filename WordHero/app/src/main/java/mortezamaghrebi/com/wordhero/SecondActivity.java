@@ -689,6 +689,7 @@ public class SecondActivity extends AppCompatActivity {
                                 case DialogInterface.BUTTON_POSITIVE:
                                     if (id == R.id.nav_export_progress) {
                                         GetStoragePermission(false);
+                                        controller.setWordProgresses(SecondActivity.this);
                                         controller.backupProgressToDocumentsWithProgress(SecondActivity.this);
                                     } else if (id == R.id.nav_import_progress) {
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -707,6 +708,7 @@ public class SecondActivity extends AppCompatActivity {
                                                 );
                                             } else {
                                                 controller.restoreProgressFromBackupDocuments(SecondActivity.this);
+                                                controller.getWordsProgress(SecondActivity.this);
                                             }
                                         } else {
                                             if (ContextCompat.checkSelfPermission(SecondActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -716,6 +718,7 @@ public class SecondActivity extends AppCompatActivity {
                                                 }, REQUEST_CODE_READ_STORAGE);
                                             } else {
                                                 controller.restoreProgressFromBackupDocuments(SecondActivity.this);
+                                                controller.getWordsProgress(SecondActivity.this);
                                             }
                                         }
                                     } else if (id == R.id.nav_get_images_github) {
@@ -793,15 +796,19 @@ public class SecondActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mpbutton.seekTo(0);mpbutton.start();
-                String url = "https://wordhero.ir";  // آدرس سایتت
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.setPackage("com.android.chrome");
-                try {
-                    startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    intent.setPackage(null);
-                    startActivity(intent);
+                if(controller.getTourShown(15)) {
+                    String url = "https://wordhero.ir";  // آدرس سایتت
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.setPackage("com.android.chrome");
+                    try {
+                        startActivity(intent);
+
+                    } catch (ActivityNotFoundException e) {
+                        intent.setPackage(null);
+                        startActivity(intent);
+                    }
                 }
+                controller.showTourMessage(SecondActivity.this,14,17);
             }
         });
 
@@ -829,10 +836,7 @@ public class SecondActivity extends AppCompatActivity {
                         .show();
             }
         });
-        if(controller.getTourShown(9))
-        {
-            controller.showTourMessage(SecondActivity.this,11,12);
-        }else controller.showTourMessage(SecondActivity.this,1,5);
+        controller.showTourMessage(SecondActivity.this,1,5);
     }
 
     String order = "";
@@ -1248,6 +1252,19 @@ public class SecondActivity extends AppCompatActivity {
             imgsynced.setVisibility(View.VISIBLE);
         }
         resumeMusic();
+        if(controller.getTourShown(9))
+        {
+            controller.showTourMessage(SecondActivity.this,11,12);
+        }
+        if(controller.getTourShown(12))
+        {
+            controller.showTourMessage(SecondActivity.this,13,13);
+        }
+        if(controller.getTourShown(17))
+        {
+            if(!controller.getTourShown(18)) showCommentDialog();
+            controller.setTourShown(18);
+        }
         super.onStart();
     }
 
@@ -2518,17 +2535,17 @@ public class SecondActivity extends AppCompatActivity {
         builder.setTitle("از برنامه راضی هستید؟ 🌟");
         builder.setMessage("با گذاشتن نظر و امتیاز، از ما حمایت کنید!");
         builder.setCancelable(false);
-
-        builder.setPositiveButton("کافه‌بازار", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                openCafeBazaarForComment();
-                controller.setIsCommentedBazaar(true);
-                dialog.dismiss();
-            }
-        });
-
-        builder.setNegativeButton("مایکت", new DialogInterface.OnClickListener() {
+        if(!MYKET) {
+            builder.setPositiveButton("نظر در کافه‌بازار", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    openCafeBazaarForComment();
+                    controller.setIsCommentedBazaar(true);
+                    dialog.dismiss();
+                }
+            });
+        }
+        builder.setNegativeButton("نظر در مایکت", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 openMyketForComment();

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -79,29 +80,7 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
                 lytbutton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which){
-                                    case DialogInterface.BUTTON_POSITIVE:
-                                        try {
-                                            GetWordsFromURL(urlwords, urlurlimages);
-                                        } catch (UnsupportedEncodingException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                        break;
-
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        //No button clicked
-                                        break;
-                                }
-                            }
-                        };
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                        builder.setMessage("آیا مطمئنید که میخواهید لغات را دانلود کنید؟").setPositiveButton("بله", dialogClickListener)
-                                .setNegativeButton("خیر", dialogClickListener).show();
-
+                           AskToDownloadWords(1,urlwords,urlurlimages);
                     }
                 });
                 lytbutton.setVisibility(View.VISIBLE);
@@ -151,6 +130,88 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
         }
 
         return v;
+    }
+
+    boolean saveprogress=false;
+    void AskToDownloadWords(int level,String urlwords,String urlurlimages)
+    {
+        TextView textView = new TextView(mContext);
+        switch (level) {
+            case 1:
+                textView.setText("آیا مطمئنید که میخواهید لغات این کتاب را دانلود کنید؟");
+                break;
+            case 2:
+                textView.setText("آیا میخواهید پیشرفت لغاتی که از کتاب قبلی یاد گرفته اید در کتاب جدید لحاظ شود؟");
+                break;
+            case 3:
+                textView.setText("آیا میخواهید لغات کتاب قبلی شما حذف شود؟");
+                break;
+        }
+        textView.setTextSize(18);
+        textView.setPadding(40, 40, 40, 40);
+        textView.setBackgroundColor(Color.parseColor("#2B2B2B")); // خاکستری تیره
+        textView.setTextColor(Color.WHITE); // متن سفید
+
+
+        try {
+            Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "font/yekan.ttf");
+            textView.setTypeface(typeface);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(mContext)
+                .setTitle("دریافت کتاب")
+                .setIcon(mContext.getApplicationInfo().icon)
+                .setView(textView)
+                .setPositiveButton("بله", (d, which) -> {
+                    if(level==1) {
+                        if(controller.wordItems.length<15){
+                            controller.removeAllWords();
+                            try {
+                                GetWordsFromURL(urlwords, urlurlimages);
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        else AskToDownloadWords(2,urlwords,urlurlimages);
+
+                    }
+                    if(level==2) {
+                        saveprogress=true;
+                        controller.setWordProgresses(mContext);
+                        AskToDownloadWords(3,urlwords,urlurlimages);
+                    }
+                    if(level==3)
+                    {
+                        controller.removeAllWords();
+                        try {
+                            GetWordsFromURL(urlwords, urlurlimages);
+                        } catch (UnsupportedEncodingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                })
+                .setNegativeButton("خیر", (d, which) -> {
+                    if(level==1) return;
+                    if(level==2) {
+                        saveprogress=false;
+                        AskToDownloadWords(3,urlwords,urlurlimages);
+                    }
+                    if(level==3)
+                    {
+                        try {
+                            GetWordsFromURL(urlwords, urlurlimages);
+                        } catch (UnsupportedEncodingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                })
+                .create();
+        dialog.show();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2B2B2B")));
+
     }
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
@@ -235,8 +296,7 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
 
                             // بعد از اتمام حلقه
                             handler.post(() -> {
-                                progressDialog.dismiss();
-                                showSummaryDialog(add, update, error, urlimages);
+                               showSummaryDialog(add, update, error, urlimages);
                             });
                         });
                     }
@@ -338,6 +398,13 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
         });
 
         dialog_summary = builder.create();
+
+        controller.refreshWordItems();
+        if(saveprogress)
+        {
+            controller.applyWordProgresses();
+        }
+
         dialog_summary.show();
 
 
