@@ -45,7 +45,6 @@ public class NotEnoughDialogClass extends Dialog  {
             lytnopotion.getLayoutParams().height=0;
             lytnopotion.requestLayout();
         }
-        controller = null;
         btnok.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -64,7 +63,9 @@ public class NotEnoughDialogClass extends Dialog  {
                 return false;
             }
         });
-        controller.showTourMessage(context,10,10);
+        controller.showTourMessage(context,9,9);
+        controller = null;
+
     }
 
 }

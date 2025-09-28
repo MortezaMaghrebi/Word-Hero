@@ -75,7 +75,7 @@ import java.util.Map;
 public class SecondActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_READ_STORAGE = 606;
-    TextView txtheart1, txtheart2, txtexir1, txtexir2, txtstar1, txtstar2, txtuser, txtavatarname, txtnummessages, txtGetimagesprogress;
+    TextView txtheart1, txtheart2, txtexir1, txtexir2, txtstar1, txtstar2, txtuser, txtavatarname, txtnummessages, txtGetimagesprogress,tvBookName;
     RelativeLayout prgheart, prgexir, prgstar, prgref, btnmessages, btnusersetting, lytone;
     LinearLayout buyh1, buyh2, buyh3, buyp1, buyp2, buyp3, lyttwo, lytthree, lytbody, lytfour, lytfive;
     ImageView imghome, imgchat, imgmarket, imgsearch, imgusers, imgacceptavatar, imgacceptuser, imgnextavatar, imgprevavatar, imgavatarbuying, imgsynced, imginfo, imgsettings;
@@ -109,7 +109,7 @@ public class SecondActivity extends AppCompatActivity {
     Boolean longs = false;
     int avatarindex = 1;
     final int REQUEST_CODE_OPEN_DOCUMENT = 609;
-    final boolean MYKET=true;
+    final boolean MYKET=false;
     void initControls() {
         mpbutton = MediaPlayer.create(SecondActivity.this, R.raw.clicksound);
         mpbutton.setVolume((float) (controller.getVolumeButtons() / 100.0), (float) (controller.getVolumeButtons() / 100.0));
@@ -130,6 +130,7 @@ public class SecondActivity extends AppCompatActivity {
         txtavatarname = (TextView) findViewById(R.id.txtavatarname);
         txtnummessages = (TextView) findViewById(R.id.txtnummessages);
         txtGetimagesprogress = (TextView) findViewById(R.id.txtGetimagesprogress);
+        tvBookName = (TextView) findViewById(R.id.tvBookName);
         prgref = (RelativeLayout) findViewById(R.id.prg_ref);
         prgheart = (RelativeLayout) findViewById(R.id.prgheart);
         prgexir = (RelativeLayout) findViewById(R.id.prgexir);
@@ -689,7 +690,7 @@ public class SecondActivity extends AppCompatActivity {
                                 case DialogInterface.BUTTON_POSITIVE:
                                     if (id == R.id.nav_export_progress) {
                                         GetStoragePermission(false);
-                                        controller.setWordProgresses(SecondActivity.this);
+                                        //controller.setWordProgresses(SecondActivity.this);
                                         controller.backupProgressToDocumentsWithProgress(SecondActivity.this);
                                     } else if (id == R.id.nav_import_progress) {
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -708,7 +709,7 @@ public class SecondActivity extends AppCompatActivity {
                                                 );
                                             } else {
                                                 controller.restoreProgressFromBackupDocuments(SecondActivity.this);
-                                                controller.getWordsProgress(SecondActivity.this);
+                                                //controller.getWordsProgress(SecondActivity.this);
                                             }
                                         } else {
                                             if (ContextCompat.checkSelfPermission(SecondActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -718,7 +719,7 @@ public class SecondActivity extends AppCompatActivity {
                                                 }, REQUEST_CODE_READ_STORAGE);
                                             } else {
                                                 controller.restoreProgressFromBackupDocuments(SecondActivity.this);
-                                                controller.getWordsProgress(SecondActivity.this);
+                                                //controller.getWordsProgress(SecondActivity.this);
                                             }
                                         }
                                     } else if (id == R.id.nav_get_images_github) {
@@ -808,7 +809,7 @@ public class SecondActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 }
-                controller.showTourMessage(SecondActivity.this,14,17);
+                controller.showTourMessage(SecondActivity.this,13,16);
             }
         });
 
@@ -1028,9 +1029,9 @@ public class SecondActivity extends AppCompatActivity {
 
     void setExirUI() {
         int dec = controller.getDecreasingExir();
-        if (dec > 0) {
-            Toast.makeText(SecondActivity.this, "You have lost " + controller.decreaseExir(dec) + " drops of potion in time", Toast.LENGTH_LONG).show();
-        }
+        //if (dec > 0) {
+        //    Toast.makeText(SecondActivity.this, "You have lost " + controller.decreaseExir(dec) + " drops of potion in time", Toast.LENGTH_LONG).show();
+        //}
         exirchangedtime = controller.getExirChangedTime();
         txtexir1.setText("" + controller.getExir());
         if (controller.getExir() == 0) {
@@ -1252,19 +1253,20 @@ public class SecondActivity extends AppCompatActivity {
             imgsynced.setVisibility(View.VISIBLE);
         }
         resumeMusic();
-        if(controller.getTourShown(9))
+        if(controller.getTourShown(8))
         {
-            controller.showTourMessage(SecondActivity.this,11,12);
+            controller.showTourMessage(SecondActivity.this,10,11);
         }
-        if(controller.getTourShown(12))
+        if(controller.getTourShown(11))
         {
-            controller.showTourMessage(SecondActivity.this,13,13);
+            controller.showTourMessage(SecondActivity.this,12,12);
         }
-        if(controller.getTourShown(17))
+        if(controller.getTourShown(16))
         {
-            if(!controller.getTourShown(18)) showCommentDialog();
-            controller.setTourShown(18);
+            if(!controller.getTourShown(17)) showCommentDialog();
+            controller.setTourShown(17);
         }
+        tvBookName.setText(controller.getBookName());
         super.onStart();
     }
 

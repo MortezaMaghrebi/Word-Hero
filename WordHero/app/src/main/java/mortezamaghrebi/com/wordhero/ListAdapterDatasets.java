@@ -77,10 +77,11 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
             txtgroup.setText(group);
             txtname.setText(name);
             if(urlwords.length()>5) {
+                String finalName = name;
                 lytbutton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                           AskToDownloadWords(1,urlwords,urlurlimages);
+                           AskToDownloadWords(1,urlwords,urlurlimages, finalName);
                     }
                 });
                 lytbutton.setVisibility(View.VISIBLE);
@@ -133,7 +134,7 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
     }
 
     boolean saveprogress=false;
-    void AskToDownloadWords(int level,String urlwords,String urlurlimages)
+    void AskToDownloadWords(int level,String urlwords,String urlurlimages,String BookName)
     {
         TextView textView = new TextView(mContext);
         switch (level) {
@@ -169,24 +170,25 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
                         if(controller.wordItems.length<15){
                             controller.removeAllWords();
                             try {
-                                GetWordsFromURL(urlwords, urlurlimages);
+                                GetWordsFromURL(urlwords, urlurlimages,BookName);
                             } catch (UnsupportedEncodingException e) {
                                 throw new RuntimeException(e);
                             }
                         }
-                        else AskToDownloadWords(2,urlwords,urlurlimages);
+                        else AskToDownloadWords(2,urlwords,urlurlimages,BookName);
 
                     }
                     if(level==2) {
                         saveprogress=true;
                         controller.setWordProgresses(mContext);
-                        AskToDownloadWords(3,urlwords,urlurlimages);
+                        AskToDownloadWords(3,urlwords,urlurlimages,BookName);
                     }
                     if(level==3)
                     {
                         controller.removeAllWords();
+                        controller.clearBookName();
                         try {
-                            GetWordsFromURL(urlwords, urlurlimages);
+                            GetWordsFromURL(urlwords, urlurlimages,BookName);
                         } catch (UnsupportedEncodingException e) {
                             throw new RuntimeException(e);
                         }
@@ -197,12 +199,12 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
                     if(level==1) return;
                     if(level==2) {
                         saveprogress=false;
-                        AskToDownloadWords(3,urlwords,urlurlimages);
+                        AskToDownloadWords(3,urlwords,urlurlimages,BookName);
                     }
                     if(level==3)
                     {
                         try {
-                            GetWordsFromURL(urlwords, urlurlimages);
+                            GetWordsFromURL(urlwords, urlurlimages,BookName);
                         } catch (UnsupportedEncodingException e) {
                             throw new RuntimeException(e);
                         }
@@ -219,7 +221,7 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
     }
 
     int add = 0, update = 0, error = 0;
-    public void GetWordsFromURL(String url, String urlimages) throws UnsupportedEncodingException {
+    public void GetWordsFromURL(String url, String urlimages,String BookName) throws UnsupportedEncodingException {
         controller = new Controller(mContext, true);
         RequestQueue queue = Volley.newRequestQueue(mContext);
         queue.getCache().clear();
@@ -296,8 +298,9 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
 
                             // بعد از اتمام حلقه
                             handler.post(() -> {
-                               showSummaryDialog(add, update, error, urlimages);
-                            });
+                                progressDialog.dismiss();
+                                showSummaryDialog(add, update, error, urlimages,BookName);
+                             });
                         });
                     }
                 },
@@ -354,7 +357,8 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
         queue.add(request);
     }
     AlertDialog dialog_summary;
-    private void showSummaryDialog(int addCount, int updatedCount, int errorCount, String urlimages) {
+    private void showSummaryDialog(int addCount, int updatedCount, int errorCount, String urlimages,String BookName) {
+        controller.setBookName(BookName);
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
         // inflate کردن layout سفارشی
@@ -397,18 +401,31 @@ public class ListAdapterDatasets extends ArrayAdapter<String> {
             }
         });
 
+        btnok.setOnLongClickListener(new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View view) {
+                dialog_summary.dismiss();
+                return true;
+            }
+        });
         dialog_summary = builder.create();
 
-        controller.refreshWordItems();
-        if(saveprogress)
-        {
-            controller.applyWordProgresses();
-        }
 
         dialog_summary.show();
 
 
         dialog_summary.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        try{
+            controller.refreshWordItems();
+            if(saveprogress)
+            {
+                controller.applyWordProgresses();
+            }
+        }catch (Exception e){
+
+        }
     }
 
 

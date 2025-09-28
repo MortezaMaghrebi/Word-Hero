@@ -235,7 +235,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 
 
 
-    public void deleteAllWords()
+    public void deleteAllWordsOneByOne()
     {
         Cursor c= getAllWords();
         long rowId = c.getColumnIndexOrThrow(key_id);
@@ -334,6 +334,11 @@ public class DBAdapter extends SQLiteOpenHelper {
     public void deleteAllImages() {
         // Passing null for the whereClause deletes all rows in the table
         db.delete(DATABASE_TABLE_IMAGE, null, null);
+    }
+
+    public void deleteAllWords() {
+        // Passing null for the whereClause deletes all rows in the table
+        db.delete(DATABASE_TABLE, null, null);
     }
     public void deleteAllImages1()
     {

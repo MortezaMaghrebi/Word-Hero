@@ -10,6 +10,7 @@ import android.os.Looper;
 
 import android.os.Bundle;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -318,43 +319,52 @@ public class TestActivity extends AppCompatActivity {
         }
         helpButtonsInit();
         answerButtonsInit();
-        btnnext.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        btnnext.setBackgroundResource(R.drawable.nextbuttonb);
-                        return true;
-                    case MotionEvent.ACTION_CANCEL:
-                        btnnext.setBackgroundResource(R.drawable.nextbutton);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        btnnext.setBackgroundResource(R.drawable.nextbutton);
-                        goNextQuestion();
-                        return true;
-                }
-                return false;
-            }
-        });
         btneasy.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        btneasy.setBackgroundResource(R.drawable.easybuttonb);
-                        return true;
-                    case MotionEvent.ACTION_CANCEL:
-                        btneasy.setBackgroundResource(R.drawable.easybutton);
-                        return true;
-                    case MotionEvent.ACTION_UP:
+            private boolean isLongPress = false;
+            private GestureDetector gestureDetector = new GestureDetector(btneasy.getContext(), new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    if (!isLongPress) {
                         btneasy.setBackgroundResource(R.drawable.easybutton);
                         itsEasyQuestion();
                         goNextQuestion();
+                    }
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    isLongPress = true;
+                    btneasy.setBackgroundResource(R.drawable.easybutton);
+                    itsVeryEasyFinishIt();
+                    goNextQuestion();
+                    //Toast.makeText(btneasy.getContext(), "Finish it!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        isLongPress = false;
+                        btneasy.setBackgroundResource(R.drawable.easybuttonb);
+                        gestureDetector.onTouchEvent(motionEvent);
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        btneasy.setBackgroundResource(R.drawable.easybutton);
+                        isLongPress = false;
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        gestureDetector.onTouchEvent(motionEvent);
+                        if (!isLongPress) {
+                            // اگر لانگ کلیک نبود، خودتان اقدامات لازم را انجام دهید
+                        }
                         return true;
                 }
                 return false;
             }
         });
+
 
         try {
             Display display = getWindowManager().getDefaultDisplay();
@@ -373,10 +383,22 @@ public class TestActivity extends AppCompatActivity {
 
     }
 
+
     void itsEasyQuestion()
     {
         try {
             controller.wordItems[questionsIndex[currentQuestionIndex]].review += "z";
+            wordItem wi = controller.wordItems[questionsIndex[currentQuestionIndex]];
+            controller.myDB.UpdateWordReview(wi.id, wi.review, wi.lastheart);
+        } catch (Exception e) {
+            Toast.makeText(TestActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+    void itsVeryEasyFinishIt()
+    {
+        try {
+
+            controller.wordItems[questionsIndex[currentQuestionIndex]].review += "k";
             wordItem wi = controller.wordItems[questionsIndex[currentQuestionIndex]];
             controller.myDB.UpdateWordReview(wi.id, wi.review, wi.lastheart);
         } catch (Exception e) {

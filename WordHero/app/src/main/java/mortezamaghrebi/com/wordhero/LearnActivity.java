@@ -561,140 +561,143 @@ public class LearnActivity extends AppCompatActivity {
         }
     };
 
-    void showNextQuestion()
-    {
-            Random rnd = new Random();
-            wordItem item=controller.wordItems[questionsIndex[currentQuestionIndex]];
+    void showNextQuestion() {
+        Random rnd = new Random();
+        wordItem item = controller.wordItems[questionsIndex[currentQuestionIndex]];
 
-            //txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
-            List<Integer> list;
-            list = new ArrayList<Integer>();
-            list.add(questionsIndex[currentQuestionIndex]);
-            while(list.size()<2)
-            {
-                int r= rnd.nextInt(questionsIndex.length);
-                if(!list.contains(questionsIndex[r]))list.add(questionsIndex[r]);
-            }
-            while(list.size()<4)
-            {
-                int r= rnd.nextInt(controller.wordItems.length);
-                if(!list.contains(r))list.add(r);
-            }
-            List<Integer> alist;
-            alist = new ArrayList<Integer>();
-            while(alist.size()<4)
-            {
-                int r= rnd.nextInt(4);
-                if(!alist.contains(list.get(r)))alist.add(list.get(r));
-            }
-            imgwordimage.getLayoutParams().height=0;
-            imgwordimage.requestLayout();
-            showimage=false;
-            currentAnswerIndex = alist.indexOf(questionsIndex[currentQuestionIndex]);
-            if(item.box()<7)
-            {
-                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
-                txtans1.setText(controller.wordItems[alist.get(0)].persian);
-                txtans2.setText(controller.wordItems[alist.get(1)].persian);
-                txtans3.setText(controller.wordItems[alist.get(2)].persian);
-                txtans4.setText(controller.wordItems[alist.get(3)].persian);
-                if(item.box()<3)
-                {
-                    txtques.setTextColor(Color.parseColor("#4169E1"));
-                    try {
-                        showimage=true;
-                        getImage(controller.wordItems[questionsIndex[currentQuestionIndex]].word,true);
+        //txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
+        List<Integer> list;
+        list = new ArrayList<Integer>();
+        list.add(questionsIndex[currentQuestionIndex]);
+        while (list.size() < 2) {
+            int r = rnd.nextInt(questionsIndex.length);
+            if (!list.contains(questionsIndex[r])) list.add(questionsIndex[r]);
+        }
+        while (list.size() < 4) {
+            int r = rnd.nextInt(controller.wordItems.length);
+            if (!list.contains(r)) list.add(r);
+        }
+        List<Integer> alist;
+        alist = new ArrayList<Integer>();
+        while (alist.size() < 4) {
+            int r = rnd.nextInt(4);
+            if (!alist.contains(list.get(r))) alist.add(list.get(r));
+        }
+        imgwordimage.getLayoutParams().height = 0;
+        imgwordimage.requestLayout();
+        showimage = false;
+        currentAnswerIndex = alist.indexOf(questionsIndex[currentQuestionIndex]);
+        if (item.box() < 6) {
+            txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
+            txtans1.setText(controller.wordItems[alist.get(0)].persian.split("،")[0]);
+            txtans2.setText(controller.wordItems[alist.get(1)].persian.split("،")[0]);
+            txtans3.setText(controller.wordItems[alist.get(2)].persian.split("،")[0]);
+            txtans4.setText(controller.wordItems[alist.get(3)].persian.split("،")[0]);
+            if (item.box() < 3) {
+                txtques.setTextColor(Color.parseColor("#4169E1"));
+                try {
+                    showimage = true;
+                    getImage(controller.wordItems[questionsIndex[currentQuestionIndex]].word, true);
 
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                }else
-                    txtques.setTextColor(Color.parseColor("#000000"));
-                if(ttsinit&&isproun) tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "!?", TextToSpeech.QUEUE_ADD, null);
-
-            }else if(item.box()<12)
-            {
-                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian + "؟");
-                txtans1.setText(controller.wordItems[alist.get(0)].word);
-                txtans2.setText(controller.wordItems[alist.get(1)].word);
-                txtans3.setText(controller.wordItems[alist.get(2)].word);
-                txtans4.setText(controller.wordItems[alist.get(3)].word);
-
-            }else if(item.box()<13)
-            {
-                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
-                txtans1.setText(controller.wordItems[alist.get(0)].definition);
-                txtans2.setText(controller.wordItems[alist.get(1)].definition);
-                txtans3.setText(controller.wordItems[alist.get(2)].definition);
-                txtans4.setText(controller.wordItems[alist.get(3)].definition);
-                if(ttsinit&&isproun) tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "!?", TextToSpeech.QUEUE_ADD, null);
-
-            }else if(item.box()<14)
-            {
-                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian + "؟");
-                txtans1.setText(controller.wordItems[alist.get(0)].definition);
-                txtans2.setText(controller.wordItems[alist.get(1)].definition);
-                txtans3.setText(controller.wordItems[alist.get(2)].definition);
-                txtans4.setText(controller.wordItems[alist.get(3)].definition);
-            }else if(item.box()<14)
-            {
-                txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].definition + "?");
-                txtans1.setText(controller.wordItems[alist.get(0)].word);
-                txtans2.setText(controller.wordItems[alist.get(1)].word);
-                txtans3.setText(controller.wordItems[alist.get(2)].word);
-                txtans4.setText(controller.wordItems[alist.get(3)].word);
-                if(ttsinit&&isproun) tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].definition + "!?", TextToSpeech.QUEUE_ADD, null);
-
-            }else if (item.box()<15)
-            {
-                String question=controller.wordItems[questionsIndex[currentQuestionIndex]].example.toLowerCase();
-                String[] words = controller.wordItems[questionsIndex[currentQuestionIndex]].word.toLowerCase().split(" ");
-                for (String word:words) {
-                    question= question.replace(word,"#");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
-                String[] questionwords = question.split(" ");
-                String[] realQuestionwords=controller.wordItems[questionsIndex[currentQuestionIndex]].example.split(" ");
-                for(int i=0;i<questionwords.length;i++) if(questionwords[i].contains("#")) questionwords[i]="_____";
-                question="";
-                for(int i=0;i<questionwords.length;i++)
-                {
-                    if(questionwords[i].contains("____"))question+=questionwords[i]+" ";
-                    else question+=realQuestionwords[i]+" ";
-                }
-                while (question.contains("_____ _____"))question=question.replace("_____ _____","_____");
-                txtques.setText(question.trim() + "?");
-                txtans1.setText(controller.wordItems[alist.get(0)].word);
-                txtans2.setText(controller.wordItems[alist.get(1)].word);
-                txtans3.setText(controller.wordItems[alist.get(2)].word);
-                txtans4.setText(controller.wordItems[alist.get(3)].word);
-                if(ttsinit&&isproun) tts.speak(question + "!?", TextToSpeech.QUEUE_ADD, null);
+            } else
+                txtques.setTextColor(Color.parseColor("#000000"));
+            if (ttsinit && isproun)
+                tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "!?", TextToSpeech.QUEUE_ADD, null);
 
+        } else if (item.box() < 7) {
+            txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
+            txtans1.setText(controller.wordItems[alist.get(0)].persian);
+            txtans2.setText(controller.wordItems[alist.get(1)].persian);
+            txtans3.setText(controller.wordItems[alist.get(2)].persian);
+            txtans4.setText(controller.wordItems[alist.get(3)].persian);
+            txtques.setTextColor(Color.parseColor("#000000"));
+            if (ttsinit && isproun)
+                tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "!?", TextToSpeech.QUEUE_ADD, null);
+
+        } else if (item.box() < 12) {
+            txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian + "؟");
+            txtans1.setText(controller.wordItems[alist.get(0)].word);
+            txtans2.setText(controller.wordItems[alist.get(1)].word);
+            txtans3.setText(controller.wordItems[alist.get(2)].word);
+            txtans4.setText(controller.wordItems[alist.get(3)].word);
+
+        } else if (item.box() < 13) {
+            txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "?");
+            txtans1.setText(controller.wordItems[alist.get(0)].definition);
+            txtans2.setText(controller.wordItems[alist.get(1)].definition);
+            txtans3.setText(controller.wordItems[alist.get(2)].definition);
+            txtans4.setText(controller.wordItems[alist.get(3)].definition);
+            if (ttsinit && isproun)
+                tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].word + "!?", TextToSpeech.QUEUE_ADD, null);
+
+        } else if (item.box() < 14) {
+            txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].persian + "؟");
+            txtans1.setText(controller.wordItems[alist.get(0)].definition);
+            txtans2.setText(controller.wordItems[alist.get(1)].definition);
+            txtans3.setText(controller.wordItems[alist.get(2)].definition);
+            txtans4.setText(controller.wordItems[alist.get(3)].definition);
+        } else if (item.box() < 14) {
+            txtques.setText(controller.wordItems[questionsIndex[currentQuestionIndex]].definition + "?");
+            txtans1.setText(controller.wordItems[alist.get(0)].word);
+            txtans2.setText(controller.wordItems[alist.get(1)].word);
+            txtans3.setText(controller.wordItems[alist.get(2)].word);
+            txtans4.setText(controller.wordItems[alist.get(3)].word);
+            if (ttsinit && isproun)
+                tts.speak(controller.wordItems[questionsIndex[currentQuestionIndex]].definition + "!?", TextToSpeech.QUEUE_ADD, null);
+
+        } else if (item.box() < 15) {
+            String question = controller.wordItems[questionsIndex[currentQuestionIndex]].example.toLowerCase();
+            String[] words = controller.wordItems[questionsIndex[currentQuestionIndex]].word.toLowerCase().split(" ");
+            for (String word : words) {
+                question = question.replace(word, "#");
             }
+            String[] questionwords = question.split(" ");
+            String[] realQuestionwords = controller.wordItems[questionsIndex[currentQuestionIndex]].example.split(" ");
+            for (int i = 0; i < questionwords.length; i++)
+                if (questionwords[i].contains("#")) questionwords[i] = "_____";
+            question = "";
+            for (int i = 0; i < questionwords.length; i++) {
+                if (questionwords[i].contains("____")) question += questionwords[i] + " ";
+                else question += realQuestionwords[i] + " ";
+            }
+            while (question.contains("_____ _____"))
+                question = question.replace("_____ _____", "_____");
+            txtques.setText(question.trim() + "?");
+            txtans1.setText(controller.wordItems[alist.get(0)].word);
+            txtans2.setText(controller.wordItems[alist.get(1)].word);
+            txtans3.setText(controller.wordItems[alist.get(2)].word);
+            txtans4.setText(controller.wordItems[alist.get(3)].word);
+            if (ttsinit && isproun) tts.speak(question + "!?", TextToSpeech.QUEUE_ADD, null);
 
-            int day=controller.wordItems[questionsIndex[currentQuestionIndex]].day;
-            int dayis=((day-1)%4)+1;
-            int weekis=(int)((day-1)/4)+1;
-            txtweek.setText("هفته: "+weekis+"، روز: "+dayis);
-            txtnum.setText("سوال: "+(currentQuestionIndex+1)+"/"+NumberOfQuestions);
-            lytans1.setBackgroundResource(R.drawable.curve_answra1);
-            lytans2.setBackgroundResource(R.drawable.curve_answra1);
-            lytans3.setBackgroundResource(R.drawable.curve_answra1);
-            lytans4.setBackgroundResource(R.drawable.curve_answra1);
-            lytans1.setVisibility(View.VISIBLE);
-            lytans2.setVisibility(View.VISIBLE);
-            lytans3.setVisibility(View.VISIBLE);
-            lytans4.setVisibility(View.VISIBLE);
-            isclicked = false;
-            used_help_a = used_help_b = used_help_c = help_a_used = false;
-            btnhelp1.setEnabled(true);
-            btnhelp2.setEnabled(true);
-            btnhelp3.setEnabled(true);
-            btnhelp1.setBackgroundResource(R.drawable.helpx2);
-            btnhelp2.setBackgroundResource(R.drawable.help2r);
-            btnhelp3.setBackgroundResource(R.drawable.helpshow);
-            time=(timeperquestion*100)-1;
-            mHandler = new Handler();
-            mHandler.postDelayed(mUpdate, 100);
+        }
+
+        int day = controller.wordItems[questionsIndex[currentQuestionIndex]].day;
+        int dayis = ((day - 1) % 4) + 1;
+        int weekis = (int) ((day - 1) / 4) + 1;
+        txtweek.setText("هفته: " + weekis + "، روز: " + dayis);
+        txtnum.setText("سوال: " + (currentQuestionIndex + 1) + "/" + NumberOfQuestions);
+        lytans1.setBackgroundResource(R.drawable.curve_answra1);
+        lytans2.setBackgroundResource(R.drawable.curve_answra1);
+        lytans3.setBackgroundResource(R.drawable.curve_answra1);
+        lytans4.setBackgroundResource(R.drawable.curve_answra1);
+        lytans1.setVisibility(View.VISIBLE);
+        lytans2.setVisibility(View.VISIBLE);
+        lytans3.setVisibility(View.VISIBLE);
+        lytans4.setVisibility(View.VISIBLE);
+        isclicked = false;
+        used_help_a = used_help_b = used_help_c = help_a_used = false;
+        btnhelp1.setEnabled(true);
+        btnhelp2.setEnabled(true);
+        btnhelp3.setEnabled(true);
+        btnhelp1.setBackgroundResource(R.drawable.helpx2);
+        btnhelp2.setBackgroundResource(R.drawable.help2r);
+        btnhelp3.setBackgroundResource(R.drawable.helpshow);
+        time = (timeperquestion * 100) - 1;
+        mHandler = new Handler();
+        mHandler.postDelayed(mUpdate, 100);
     }
 
     void initTts()
@@ -832,7 +835,7 @@ public class LearnActivity extends AppCompatActivity {
                 }
                 if(currentQuestionIndex==NumberOfQuestions-1)txtnext.setText("نتیجه");
                 fetch_current_page=2;
-                controller.showTourMessage(LearnActivity.this, 7,9);
+                controller.showTourMessage(LearnActivity.this, 7,8);
 
             }
         }, delay);

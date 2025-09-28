@@ -338,11 +338,37 @@ public class Controller {
                 FileOutputStream outChannel = new FileOutputStream(backupFile);
                 OutputStreamWriter writer = new OutputStreamWriter(outChannel);
 
-                getAllImages(); // Make sure this is thread-safe
-
+                //getAllImages(); // Make sure this is thread-safe
+                List<WordProgress> progresses= getWordsProgress(context);
+                refreshWordItems();
                 for (int i = 0; i < wordItems.length; i++) {
-                    wordItem w = wordItems[i];
-                    String line= w.word+"#"+w.review+"#"+w.lastheart+"#"+w.started+"#"+w.finished+"\n";
+                    String word = wordItems[i].word.toLowerCase().trim();
+                    String review = wordItems[i].review;
+                    if (review.length() > 0) {
+                        boolean find = false;
+
+                        for (int j = 0; j < progresses.size(); j++) {
+                            if (progresses.get(j).word.equals(word)) {
+                                progresses.get(j).progress = review;
+                                find = true;
+                                break;
+                            }
+                        }
+
+                        if (!find) {
+                            WordProgress progress1 = new WordProgress();
+                            progress1.word = word;
+                            progress1.progress = review;
+                            progresses.add(progress1);
+                        }
+                    }
+                }
+                progressDialog.setMax(progresses.size()); // Set max progress
+
+
+
+                for (int i = 0; i < progresses.size(); i++) {
+                    String line= progresses.get(i).word+"#"+progresses.get(i).progress+"#"+0+"#"+0+"#"+0+"\n";
                     writer.write(line);
                     int finalI = i;
                     ((Activity) context).runOnUiThread(() -> progressDialog.setProgress(finalI + 1));
@@ -597,15 +623,11 @@ public class Controller {
             String[] items=lines[i].split("#");
             //String line= w.word+"#"+w.review+"#"+w.lastheart+"#"+w.started+"#"+w.finished+"\n";
 
-            if(items.length==5)
+            if(items.length>=2)
             {
                 String word=items[0];
                 String review=items[1];
-                String lastheart=items[2];
-                String started=items[3];
-                String finished=items[4];
-                myDB.UpdateWordProgress(word,review,Integer.parseInt(lastheart),Integer.parseInt(started),Integer.parseInt(finished));
-                numsuccess++;
+                numsuccess+=myDB.UpdateWordReview(word,review);
             }
         }
         new AlertDialog.Builder(context)
@@ -802,7 +824,8 @@ public class Controller {
                 wordItems[k].word = cursor.getString(DBAdapter.COL_word);
                 wordItems[k].example = cursor.getString(DBAdapter.COL_example);
                 wordItems[k].day = cursor.getInt(DBAdapter.COL_day);
-                wordItems[k].persian= decode(cursor.getString(DBAdapter.COL_persian));
+                String[] persians= decode(cursor.getString(DBAdapter.COL_persian)).split("،");
+                wordItems[k].persian = persians[0]+(persians.length>1?"، "+persians[1]:"");
                 wordItems[k].examplefa= decode(cursor.getString(DBAdapter.COL_examplefa));
                 wordItems[k].definition = cursor.getString(DBAdapter.COL_definition);
                 wordItems[k].review= cursor.getString(DBAdapter.COL_review);
@@ -903,6 +926,32 @@ public class Controller {
         return sb.toString().trim();
     }
 
+    public String getBookName() {
+        String[] BookEmojies={"\uD83D\uDCD5","\uD83D\uDCD8","\uD83D\uDCD7","\uD83D\uDCD2","\uD83D\uDCD9"};
+        String BookName = prefs.getString("bookname", "");
+        if(BookName.length()>0){
+            String[] BookNames=BookName.split("\n");
+            BookName="";
+            for(int i=0;i<BookNames.length;i++){
+                BookNames[i]=BookEmojies[i%BookEmojies.length]+BookNames[i];
+                if(i>0)BookName+="\n";
+                BookName+=BookNames[i];
+            }
+        }
+        return BookName;
+    }
+
+    public void setBookName(String bookname) {
+        String BookName = prefs.getString("bookname", "");
+        if(BookName.length()>0) BookName+="\n";
+        editor.putString("bookname",BookName+ bookname);
+        editor.commit();
+    }
+
+    public void clearBookName() {
+        editor.putString("bookname","");
+        editor.commit();
+    }
     public class WordProgress{
         public String word;
         public String progress;
@@ -984,7 +1033,7 @@ public class Controller {
                 count += myDB.UpdateWordReview(item.word, item.progress);
             }
 
-            Toast.makeText(context, "Num " + count + " words review updated", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,   count + " تا از کلمات پیشرفت داشتند که لحاظ شد", Toast.LENGTH_SHORT).show();
         }catch (Exception e){}
     }
 
@@ -1014,38 +1063,36 @@ public class Controller {
     {
         switch (message) {
             case 1:
-                return "سلام! خیلی خوشحالیم که اومدی تو اپ ما! 😊 آماده‌ای یه سفر باحال به دنیای کلمات شروع کنیم؟";
+                return "سلام! خیلی خوشحالم که تصمیم گرفتی با این برنامه لغت یاد بگیری! 😊 آماده‌ای یه سفر باحال به دنیای کلمات شروع کنیم؟";
             case 2:
-                return "اینجا می‌تونی کلی لغت انگلیسی یاد بگیری، اونم با روش لایتنر! 😄 برنامه خودش حواسش هست چی بهت نشون بده تا راحت یاد بگیری.";
+                return "اینجا می‌تونی کلی لغت انگلیسی یاد بگیری، اونم با روش لایتنر هوشمند! 😄 برنامه خودش حواسش هست کدوم کلمه رو کی بهت نشون بده تا راحت یاد بگیری.";
             case 3:
                 return "ما یه عالمه عکس مرتبط، چیزی حدود 24هزارتا داریم! 📸 برای بیشتر کلمات پرکاربرد، که کمکت می‌کنن لغتا تو ذهنت بمونن.";
             case 4:
-                return "دوست داری لغتای کتاب مورد علاقه‌ت رو کار کنی؟ یا از کتابای آماده‌مون مثل 504، 1100 یا سری Interchange و American English Files استفاده کنی؟ 📚";
+                return "میتونی لغتای کتاب مورد علاقه خودت رو کار کنی! یا از کتابای آماده‌مون مثل 504، 1100 یا سری Interchange و American English Files استفاده کنی! 📚";
             case 5:
                 return "خب، دیگه منتظر چی هستی؟ دکمه‌ی «یاد بگیر» رو بزن و بریم! 🚀";
             case 6:
-                return "لیست کتابا جلوت باز میشه! 😊 برای شروع، Interchange 1 to 3 رو پیشنهاد می‌کنم، پر از لغتای کاربردی و باحاله.";
+                return "لیست کتابا جلوت باز میشه! 😊 برای شروع، American English Files رو پیشنهاد می‌کنم، از Starter تا سطح 5 داره، پر از لغتای کاربردی و باحاله، یکیشو انتخاب کن!";
             case 7:
-                return "هر کلمه 16 بار میاد جلوت. اگه بگی «آسون بود»، زودتر میره جلو! اگه دکمه رو نگه داری، یه‌راست میره مرحله آخر! 🏃‍♂️";
+                return "هر کلمه 16 بار میاد جلوت. اگه بگی «خیلی آسون بود»، زودتر میره جلو! اگه دکمه «خیلی آسون بود» رو نگه داری، یه‌راست میره مرحله آخر! 🏃‍♂️";
             case 8:
-                return "اول با عکس نشونت می‌دیم، بعد بدون عکس، بعدشم تو جمله‌ها می‌پرسیم. خلاصه کلمه رو انقدر قشنگ تو ذهنت جا می‌ندازیم! 😊";
-            case 9:
-                return "اگه فیلترشکن داری، روی عکس بزن و یه تصویر جدید از نت بگیر! دوبار بزن که مطمئن شی عوض شده. 🔄";
+                return "اول کلمه رو با عکس نشونت می‌دیم، بعد بدون عکس، بعدشم تو جمله‌ها می‌پرسیم. خلاصه کلمه رو قشنگ تو ذهنت جا می‌ندازیم! 😊";
+           case 9:
+                return "اینجا قلب و اکسیر رایگانه! 😍 نگران تموم شدنشون نباش. قلبت تموم شد؟ یه کم استراحت کن، بعد دوباره پر میشه! کافیه برنامه رو ببندی دوباره باز کنی!";
             case 10:
-                return "اینجا قلب و اکسیر رایگانه! 😍 نگران تموم شدنشون نباش. قلبت تموم شد؟ یه کم استراحت کن، بعد دوباره پر میشه!";
-            case 11:
                 return "بخش آزمون و تطبیق هم مثل «یاد بگیر»ه، فقط سؤالا یه جور دیگه‌ست. جواب درست بدی، کلمه تو جعبه لایتنر میره مرحله بعدی! 💪";
-            case 12:
+            case 11:
                 return "روی پروفایل بزن تا لیست لغتا و پیشرفتت رو ببینی. انگار یه نقشه گنج داری! 🗺️";
-            case 13:
+            case 12:
                 return "حالا دکمه‌ی «کتاب دلخواه خودت رو ایجاد کن» رو بزن، می‌گم چی به چیه! 😎";
-            case 14:
+            case 13:
                 return "می‌خوای کتاب خودت رو یاد بگیری؟ متنشو تو سایت بذار، سطحتو انتخاب کن، بعد تو کمتر از 10 دقیقه تو اپه! 😄";
-            case 15:
+            case 14:
                 return "کتابت PDFه؟ با یه چیزی مثل PDF OCR متنشو دربیار، بده به سایت تا لغتاشو برات آماده کنیم. 📖";
-            case 16:
+            case 15:
                 return "لیست کتابا رو می‌خوای؟ اون دکمه‌ی آبی خوشگل پایین سمت راست رو بزن! 🔵";
-            case 17:
+            case 16:
                 return "هر موقع خواستی می‌تونی کتابتو عوض کنی. موقع دانلود کتاب جدید، خودت انتخاب کن که پیشرفتت بمونه یا نه! ✨";
         }
         return "";

@@ -27,18 +27,18 @@ public class MatchingActivity extends AppCompatActivity {
     int[] questionsIndex;
     int[] answersIndex;
     int[] useranswers;
-    TextView[]words = new TextView[9];
-    TextView[]meanings = new TextView[10];
-    ImageView[]imgwords=new ImageView[9];
-    ImageView[]imgmeanings=new ImageView[10];
+    TextView[]words = new TextView[6];
+    TextView[]meanings = new TextView[6];
+    ImageView[]imgwords=new ImageView[6];
+    ImageView[]imgmeanings=new ImageView[6];
     ImageView imglines,imgback,imgexirplus1;
     TextView txtresult;
     RelativeLayout lytcontent,btncheckout;
-    int [] wordsid ={R.id.txtword1,R.id.txtword2,R.id.txtword3,R.id.txtword4,R.id.txtword5,R.id.txtword6,R.id.txtword7,R.id.txtword8,R.id.txtword9} ;
-    int [] meaningsid = {R.id.txtmeaning1,R.id.txtmeaning2,R.id.txtmeaning3,R.id.txtmeaning4,R.id.txtmeaning5,R.id.txtmeaning6,R.id.txtmeaning7,R.id.txtmeaning8,R.id.txtmeaning9,R.id.txtmeaning10};
-    int [] imgwordsid ={R.id.imgword1,R.id.imgword2,R.id.imgword3,R.id.imgword4,R.id.imgword5,R.id.imgword6,R.id.imgword7,R.id.imgword8,R.id.imgword9} ;
-    int [] imgmeaningsid = {R.id.imgmeaning1,R.id.imgmeaning2,R.id.imgmeaning3,R.id.imgmeaning4,R.id.imgmeaning5,R.id.imgmeaning6,R.id.imgmeaning7,R.id.imgmeaning8,R.id.imgmeaning9,R.id.imgmeaning10};
-    int NumberOfQuestions=10;
+    int [] wordsid ={R.id.txtword1,R.id.txtword2,R.id.txtword3,R.id.txtword4,R.id.txtword5,R.id.txtword6} ;
+    int [] meaningsid = {R.id.txtmeaning1,R.id.txtmeaning2,R.id.txtmeaning3,R.id.txtmeaning4,R.id.txtmeaning5,R.id.txtmeaning6};
+    int [] imgwordsid ={R.id.imgword1,R.id.imgword2,R.id.imgword3,R.id.imgword4,R.id.imgword5,R.id.imgword6} ;
+    int [] imgmeaningsid = {R.id.imgmeaning1,R.id.imgmeaning2,R.id.imgmeaning3,R.id.imgmeaning4,R.id.imgmeaning5,R.id.imgmeaning6};
+    int NumberOfQuestions=6;
     MediaPlayer mp_select1;
     MediaPlayer mp_select2;
     MediaPlayer mp_result1;
@@ -48,6 +48,20 @@ public class MatchingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matching);
+        ImageView backgroundImage = findViewById(R.id.backgroundImage);
+        int[] images = {
+                R.drawable.theme1,
+                R.drawable.theme2,
+                R.drawable.theme3,
+                R.drawable.theme4,
+                R.drawable.theme5,
+                R.drawable.theme6,
+                R.drawable.theme7,
+                R.drawable.theme8
+        };
+        int randomIndex = new Random().nextInt(images.length);
+        backgroundImage.setImageResource(images[randomIndex]);
+
         getquestions();
         initcontrols();
         setPlayer();
@@ -58,6 +72,7 @@ public class MatchingActivity extends AppCompatActivity {
     int selectedmeaning=-1;
     void initcontrols()
     {
+        resultshown=true;
         mp_select1 = MediaPlayer.create(MatchingActivity.this, R.raw.select1);
         mp_select2 = MediaPlayer.create(MatchingActivity.this, R.raw.select2);
         mp_result1 = MediaPlayer.create(MatchingActivity.this, R.raw.win);
@@ -76,10 +91,10 @@ public class MatchingActivity extends AppCompatActivity {
         imgexirplus1=(ImageView)findViewById(R.id.imgexirplus1);
         imgexirplus1.setVisibility(View.INVISIBLE);
         txtresult.setVisibility(View.INVISIBLE);
-        words = new TextView[9];
-        meanings = new TextView[10];
-        imgwords=new ImageView[9];
-        imgmeanings=new ImageView[10];
+        words = new TextView[6];
+        meanings = new TextView[6];
+        imgwords=new ImageView[6];
+        imgmeanings=new ImageView[6];
         View.OnClickListener imgwordclick = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -141,14 +156,14 @@ public class MatchingActivity extends AppCompatActivity {
         });
         for(int i=0;i<NumberOfQuestions;i++)
         {
-            if(i<NumberOfQuestions-1) {
+            //if(i<NumberOfQuestions-1) {
                 imgwords[i] = (ImageView) findViewById(imgwordsid[i]);
                 words[i] = (TextView) findViewById(wordsid[i]);
                 words[i].setTag(""+i); imgwords[i].setTag(""+i);
                 words[i].setText(controller.wordItems[questionsIndex[i]].word);
                 imgwords[i].setOnClickListener(imgwordclick);
                 words[i].setOnClickListener(imgwordclick);
-            }
+            //}
             meanings[i]=(TextView)findViewById(meaningsid[i]);
             imgmeanings[i]=(ImageView) findViewById(imgmeaningsid[i]);
             meanings[i].setTag(""+i); imgmeanings[i].setTag(""+i);
@@ -180,7 +195,7 @@ public class MatchingActivity extends AppCompatActivity {
                 imgmeanings[useranswers[i]].setImageResource(R.drawable.cirlcechoice3);
             }
         }
-        if(corrects==NumberOfQuestions-1) payreward();
+        if(corrects==NumberOfQuestions) payreward();
     }
     Boolean checkCompleted()
     {
@@ -195,7 +210,7 @@ public class MatchingActivity extends AppCompatActivity {
             else{
             }
         }
-        if(corrects==NumberOfQuestions-1) return true;
+        if(corrects==NumberOfQuestions) return true;
         else return false;
     }
 
@@ -301,7 +316,7 @@ public class MatchingActivity extends AppCompatActivity {
             answersIndex = new int[NumberOfQuestions];
             for(int i=0;i<answersIndex.length;i++) answersIndex[i]=questionsIndex[answrs.get(i)];
         }
-        useranswers = new int[NumberOfQuestions-1];
+        useranswers = new int[NumberOfQuestions];
         for(int i=0;i<useranswers.length;i++) useranswers[i]=-1;
     }
 
@@ -337,9 +352,9 @@ public class MatchingActivity extends AppCompatActivity {
                 controller.myDB.UpdateWordReview(wi.id, wi.review, wi.lastheart);
             }
             controller.increaseProgress(corrects);
-            controller.addPlayResult(corrects*100.0/(NumberOfQuestions-1));
+            controller.addPlayResult(corrects*100.0/(NumberOfQuestions));
             mPlayer.setVolume((float) (controller.getVolumeGame()/200.0), (float) (controller.getVolumeGame()/200.0));
-            if(corrects==NumberOfQuestions-1){
+            if(corrects==NumberOfQuestions){
                 payreward();
             }
             else if (corrects >= (NumberOfQuestions * 6 / 10)) {
@@ -350,8 +365,8 @@ public class MatchingActivity extends AppCompatActivity {
                 mp_result2.start();
             }
             resultshown = true;
-            if(corrects<NumberOfQuestions-1) {
-                txtresult.setText("" + corrects + "/" + (NumberOfQuestions - 1));
+            if(corrects<NumberOfQuestions) {
+                txtresult.setText("" + corrects + "/" + (NumberOfQuestions ));
                 txtresult.setVisibility(View.VISIBLE);
                 Animation connectingAnimation = AnimationUtils.loadAnimation(MatchingActivity.this, R.anim.exirplus);
                 txtresult.startAnimation(connectingAnimation);
