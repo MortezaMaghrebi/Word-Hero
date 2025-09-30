@@ -65,7 +65,7 @@
         android:textColor="#98e3a5"
         android:layout_below="@+id/tAddvertizeMe"
         android:fontFamily="cursive"
-        android:text="نسخه 3.5.6"
+        android:text="نسخه 3.5.7"
         />
 
 <RelativeLayout
