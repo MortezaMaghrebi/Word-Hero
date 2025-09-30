@@ -1063,12 +1063,12 @@ public class Controller {
 
     public boolean getTourShown(int tournum)
     {
-        String tourState = prefs.getString("tournum", "ffffffffffffffffffff");
+        String tourState = prefs.getString("tournum", "fffffffffffffffffffff");
         return tourState.charAt(tournum) == 't';
     }
 
     public void setTourShown(int tournum) {
-        String tourState = prefs.getString("tournum", "ffffffffffffffffffff");
+        String tourState = prefs.getString("tournum", "fffffffffffffffffffff");
 
         StringBuilder sb = new StringBuilder(tourState);
         sb.setCharAt(tournum, 't'); // این مرحله رو "نمایش داده شده" علامت می‌زنیم
@@ -1087,7 +1087,7 @@ public class Controller {
     {
         switch (message) {
             case 1:
-                return "سلام! خیلی خوشحالم که تصمیم گرفتی با این برنامه لغت یاد بگیری! 😊 آماده‌ای یه سفر باحال به دنیای کلمات شروع کنیم؟";
+                return "سلام! خیلی خوشحالم که تصمیم گرفتی با این برنامه لغت یاد بگیری! 😊\nدوست داری یاد بگیری چطور کار میکنه؟\nاین پیغام دیگه نمایشه داده نمیشه ها!";
             case 2:
                 return "اینجا می‌تونی کلی لغت انگلیسی یاد بگیری، اونم با روش لایتنر هوشمند! 😄 برنامه خودش حواسش هست کدوم کلمه رو کی بهت نشون بده تا راحت یاد بگیری.";
             case 3:
@@ -1113,11 +1113,13 @@ public class Controller {
             case 13:
                 return "می‌خوای کتاب خودت رو یاد بگیری؟ متنشو تو سایت بذار، سطحتو انتخاب کن، بعد تو کمتر از 10 دقیقه تو اپه! 😄";
             case 14:
-                return "کتابت PDFه؟ با یه چیزی مثل PDF OCR متنشو دربیار، بده به سایت تا لغتاشو برات آماده کنیم. 📖";
+                return "کتابت پی دی افه؟ با یه نرم افزاری چیزی مثل PDF OCR متنشو دربیار، بده به سایت تا لغتاشو برات آماده کنیم. 📖";
             case 15:
                 return "لیست کتابا رو می‌خوای؟ اون دکمه‌ی آبی خوشگل پایین سمت راست رو بزن! 🔵";
             case 16:
-                return "هر موقع خواستی می‌تونی کتابتو عوض کنی. موقع دانلود کتاب جدید، خودت انتخاب کن که پیشرفتت بمونه یا نه! ✨";
+                return "هر موقع خواستی می‌تونی کتابتو عوض کنی. برنامه یادش هست که کدوم لغاتو از کتاب قبلیت یاد گرفتی، فقط موقع گرفتن کتاب جدید انتخاب کن که پیشرفتت لحاظ بشه! ✨";
+            case 17:
+                return "این برنامه همیشه رایگانه، لطفا اونو به دوستات معرفی کن،\n مهم نیست که چه کتابی میخونن، چون این برنامه میتونه هر کتابی رو لغاتشو استخراج کنه و عکس هاش رو هم در بیاره و بهشون آموزش بده! \uD83C\uDF1F";
         }
         return "";
     }
@@ -2269,7 +2271,7 @@ public class Controller {
                         if (completed[0] == wordItems.length) {
                             progressDialog.dismiss();
                             Toast.makeText(context,
-                                    "✅ دانلود تکمیل شد: " + success[0] + " موفق، " + failed[0] + " ناموفق",
+                                    "✅ دانلود تکمیل شد: " + success[0] + " موفق، " + failed[0] + " ناموجود",
                                     Toast.LENGTH_LONG).show();
                         }
                     },
@@ -2287,7 +2289,7 @@ public class Controller {
                         if (completed[0] == wordItems.length) {
                             progressDialog.dismiss();
                             Toast.makeText(context,
-                                    "✅ دانلود تکمیل شد: " + success[0] + " موفق، " + failed[0] + " ناموفق",
+                                    "✅ دانلود تکمیل شد: " + success[0] + " موفق، " + failed[0] + " ناموجود",
                                     Toast.LENGTH_LONG).show();
                         }
                     });

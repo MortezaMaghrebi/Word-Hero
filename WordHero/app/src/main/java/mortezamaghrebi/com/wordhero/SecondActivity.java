@@ -810,7 +810,7 @@ public class SecondActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 }
-                controller.showTourMessage(SecondActivity.this,13,16);
+                controller.showTourMessage(SecondActivity.this,13,17);
             }
         });
 
@@ -1262,10 +1262,10 @@ public class SecondActivity extends AppCompatActivity {
         {
             controller.showTourMessage(SecondActivity.this,12,12);
         }
-        if(controller.getTourShown(16))
+        if(controller.getTourShown(17))
         {
-            if(!controller.getTourShown(17)) showCommentDialog();
-            controller.setTourShown(17);
+            if(!controller.getTourShown(18)) showCommentDialog();
+            controller.setTourShown(18);
         }
         tvBookName.setText(controller.getBookName());
         super.onStart();
@@ -2521,6 +2521,7 @@ public class SecondActivity extends AppCompatActivity {
             }catch (Exception e){}
         }
         else{
+
             if(!checkAndShowCommentDialog())
             super.onBackPressed();
         }
@@ -2531,7 +2532,14 @@ public class SecondActivity extends AppCompatActivity {
 
         // افزایش تعداد بازی‌ها
         controller.setNumberOfGamesPlayed(gamesPlayed + 1);
-
+        if(controller.getTourShown(17))
+        {
+            if(!controller.getTourShown(18)){
+                showCommentDialog();
+                return true;
+            }
+            controller.setTourShown(18);
+        }
         // بررسی شرایط نمایش دیالوگ (مثلاً پس از ۱۰ بازی)
         if (gamesPlayed >= 4 && gamesPlayed %2==0 && !controller.getIsCommentedBazaar() && !controller.getIsCommentedMyket()) {
             showCommentDialog();
