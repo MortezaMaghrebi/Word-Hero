@@ -44,7 +44,7 @@
             android:layout_marginRight="50dp"
             android:textSize="18dp"
             android:textStyle="normal"
-            android:textColor="#964b00"
+            android:textColor="#743243"
             />
     </RelativeLayout>
     <RelativeLayout
@@ -316,7 +316,7 @@
                     android:layout_width="30dp"
                     android:layout_height="wrap_content"
                     android:src="@drawable/cirlcechoice1"
-                    android:layout_toRightOf="@+id/txtword5"
+                    android:layout_toRightOf="@+id/txtword6"
                     android:layout_alignTop="@id/txtword6"
                     android:layout_alignBottom="@+id/txtword6"
                     android:layout_marginTop="3dp"

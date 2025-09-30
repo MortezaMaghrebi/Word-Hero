@@ -319,6 +319,24 @@ public class TestActivity extends AppCompatActivity {
         }
         helpButtonsInit();
         answerButtonsInit();
+        btnnext.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        btnnext.setBackgroundResource(R.drawable.nextbuttonb);
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        btnnext.setBackgroundResource(R.drawable.nextbutton);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        btnnext.setBackgroundResource(R.drawable.nextbutton);
+                        goNextQuestion();
+                        return true;
+                }
+                return false;
+            }
+        });
         btneasy.setOnTouchListener(new View.OnTouchListener() {
             private boolean isLongPress = false;
             private GestureDetector gestureDetector = new GestureDetector(btneasy.getContext(), new GestureDetector.SimpleOnGestureListener() {
