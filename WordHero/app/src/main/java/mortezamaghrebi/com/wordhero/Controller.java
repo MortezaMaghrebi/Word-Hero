@@ -472,7 +472,31 @@ public class Controller {
             return false;
         }
     }
+    public void restoreProgressFromUri(Uri uri) {
+        try {
+            File docsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+            File backupFile = new File(docsDir, "TempProgress.txt");
 
+
+            try (InputStream in = context.getContentResolver().openInputStream(uri);
+                 OutputStream out = new FileOutputStream(backupFile)) {
+
+                byte[] buffer = new byte[4096];
+                int len;
+                while ((len = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, len);
+                }
+                out.flush();
+            }
+
+
+            LoadProgressFromFile(backupFile);
+
+        } catch (Exception e) {
+            Toast.makeText(context,"Error restoring progress from backup: "+e.getMessage(),Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Error restoring progress from uri", e);
+        }
+    }
     public boolean restoreProgressFromBackupDocuments(Context context) {
         try {
             int newwords=0,duplicatewords=0;

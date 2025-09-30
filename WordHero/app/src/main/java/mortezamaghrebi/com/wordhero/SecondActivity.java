@@ -108,8 +108,9 @@ public class SecondActivity extends AppCompatActivity {
 
     Boolean longs = false;
     int avatarindex = 1;
-    final int REQUEST_CODE_OPEN_DOCUMENT = 609;
-    final boolean MYKET=false;
+    final int REQUEST_CODE_OPEN_DOCUMENT_PROGRESS = 609;
+    final int REQUEST_CODE_OPEN_DOCUMENT_IMAGE = 679;
+    final boolean MYKET=true;
     void initControls() {
         mpbutton = MediaPlayer.create(SecondActivity.this, R.raw.clicksound);
         mpbutton.setVolume((float) (controller.getVolumeButtons() / 100.0), (float) (controller.getVolumeButtons() / 100.0));
@@ -697,7 +698,7 @@ public class SecondActivity extends AppCompatActivity {
                                             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                                             intent.setType("text/plain");
                                             intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                            startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
+                                            startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT_PROGRESS);
                                         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // if android 11+ request MANAGER_EXTERNAL_STORAGE
                                             if (!Environment.isExternalStorageManager()) { // check if we already have permission
                                                 Uri uri = Uri.parse(String.format(Locale.ENGLISH, "package:%s", getApplicationContext().getPackageName()));
@@ -1213,7 +1214,7 @@ public class SecondActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("text/plain");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
+        startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT_PROGRESS);
     }
     @Override
     protected void onStart() {
@@ -1300,11 +1301,17 @@ public class SecondActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode==RESULT_OK)
         {
-            if(requestCode==REQUEST_CODE_OPEN_DOCUMENT)
+            if(requestCode==REQUEST_CODE_OPEN_DOCUMENT_IMAGE)
             {
                 if (data != null) {
                     Uri uri = data.getData();
                    controller.importImagesFromUri(uri);
+                }
+            }else  if(requestCode==REQUEST_CODE_OPEN_DOCUMENT_PROGRESS)
+            {
+                if (data != null) {
+                    Uri uri = data.getData();
+                    controller.restoreProgressFromUri(uri);
                 }
             }
         }
