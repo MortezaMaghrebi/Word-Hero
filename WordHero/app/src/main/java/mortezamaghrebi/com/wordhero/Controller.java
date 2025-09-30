@@ -848,7 +848,7 @@ public class Controller {
                 wordItems[k].word = cursor.getString(DBAdapter.COL_word);
                 wordItems[k].example = cursor.getString(DBAdapter.COL_example);
                 wordItems[k].day = cursor.getInt(DBAdapter.COL_day);
-                String[] persians= decode(cursor.getString(DBAdapter.COL_persian)).split("،");
+                String[] persians= decode(cursor.getString(DBAdapter.COL_persian)).replace("؛","،").split("،");
                 wordItems[k].persian = persians[0]+(persians.length>1?"، "+persians[1]:"");
                 wordItems[k].examplefa= decode(cursor.getString(DBAdapter.COL_examplefa));
                 wordItems[k].definition = cursor.getString(DBAdapter.COL_definition);

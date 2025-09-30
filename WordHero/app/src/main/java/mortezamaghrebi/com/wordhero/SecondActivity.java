@@ -110,7 +110,7 @@ public class SecondActivity extends AppCompatActivity {
     int avatarindex = 1;
     final int REQUEST_CODE_OPEN_DOCUMENT_PROGRESS = 609;
     final int REQUEST_CODE_OPEN_DOCUMENT_IMAGE = 679;
-    final boolean MYKET=true;
+    final boolean MYKET=false;
     void initControls() {
         mpbutton = MediaPlayer.create(SecondActivity.this, R.raw.clicksound);
         mpbutton.setVolume((float) (controller.getVolumeButtons() / 100.0), (float) (controller.getVolumeButtons() / 100.0));
