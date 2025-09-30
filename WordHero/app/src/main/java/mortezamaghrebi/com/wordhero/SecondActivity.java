@@ -2536,9 +2536,10 @@ public class SecondActivity extends AppCompatActivity {
         {
             if(!controller.getTourShown(18)){
                 showCommentDialog();
+                controller.setTourShown(18);
                 return true;
             }
-            controller.setTourShown(18);
+
         }
         // بررسی شرایط نمایش دیالوگ (مثلاً پس از ۱۰ بازی)
         if (gamesPlayed >= 4 && gamesPlayed %2==0 && !controller.getIsCommentedBazaar() && !controller.getIsCommentedMyket()) {
@@ -2550,7 +2551,7 @@ public class SecondActivity extends AppCompatActivity {
     private void showCommentDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("از برنامه راضی هستید؟ 🌟");
-        builder.setMessage("با گذاشتن نظر و امتیاز، از ما حمایت کنید!");
+        builder.setMessage("دوست داری به برنامه نظر بدی؟");
         builder.setCancelable(false);
         if(!MYKET) {
             builder.setPositiveButton("نظر در کافه‌بازار", new DialogInterface.OnClickListener() {
