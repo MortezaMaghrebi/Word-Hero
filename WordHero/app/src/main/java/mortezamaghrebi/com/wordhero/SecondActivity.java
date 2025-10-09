@@ -110,8 +110,8 @@ public class SecondActivity extends AppCompatActivity {
     int avatarindex = 1;
     final int REQUEST_CODE_OPEN_DOCUMENT_PROGRESS = 609;
     final int REQUEST_CODE_OPEN_DOCUMENT_IMAGE = 679;
-    final boolean MYKET=false;
-    final boolean BAZAAR = true;
+    final boolean MYKET=true;
+    final boolean BAZAAR = false;
     void initControls() {
         mpbutton = MediaPlayer.create(SecondActivity.this, R.raw.clicksound);
         mpbutton.setVolume((float) (controller.getVolumeButtons() / 100.0), (float) (controller.getVolumeButtons() / 100.0));
@@ -2580,7 +2580,7 @@ public class SecondActivity extends AppCompatActivity {
         builder.setTitle("از برنامه راضی هستید؟ 🌟");
         builder.setMessage("دوست داری به برنامه نظر بدی؟");
         builder.setCancelable(false);
-        if(!MYKET) {
+        if(BAZAAR) {
             builder.setPositiveButton("نظر در کافه‌بازار", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -2590,14 +2590,16 @@ public class SecondActivity extends AppCompatActivity {
                 }
             });
         }
-        builder.setNegativeButton("نظر در مایکت", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                openMyketForComment();
-                controller.setIsCommentedMyket(true);
-                dialog.dismiss();
-            }
-        });
+        if(MYKET) {
+            builder.setNegativeButton("نظر در مایکت", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    openMyketForComment();
+                    controller.setIsCommentedMyket(true);
+                    dialog.dismiss();
+                }
+            });
+        }
 
         builder.setNeutralButton("بعداً", new DialogInterface.OnClickListener() {
             @Override
