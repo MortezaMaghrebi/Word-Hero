@@ -1451,7 +1451,35 @@
                         android:textStyle="bold"
                         android:id="@+id/tvBookName"
                         />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal"
+                        >
+                        <Button
+                            android:id="@+id/btnsearchword"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:padding="5dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="0dp"
+                            android:background="@drawable/search_128px"
+                            android:textSize="18dp"
+                            android:fontFamily="@font/yekan"
+                            android:text="" />
+                        <EditText
+                            android:id="@+id/txtword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="25dp"
+                            android:fontFamily="@font/yekan"
+                            android:hint="کلمه انگلیسی رو تایپ کن ..."
+                            android:textColor="#000000"
+                            android:textColorHint="#454500" />
 
+                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
@@ -1642,45 +1670,18 @@
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="30dp"
-                        android:orientation="vertical"
-                        >
 
-                        <EditText
-                            android:id="@+id/txtword"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="15dp"
-                            android:layout_marginRight="15dp"
-                            android:hint="کلمه انگلیسی رو تایپ کن ..."
-                            android:textColor="#000000"
-                            android:textColorHint="#454500" />
-                        <Button
-                            android:id="@+id/btnsearchword"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="30dp"
-                            android:layout_marginRight="30dp"
-                            android:layout_marginTop="25dp"
-                            android:background="@drawable/button2a"
-                            android:textSize="18dp"
-                            android:fontFamily="@font/yekan"
-                            android:text="تو کتاب بگرد" />
-                    </LinearLayout>
 
                     <Button
                         android:id="@+id/btnAddYourOwnBook"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="30dp"
-                        android:layout_marginRight="30dp"
+                        android:layout_height="60dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
                         android:layout_marginTop="25dp"
                         android:background="@drawable/button1a"
                         android:fontFamily="@font/yekan"
-                        android:textSize="18dp"
+                        android:textSize="21dp"
                         android:text="کتاب دلخواهتو ایجاد کن" />
 
                     <TextView
