@@ -111,6 +111,7 @@ public class SecondActivity extends AppCompatActivity {
     final int REQUEST_CODE_OPEN_DOCUMENT_PROGRESS = 609;
     final int REQUEST_CODE_OPEN_DOCUMENT_IMAGE = 679;
     final boolean MYKET=false;
+    final boolean BAZAAR = true;
     void initControls() {
         mpbutton = MediaPlayer.create(SecondActivity.this, R.raw.clicksound);
         mpbutton.setVolume((float) (controller.getVolumeButtons() / 100.0), (float) (controller.getVolumeButtons() / 100.0));
@@ -679,8 +680,13 @@ public class SecondActivity extends AppCompatActivity {
                    // openCafeBazaarForComment();
                     // باز کردن صفحه کافه‌بازار برای نظر دادن
                 //}
-                else if (id == R.id.nav_comment_on_myket) {
-                    openMyketForComment();
+                //else if (id == R.id.nav_comment_on_myket) {
+                //    openMyketForComment();
+                    // باز کردن صفحه مایکت برای نظر دادن
+                //}
+                else if (id == R.id.nav_comment_on_market) {
+                    if(BAZAAR) openCafeBazaarForComment();
+                    else if (MYKET) openMyketForComment();
                     // باز کردن صفحه مایکت برای نظر دادن
                 }else {
 
@@ -746,22 +752,25 @@ public class SecondActivity extends AppCompatActivity {
                                     } else if (id == R.id.nav_update_application) {
                                         if(MYKET){
                                             checkUpdateInMyket(SecondActivity.this);
-                                        }else {
-                                            String url = "https://github.com/MortezaMaghrebi/Word-Hero/raw/refs/heads/main/WordHero/app/release/app-release.apk";  // آدرس سایتت
-
-                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-
-                                            intent.setPackage("com.android.chrome");
-
-                                            try {
-                                                startActivity(intent);
-                                            } catch (ActivityNotFoundException e) {
-                                                intent.setPackage(null);
-                                                startActivity(intent);
-                                            } // آپدیت برنامه
+                                        }else if(BAZAAR) {
+                                            checkUpdateInCafeBazaar(SecondActivity.this);
                                         }
-                                    }
+                                        else {
+                                                checkUpdateInCafeBazaar(SecondActivity.this);
+                                                String url = "https://github.com/MortezaMaghrebi/Word-Hero/raw/refs/heads/main/WordHero/app/release/app-release.apk";  // آدرس سایتت
 
+                                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+                                                intent.setPackage("com.android.chrome");
+
+                                                try {
+                                                    startActivity(intent);
+                                                } catch (ActivityNotFoundException e) {
+                                                    intent.setPackage(null);
+                                                    startActivity(intent);
+                                                } // آپدیت برنامه
+                                            }
+                                        }
                                         break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
@@ -784,10 +793,14 @@ public class SecondActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mpbutton.seekTo(0);mpbutton.start();
                 String word = txtword.getText().toString();
+                Dictionary dictionary = Dictionary.getInstance(SecondActivity.this);
+
+
                 if(word.length()>0){
                     try {
-                        controller.Dictionary(word);
-                    } catch (UnsupportedEncodingException e) {
+                        dictionary.find(word);
+                        //controller.Dictionary(word);
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }}
             }
@@ -968,6 +981,20 @@ public class SecondActivity extends AppCompatActivity {
             // اگر مایکت نصب نبود، مثلا به وب مایکت منتقل می‌شود
             Intent intent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://myket.ir/app/" + packageName));
+            context.startActivity(intent);
+        }
+    }
+    public void checkUpdateInCafeBazaar(Context context) {
+        String packageName = context.getPackageName(); // شناسه پکیج اپ شما
+        try {
+            String url = "bazaar://details/modal?id=" + packageName;
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.setPackage("com.farsitel.bazaar"); // مشخص کردن بازار
+            context.startActivity(intent);
+        } catch (Exception e) {
+            // اگر مایکت نصب نبود، مثلا به وب مایکت منتقل می‌شود
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://cafebazaar.ir/app/" + packageName));
             context.startActivity(intent);
         }
     }

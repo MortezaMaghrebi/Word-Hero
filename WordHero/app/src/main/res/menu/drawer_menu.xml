@@ -35,13 +35,14 @@
     <item
         android:id="@+id/nav_update_application"
         android:title="بروزرسانی برنامه" />
-    <!--
         <item
-            android:id="@+id/nav_comment_on_cafebazaar"
-            android:title="ثبت نظر در کافه‌بازار" />
- -->
-        <item
-            android:id="@+id/nav_comment_on_myket"
-            android:title="ثبت نظر در مایکت" />
+            android:id="@+id/nav_comment_on_market"
+            android:title="نظر دادن به برنامه" />
 
-    </menu>
+    <!--
+      <item
+          android:id="@+id/nav_comment_on_myket"
+          android:title="ثبت نظر در مایکت" />
+          -->
+
+  </menu>
